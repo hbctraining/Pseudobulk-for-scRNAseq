@@ -1,4 +1,4 @@
-# Differntial expression analysis of scRNAseq
+# Differential expression analysis of scRNAseq
 
 | Audience | Computational skills required| Duration |
 :----------|:----------|:----------|
