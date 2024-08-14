@@ -1,4 +1,4 @@
-# Schedule for Differential expression analysis of single-cell RNA-seq workshop
+# Differential expression analysis of single-cell RNA-seq workshop
 
 ## Pre-reading
 * [Introduction to scRNA-seq](../lessons/01_intro_to_scRNA-seq.md)
@@ -12,8 +12,7 @@
 | 09:30 - 09:45 | [Workshop introduction]() |  |
 | 09:45 - 10:30| [Crash course scRNA-seq: From counts to annotated clusters]() |
 | 10:30 - 10:40 | Break |
-| 10:40 - 11:30 | [Differential expression analysis for single cell RNA-seq]() |  |
-| 11:30 - 11:45 | [Pseudobulk approach - setting up]() | Noor |
+| 10:40 - 11:45 | [Differential expression analysis using FindMarkers()]() |  |
 | 11:45 - 12:00 | Overview of self-learning materials and homework submission | Meeta |
 
 
@@ -25,8 +24,16 @@ I. Please **study the contents** and **work through all the code** within the fo
       <details>
        <summary><i>Click here for a preview of this lesson</i></summary>
        <br> Running DESeq2 on the aggregated count matrix. <br><br>In this lesson you will:<br>
-             -  <br><br>
+             -  Sample level QC (PCA and hierarchical clustering)<br><br>
         </details>
+
+  2. [Exploring results of Pseudobulk analysis]()
+      <details>
+       <summary><i>Click here for a preview of this lesson</i></summary>
+       <br> Explore the significant genes using various visualizations. <br><br>In this lesson you will:<br>
+             -  Volcano plot, dotlot<br>
+             - Visualizations at the single cell level<br><br>
+        </details>       
 
  2.  [Functional analysis]()
       <details>
