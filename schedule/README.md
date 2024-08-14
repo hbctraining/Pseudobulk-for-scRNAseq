@@ -1,4 +1,4 @@
-# Differential expression analysis of single-cell RNA-seq workshop
+# Workshop Schedule
 
 ## Pre-reading
 * [Introduction to scRNA-seq](../lessons/01_intro_to_scRNA-seq.md)
@@ -60,19 +60,34 @@ II. **Submit your work**:
 | Time |  Topic  | Instructor |
 |:-----------:|:----------:|:--------:|
 | 09:30 - 10:15 | Self-learning lessons discussion | All |
-| 10:15 - 11:15|  [Normalization and regressing out unwanted variation]() | Noor |
+| 10:15 - 11:15|   |  |
 | 11:15 - 11:25 | Break |
-| 11:25 - 12:00| [A brief introduction to Integration]() | Meeta |
+| 11:25 - 12:00|  |  |
 
 ### Before the next class:
+
 I. Please **study the contents** and **work through all the code** within the following lessons:
+   1. [Self-learning lesson]()
+      <details>
+       <summary><i>Click here for a preview of this lesson</i></summary>
+         <br>A two sentence summary of the lesson.... <br><br>In this lesson, we will:<br>
+             - Point 1<br>
+             - Point 2<br><br>
+        </details>
+   
 
-
+   2. [Self-learning lesson #2]()
+      <details>
+       <summary><i>Click here for a preview of this lesson</i></summary>
+         <br>A two sentence summary of the lesson.... <br><br>In this lesson, we will:<br>
+             - Point 1<br>
+             - Point 2<br><br>
+        </details>
 
 
 II. **Submit your work**:
    * Each lesson above contains exercises; please go through each of them.
-   * **Submit your answers** to the exercises using [this Google form](https://docs.google.com/forms/d/e/1FAIpQLSd8-k5YwfQekQQdFuDVPhGCy-eK70CqPiUkDNYDeWSEQYBAZg/viewform?usp=sf_link) on **the day *before* the next class**.
+   * **Submit your answers** to the exercises using [this Google form]() on **the day *before* the next class**.
 
 ### Questions?
 * ***If you get stuck due to an error*** while runnning code in the lesson, [email us](mailto:hbctraining@hsph.harvard.edu) 
@@ -85,12 +100,10 @@ II. **Submit your work**:
 
 | Time |  Topic  | Instructor |
 |:-----------:|:----------:|:--------:|
-| 9:30 - 10:00 | Self-learning lessons discussion | All |
-| 10:00 - 11:00 |[Marker identification](../lessons/09_merged_SC_marker_identification.md) | Noor |
-| 11:00 - 11:10 | Break |
-| 11:10 - 11:30 | [Workflow summary](../lessons/scRNAseq_workflow.md) | Meeta |
-| 11:30 - 11:45 | [Seurat Cheatsheet](../lessons/seurat_cheatsheet.md) Overview and Final Q & A | All |
-| 11:45- 12:00 | [Wrap up](../slides/Workshop_wrapup.pdf) | Meeta |
+| 09:30 - 10:15 | Self-learning lessons discussion | All |
+| 10:15 - 11:15|   |  |
+| 11:15 - 11:25 | Break |
+| 11:25 - 12:00|  |  |
 
 ***
 
