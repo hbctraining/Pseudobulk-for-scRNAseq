@@ -4,10 +4,12 @@ author: "Noor Sohail, Meeta Mistry"
 date: August 13th, 2024
 ---
 
-## Single-cell RNA-seq data - counts to annotated clusters
+# Single-cell RNA-seq data - counts to annotated clusters
 
-
-* Include workflow image and highlights if individual steps
+## Learning Objectives
+* Describe the workflow and steps involved in going from counts to clusters
+* Identify challenges at each step
+* Introduce the dataset and begin setup by loading data 
 
 
 ***
