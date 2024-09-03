@@ -10,7 +10,7 @@
 | Time |  Topic  | Instructor |
 |:-----------:|:----------:|:--------:|
 | 09:30 - 09:45 | [Workshop introduction]() |  |
-| 09:45 - 10:30| [Crash course scRNA-seq: From counts to annotated clusters]() |
+| 09:45 - 10:30| [From counts to annotated clusters]() |
 | 10:30 - 10:40 | Break |
 | 10:40 - 11:45 | [Differential expression analysis using FindMarkers()]() |  |
 | 11:45 - 12:00 | Overview of self-learning materials and homework submission | Meeta |
@@ -20,28 +20,22 @@
 
 I. Please **study the contents** and **work through all the code** within the following lessons:
  
-   1. [Pseudobulk analysis using DESeq2]()
+   1. [Aggregating by celltype using pseudobulk approach]()
       <details>
        <summary><i>Click here for a preview of this lesson</i></summary>
        <br> Running DESeq2 on the aggregated count matrix. <br><br>In this lesson you will:<br>
-             -  Sample level QC (PCA and hierarchical clustering)<br><br>
+             - Aggregate counts for each celltype<br>
+             - Sample level QC for a given celltype (PCA and hierarchical clustering)<br>
+             - Visualizations to bring it back to the single cell level <br><br>
+<br>
         </details>
 
-  2. [Exploring results of Pseudobulk analysis]()
+  2. [Automating pseudobulk aggregation using for loops]()
       <details>
        <summary><i>Click here for a preview of this lesson</i></summary>
-       <br> Explore the significant genes using various visualizations. <br><br>In this lesson you will:<br>
-             -  Volcano plot, dotlot<br>
-             - Visualizations at the single cell level<br><br>
+       <br> Demonstrate how to run this for different celltypes. <br><br>In this lesson you will:<br>
+             - Complete exercise for running through with another celltype<br><br>
         </details>       
-
- 2.  [Functional analysis]()
-      <details>
-       <summary><i>Click here for a preview of this lesson</i></summary>
-         <br>Now that you have signifanct genes, let's find out what they represent. <br><br>In this lesson you will:<br>
-             -  Identify relevant biological pathways<<br><br>
-        </details>
-     
          
 
 II. **Submit your work**:
@@ -60,30 +54,19 @@ II. **Submit your work**:
 | Time |  Topic  | Instructor |
 |:-----------:|:----------:|:--------:|
 | 09:30 - 10:15 | Self-learning lessons discussion | All |
-| 10:15 - 11:15|   |  |
-| 11:15 - 11:25 | Break |
-| 11:25 - 12:00|  |  |
+| 10:15 - 10:20|  Break |  |
+| 10:20 - 12:00 | [Pseudobulk Differential Expression Analysis using DESeq2]() | |
 
 ### Before the next class:
 
 I. Please **study the contents** and **work through all the code** within the following lessons:
-   1. [Self-learning lesson]()
+   1. [Functional Analysis]()
       <details>
        <summary><i>Click here for a preview of this lesson</i></summary>
-         <br>A two sentence summary of the lesson.... <br><br>In this lesson, we will:<br>
-             - Point 1<br>
-             - Point 2<br><br>
+         <br>Now that we have significant genes, let's gain some biological insight <br><br>In this lesson, we will:<br>
+             - Over-representation analsyis<br>
+             - GSEA and other visualizations<br><br>
         </details>
-   
-
-   2. [Self-learning lesson #2]()
-      <details>
-       <summary><i>Click here for a preview of this lesson</i></summary>
-         <br>A two sentence summary of the lesson.... <br><br>In this lesson, we will:<br>
-             - Point 1<br>
-             - Point 2<br><br>
-        </details>
-
 
 II. **Submit your work**:
    * Each lesson above contains exercises; please go through each of them.
@@ -101,9 +84,10 @@ II. **Submit your work**:
 | Time |  Topic  | Instructor |
 |:-----------:|:----------:|:--------:|
 | 09:30 - 10:15 | Self-learning lessons discussion | All |
-| 10:15 - 11:15|   |  |
-| 11:15 - 11:25 | Break |
-| 11:25 - 12:00|  |  |
+| 10:15 - 11:15| [Methods for Differental Abundance]()  |  |
+| 11:15 - 11:20 | Break |
+| 11:25 - 12:00| Discussion and Q&A |  |
+| 11:45 - 12:00| [Wrap-up]() |  |
 
 ***
 
