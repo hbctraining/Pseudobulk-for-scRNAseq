@@ -153,7 +153,16 @@ bulk$condition <- factor(bulk$condition, levels=c("TN", "RT", "cold2", "cold7"))
 bulk@meta.data %>% head()
 ```
 
-TODO: show bulk metadata
+
+```
+                                 orig.ident celltype    sample condition  n_cells
+Adipo_Sample-1_TN         Adipo_Sample-1_TN    Adipo  Sample-1        TN       5
+Adipo_Sample-11_RT       Adipo_Sample-11_RT    Adipo Sample-11        RT       7
+Adipo_Sample-12_RT       Adipo_Sample-12_RT    Adipo Sample-12        RT      43
+Adipo_Sample-13_cold2 Adipo_Sample-13_cold2    Adipo Sample-13     cold2      28
+Adipo_Sample-14_cold2 Adipo_Sample-14_cold2    Adipo Sample-14     cold2     491
+Adipo_Sample-15_cold7 Adipo_Sample-15_cold7    Adipo Sample-15     cold7      15
+```
 
 The output of this aggregation is a sparse matrix, and when we take a quick look, we can see that it is a gene by cell type-sample matrix.
 
