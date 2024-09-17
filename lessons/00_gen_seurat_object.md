@@ -23,7 +23,7 @@ This information comes from a final, completely processed dataset. We have [mate
 
 ## Pre-processing steps
 
-We have detailed the steps used to generate the seurat object being used for the following lessons. For more details on how to 
+Here we have provided the code used to generate the seurat object that will be used for the workshop. The parameters for each step were chosen based upon the descriptions in the methods section.
 
 1. Download and unzip the dataset from GEO using bash
 
@@ -62,6 +62,11 @@ meta <- select(meta, -c(cluster_id))
 # - nFeature_RNA = nGene
 meta <- select(meta, -c(nUMI, nGene))
 
+# Rename columns for more clarity
+meta <- meta %>%
+    rename(c("orig.ident"="sample", "sample"="condition"))
+
+
 # Removing cluster resolutions that will not be used
 cols <- c(
     "integrated_snn_res.0.1",
@@ -76,7 +81,11 @@ cols <- c(
 )
 
 meta <- meta %>% select(-c(cols))
+
+# Store clusters IDs as factors
 meta$seurat_clusters <- meta$integrated_snn_res.1.2
+sorted_cluster <- sort(as.integer(unique(meta$seurat_clusters)))
+meta$seurat_clusters <- factor(meta$seurat_clusters, levels=sorted_cluster)
 ```
 
 
@@ -123,7 +132,7 @@ seurat <- FindVariableFeatures(seurat,
 
 ```r
 # Split seurat object by sample
-split_seurat <- SplitObject(seurat, split.by = "sample")
+split_seurat <- SplitObject(seurat, split.by = "condition")
 
 # Run SCTranform on each sample individually
 for (i in 1:length(split_seurat)) {
