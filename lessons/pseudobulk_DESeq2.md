@@ -74,10 +74,31 @@ meta <- seurat@meta.data %>%
             unique() %>%
             remove_rownames()
 
+meta
 ```
 
+```
+      sample condition
+1   Sample_1        TN
+2   Sample_2        TN
+3   Sample_9        TN
+4  Sample_10        TN
+5   Sample_3        RT
+6   Sample_4        RT
+7  Sample_11        RT
+8  Sample_12        RT
+9   Sample_6     cold2
+10 Sample_13     cold2
+11 Sample_14     cold2
+12  Sample_7     cold7
+13  Sample_8     cold7
+14 Sample_15     cold7
+15 Sample_16     cold7
+```
 
-We want to group counts by sample:
+Next we need ask ourselves, how are we going to group our data? We know we want to run the analysis on a per-celltype basis and aggregate at the sample level. As a result, we want to:
+
+group counts by sample:
 
 ```r
 identity <- sort(unique(seurat@meta.data[["sample"]]))
