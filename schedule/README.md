@@ -10,7 +10,7 @@
 | Time |  Topic  | Instructor |
 |:-----------:|:----------:|:--------:|
 | 09:30 - 09:45 | [Workshop introduction]() |  |
-| 09:45 - 10:30| [From counts to annotated clusters]() |
+| 09:45 - 10:30| [Project setup and data exploration ](../lessons/01_scRNA_counts_to_clusters.md) |
 | 10:30 - 10:40 | Break |
 | 10:40 - 11:45 | [Differential expression analysis using FindMarkers()]() |  |
 | 11:45 - 12:00 | Overview of self-learning materials and homework submission | Meeta |
