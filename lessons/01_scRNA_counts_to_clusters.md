@@ -4,56 +4,24 @@ author: "Noor Sohail, Meeta Mistry"
 date: August 13th, 2024
 ---
 
-# Single-cell RNA-seq data - counts to annotated clusters
+# Project Setup and Data Exploration 
 
 ## Learning Objectives
 
-* Introduce the dataset and begin setup by loading data 
+* Introduce the dataset and begin setup by loading data
+* Describe the process of going from count matrix to annotated clusters
+* Explore distribution of cluster annotations
 
-## Set up
+## Introduction to the dataset
+For this workshop, we will be using the single-cell RNA-seq dataset from [Shamsi et al (2021)](https://www.nature.com/articles/s42255-021-00373-z). The primary focus of this project was to evaluate the changes in brown adipose tissue (BAT) at different temperatures. 
 
-For this workshop, we will be working within an RStudio project. In order to follow along you should have **downloaded the R project**.
-
-> If you haven't done this already, the project can be accessed using [this link](TODO).
-
-Once downloaded, you should see a file called `TODO` on your computer (likely, in your `Downloads` folder). 
-
-1. Unzip this file. It will result in a folder of the same name. 
-2. **Move the folder to the location on your computer where you would like to perform the analysis.**
-3. Open up the folder. The contents will look like the screenshot below. 
-4. **Locate the `.Rproj file` and double-click on it.** This will open up RStudio with the "DGE_scRNA" project loaded. 
-
-TODO: image of file explorer
-
-## Project organization
-
-One of the most important parts of research that involves large amounts of data, is how best to manage it. We tend to prioritize the analysis, but there are many other important aspects of **data management that are often overlooked** in the excitement to get a first look at new data. The [HMS Data Management Working Group](https://datamanagement.hms.harvard.edu/), discusses in-depth some things to consider beyond the data creation and analysis.
-
-One important aspect of data management is organization. For each experiment you work on and analyze data for, it is considered best practice to get organized by creating **a planned storage space (directory structure)**. We will do that for our single-cell analysis. 
-
-Look inside your project space and you will find that a directory structure has been setup for you:
-
-```
-DGE_scRNA/
-├── data
-├── results
-└── figures
-```
-
-> **NOTE FOR WINDOWS OS users** - When you open the project folder after unzipping, please check if you have a `data` folder with a sub folder also called `data`. If this is the case, please move all the files from the subfolder into the parent `data` folder.
-
-
-## Exploring the example dataset
-
-To interpret the results generated from running a differential gene expression (DGE) analysis, we first need to understand our dataset. We will be using the single-cell RNA-seq dataset from [Shamsi et al (2021)](https://www.nature.com/articles/s42255-021-00373-z).
-
-The primary focus of this project was to evaluate the changes in brown adipose tissue (BAT) at different temperatures. Prolonged exposure to the cold results in increased populations of brown adipocytes.
+Cells were isolated from stromal vascular fraction of brown adipose tissue. After removal of all hematopoietic lineage-positive cells, 24,498 non-hematopoietic cells were re-clustered and visualisation of the clusters using UMAP identified eight major non-immune cell types present in BAT. This unsupervised clustering of gene expression profiles also revealed heterogeneity within each cell type, illustrated by the presence of multiple distinct clusters for each cell type.
 
 <p align="center" style="display:flex">
     <img src="../img/sample_info_paper_graphic_1.png" width="40%">
-    <img src="../img/sample_info_paper_graphic_2.png" width="60%">
 </p>
 
+Prolonged exposure to the cold results in increased populations of brown adipocytes.. Using a combination of known markers, we identified Pdgfrα-expressing adipose progenitors (Pdgfrα+ APCs), vascular and lymphatic endothelial cells, VSM cells, pericytes and adipocytes, as well as myelinating- and non-myelinating Schwann cells (Fig. 1b and Extended Data Fig. 1).
 For this workshop, we will be using the output of DGE using a variety of tools to identify differentially expressed genes between conditions by celltype.
 
 ### Relevant metadata
@@ -90,6 +58,41 @@ Some relevant metadata for our dataset is provided below:
     6. Adipocytes
     7. Myelinating Schwann cells
     8. Non-myelinating Schwann cells
+
+## Set up
+
+For this workshop, we will be working within an RStudio project. In order to follow along you should have **downloaded the R project**.
+
+> If you haven't done this already, the project can be accessed using [this link](TODO).
+
+Once downloaded, you should see a file called `TODO` on your computer (likely, in your `Downloads` folder). 
+
+1. Unzip this file. It will result in a folder of the same name. 
+2. **Move the folder to the location on your computer where you would like to perform the analysis.**
+3. Open up the folder. The contents will look like the screenshot below. 
+4. **Locate the `.Rproj file` and double-click on it.** This will open up RStudio with the "DGE_scRNA" project loaded. 
+
+TODO: image of file explorer
+
+## Project organization
+
+One of the most important parts of research that involves large amounts of data, is how best to manage it. We tend to prioritize the analysis, but there are many other important aspects of **data management that are often overlooked** in the excitement to get a first look at new data. The [HMS Data Management Working Group](https://datamanagement.hms.harvard.edu/), discusses in-depth some things to consider beyond the data creation and analysis.
+
+One important aspect of data management is organization. For each experiment you work on and analyze data for, it is considered best practice to get organized by creating **a planned storage space (directory structure)**. We will do that for our single-cell analysis. 
+
+Look inside your project space and you will find that a directory structure has been setup for you:
+
+```
+DGE_scRNA/
+├── data
+├── results
+└── figures
+```
+
+> **NOTE FOR WINDOWS OS users** - When you open the project folder after unzipping, please check if you have a `data` folder with a sub folder also called `data`. If this is the case, please move all the files from the subfolder into the parent `data` folder.
+
+
+
 
 ## Loading single-cell RNA-seq count data 
 
