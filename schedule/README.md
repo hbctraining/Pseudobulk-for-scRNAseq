@@ -3,6 +3,7 @@
 ## Pre-reading
 * [Introduction to scRNA-seq]([../lessons/01_intro_to_scRNA-seq.md](https://hbctraining.github.io/scRNA-seq_online/lessons/01_intro_to_scRNA-seq.html))
 * [scRNA-seq: From sequence reads to count matrix](https://hbctraining.github.io/scRNA-seq_online/lessons/02_SC_generation_of_count_matrix.html)
+* [scRNA-seq: From counts to clusters](../lessons/00_counts_to_clusters_overview.md)
 * [Download this project]()
 
 ## Day 1
@@ -10,7 +11,7 @@
 | Time |  Topic  | Instructor |
 |:-----------:|:----------:|:--------:|
 | 09:30 - 09:45 | [Workshop introduction]() |  |
-| 09:45 - 10:30| [Project setup and data exploration ](../lessons/01_scRNA_counts_to_clusters.md) |
+| 09:45 - 10:30| [Project setup and data exploration ](../lessons/01_setup_intro_dataset.md) |
 | 10:30 - 10:40 | Break |
 | 10:40 - 11:45 | [Differential expression analysis using FindMarkers()]() |  |
 | 11:45 - 12:00 | Overview of self-learning materials and homework submission | Meeta |
