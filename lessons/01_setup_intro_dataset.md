@@ -29,7 +29,7 @@ The mice used in this study were housed in 4 different temperature conditions:
 There are four replicates per condition, except cold2 which has 3 replicates. This experimental design allowed for adequate comparison of gene expression for each celltype between conditions. For this workshop, we will be **using this clustered data set as a starting point** to demonstrate various approaches for **identifying differentially expressed genes in single cell RNA-seq data**.
 
 ### Raw data
-The processed dataset is available on [GEO (GSE160585)](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE160585) and the raw data is available for download on [SRA]( https://www.ncbi.nlm.nih.gov/sra?term=SRP290688). We chose to download the filtered counts data and metadata files, and use those to create  a Seurat object as our starting point. For more detailed information and code on how to create the object from the GEO files, please [see this lesson](00_gen_seurat_object.md).
+The processed dataset is available on [GEO (GSE160585)](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE160585) and the raw data is available for download on [SRA]( https://www.ncbi.nlm.nih.gov/sra?term=SRP290688). We chose to download the filtered counts data and metadata files, and use those to create  a Seurat object as our starting point. For more detailed information and code on how to create the object from the GEO files, please [see this lesson](01b_gen_seurat_object.md).
 
 ### Relevant metadata
 In addition to the counts matrix, we also need to collect information about the data; this is known as metadata. There is often a temptation to just start exploring the data, but it is not very meaningful if we know nothing about the samples that this data originated from.
@@ -101,7 +101,7 @@ library(ggalluvial)
 
 ### Load Seurat object
 
-We generated this Seurat object using the using the files that were deposited to GEO. More details on how this seurat object is detailed in another [lesson](00_gen_seurat_object.md), where we provide more clarity on what parameters were used for normalization, integration, and clustering. 
+We generated this Seurat object using the using the files that were deposited to GEO. More details on how this seurat object is detailed in [another lesson](01b_gen_seurat_object.md), where we provide more clarity on what parameters were used for normalization, integration, and clustering. 
 
 Let's begin by looking at what metadata is stored inside the Seurat object, paying close attention to sample identities and celltype annotations.
 
