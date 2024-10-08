@@ -1,7 +1,7 @@
 # Workshop Schedule
 
 ## Pre-reading
-* [Introduction to scRNA-seq]([../lessons/01_intro_to_scRNA-seq.md](https://hbctraining.github.io/scRNA-seq_online/lessons/01_intro_to_scRNA-seq.html))
+* [Introduction to scRNA-seq]([../lessons/01_intro_to_scRNA-seq.md](https://hbctraining.github.io/scRNA-seq_online/lessons/01_intro_to_scRNA-seq.html)
 * [scRNA-seq: From sequence reads to count matrix](https://hbctraining.github.io/scRNA-seq_online/lessons/02_SC_generation_of_count_matrix.html)
 * [scRNA-seq: From counts to clusters](../lessons/00_counts_to_clusters_overview.md)
 * [Download this project]()
