@@ -14,26 +14,26 @@ Approximate time: 90 minutes
 
 * * *
 
-# Differential expression analysis with DESeq2
+## Pseudobulk differential expression analysis
 
-<p align="center">
-<img src="../img/sc_workflow_2022.jpg" width="630">
-</p>
+In the previous lesson we demonstrated how to perform a differential expression analysis using the `FindMarkers()` function in Seurat. The major limitation of this approach is that it treats each individual cell as replicate, which inflates the p-value resulting in many false positives. In this lesson we introduce you to the pseudobulk approach, in which cells belonging to a cluster are aggregated within each sample to create a gene by sample count matrix. This count matrix resembles the input we use for bulk RNA-seq, and we use a similar workflow to idenitfy differentially expressed genes.
 
-After determining the cell type identities of the scRNA-seq clusters, we often would like to perform a differential expression (DE) analysis between conditions within particular cell types. While functions exist within Seurat to perform DE analysis, the p-values from these analyses are often inflated as each cell is treated as an independent sample. This is problematic, since we know that single cells isolated from the same biological sample (whether the same mouse, same human sample or same cell culture, etc.) are *not* independent of each other. If we treat cells as independent samples, then we are not truly investigating the variation across a population, but the variation across an individual/organism. Therefore, we could only make conclusions at the level of this individual, not the population. 
+**CREATE A FIGURE TO DEMONSTRATE THE AGGREGATION**
 
-Usually, we want to infer which genes might be important for a condition at the population level, so we need the samples contrasted in our DE analysis to originate from different organisms/samples, not different cells. To do this, the current best practice is using a pseudobulk approach, which involves the following steps:
+Forming pseudobulk samples is important to perform accurate differential expression analysis. Cells from the same sample/individual are more similar to each other than to cells from another individual. This means treating each cell as an independent sample leads to underestimation of the variance and misleadingly small p-values. Working on the level of pseudobulk ensures reliable statistical tests because the samples correspond to the units of replication.
+
+Using a pseudobulk approach involves the following steps:
 
 1. Subsetting to the cells for the cell type(s) of interest to perform the DE analysis;
 2. Extracting the raw counts after QC filtering of cells to be used for the DE analysis;
 3. Aggregating the counts and metadata to the sample level; 
 4. Performing the DE analysis (Need at least two biological replicates per condition to perform the analysis, but more replicates are recommended).
 
-# Data wrangling to get pseudobulk counts
 
-## Create new script
 
-Next, open a new Rscript file, and start with some comments to indicate what this file is going to contain:
+## Setting up
+
+Let's begin by opening a new Rscript file, and include a commentheader line:
 
 ```r
 # Single-cell RNA-seq analysis - Pseudobulk DE analysis with DESeq2
@@ -42,11 +42,9 @@ Next, open a new Rscript file, and start with some comments to indicate what thi
 Save the Rscript as `DE_analysis_scrnaseq.R`.
 
 
-## Load libraries
+### Load libraries
 
-After bringing in the raw counts data for our experiment, we will use tools from various packages to wrangle our data to the format needed, followed by aggregation of the raw counts across the single cells to the sample level. Then, we will use DESeq2 to perform the differential expression analysis across conditions of interest. To learn more about the DESeq2 method and deconstruction of the steps in the analysis, we have [additional materials available](https://hbctraining.github.io/DGE_workshop_salmon_online/schedule/links-to-lessons.html).
-
-Let's load the libraries that we will be using for the analysis.
+Next, let's load the libraries that we will be using for the analysis:
 
 ```r
 # Load libraries
@@ -60,9 +58,9 @@ library(cowplot)
 library(dplyr)
 ```
 
-## Create metadata
+### Create metadata
 
-To make the most of our analysis, we want to create a dataframe with all of the  sample-level metadata to make use of later
+We will want to create a dataframe with all of the sample-level metadata, this will be used during the aggregation step but aso later with differential expression analysis.
 
 > _**NOTE:** Other relevant metadata for a pseudobulk differential expression analysis include information about the individuals that will be contrasted (age, sex, clinical presentation, etc.). The more information you can collect about your study samples, the better!_
 
@@ -96,9 +94,10 @@ meta
 15 Sample_16     cold7
 ```
 
-Next we need ask ourselves, how are we going to group our data? We know we want to run the analysis on a per-celltype basis and aggregate at the sample level. As a result, we want to:
+## Aggregate counts for pseudobulk analysis
+Now, before we transform our single-cell level dataset into one sample-level dataset per cell type (cluster) there are a few data wrangling steps involved. We know that we want to aggregate cells of a particular celltype and that we want to collapse the down by sample.
 
-group counts by sample:
+First, we create a vector of unique sample names:
 
 ```r
 identity <- sort(unique(seurat@meta.data[["sample"]]))
@@ -111,7 +110,7 @@ identity
 [13] "Sample_7"  "Sample_8"  "Sample_9" 
 ```
 
-within each celltype:
+Next, we create a vector of unique celltypes:
 
 ```r
 groups <- sort(unique(seurat@meta.data[["celltype"]]))
@@ -123,7 +122,7 @@ groups
 [8] "VSM"      "VSM-AP"  
 ```
 
-and do comparisons between the different conditions:
+And finally, a vector of the different groups we will be comparing:
 
 ```r
 comparisons <- sort(unique(seurat@meta.data[["condition"]]))
@@ -134,14 +133,7 @@ comparisons
 [1] "cold2" "cold7" "RT"    "TN" 
 ```
 
-Now, we are ready for aggregation of counts to the sample level. Essentially, we are taking the sum of counts for each sample within each cell type.
-
-
-## Aggregate counts for pseudobulk analysis
-
-To enable pseudobulk differential expression (DE) analysis, we need to transform our single-cell level dataset into one sample-level dataset per cell type (cluster) that we want to study using DE analysis.
-
-To create the actual pseudo-bulked seurat object where we aggregated on the raw RNA counts, we use the `AggregateExpression()` function. In this newly create seurat object, the columns are sample (not cells anymore) and rownames are features (genes).
+To aggregate the counts, we will use the `AggregateExpression()` function from Seurat. It will take as input a Seurat object, and returns summed counts ("pseudobulk") for each identity class. The default is to return a matrix with genes as rows, and identity classes as columns. We have set `return.seurat` to  `TRUE`, which means rather than a matrix we will get an object of class Seurat. We have also specified which factors to aggregate on, using the `group.by` argument.
 
 
 ```r
@@ -153,9 +145,14 @@ bulk <- AggregateExpression(
 )
 ```
 
-Based on how we grouped the seurat object, we will see that the samples have the a name "{celltype}_{sample}_{condition}" to show that we are grouping together counts based on sample, celltype, and condition. The metadata columns that were used as input are included in this new seurat object as well.
+Now our Seurat object has 'cells' which correspond to aggregated counts. We will see that the samples have the a name "{celltype}_{sample}_{condition}" to show that we are grouping together counts based on sample, celltype, and condition. The metadata columns that were used as input are included in this new Seurat object as well.
 
-If there were other pieces of sample-level metadata, this would the time to include those columns in the new seurat object. For example, adding the number of cells we aggregated on is useful information to include.
+```r
+# each 'cell' is a sample-condition-celltype pseudobulk profile
+tail(Cells(bulk))
+```
+
+Now would be the time to add to your metadata, any other information you have on the samples. For example, adding the number of cells we aggregated on is useful information to include.
 
 ```r
 # Number of cells by sample and celltype
@@ -209,33 +206,32 @@ Mrpl15                   135                  2037
 
 
 
-* * *
-
-# Differential gene expression with DESeq2
+## Differential gene expression with DESeq2
 
 **We will be using [DESeq2](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8) for the pseudobulk DE analysis, and the analysis steps with DESeq2 are shown in the flowchart below in green and blue**. DESeq2 first normalizes the count data to account for differences in library sizes and RNA composition between samples. Then, we will use the normalized counts to make some plots for QC at the gene and sample level. The final step is to use the appropriate functions from the DESeq2 package to perform the differential expression analysis. We will go into each of these steps briefly, but additional details and helpful suggestions regarding DESeq2 can be found in [our materials](https://hbctraining.github.io/DGE_workshop_salmon_online/schedule/links-to-lessons.html) detailing the workflow for bulk RNA-seq analysis, as well as in the [DESeq2 vignette](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html).
+
+**NEED TO MODIFY THE WORKFLOW SO IT INCLUDES AGGREGATE STEP**
 
 <p align="center">
   <img src="../img/de_workflow_salmon.png" width="400">
 </p>
 
 
-# Creating a DESeq2 object
+## Creating a DESeq2 object
 
-From the bulked seurat object, we can readily create a DESeq2 object using any element of the lists. All we need to do is decide which cell type we wish to focus on, and retrieve the corresponding data from our lists.
+From the pseudobulk Seurat object, we can easily extract the information required for input to DESeq2. First, we need to do is decide which cell type we wish to focus on, and then retrieve the corresponding data from the object. We are going to look for differntially expressed genes between the `TN` and `cold7` condition for the **`VSM` cells**. 
 
-This bulked seurat object constains the aggregated counts for every celltype. Here we are going to run DESeq2 DGE between `TN` and `cold7` condition for the `VSM` cells.
+We use the `subset()` function to get the data we need:
 
 
 ```r
 bulk_vsm <- subset(bulk, subset= (celltype == "VSM") & (condition %in% c("TN", "cold7")))
-seurat_vsm <- subset(seurat, subset= (celltype == "VSM") & (condition %in% c("TN", "cold7")))
 ```
 
 
 ## Number of cells
 
-Before moving on to a pseudobulk DGE analysis, it is important to identify how many cells we are able to pseudobulk on. Remember that for DESeq2 we will be aggregating on a per-sample basis so we need to make sure that we have enough cells per sample after subsetting to one celltype.
+Before moving on to a pseudobulk DGE analysis, it is important to identify **how many cells did we aggregate fo each sample**. We need to make sure that we have enough cells per sample after subsetting to one celltype. We can see that with the exception of one sample, the TN group has many cells and the cold7 samples have much fewer cells.
 
 
 ```r
@@ -252,7 +248,7 @@ ggplot(bulk_vsm@meta.data) +
 </p>
 
 
-## Creating DESeq2 object
+
 
 Now we can create our DESeq2 object to prepare to run the DE analysis. We need to include the counts, metadata, and design formula for our comparison of interest. In the design formula we should also include any other columns in the metadata for which we want to regress out the variation (e.g. batch, sex, age, etc.). We only have our comparison of interest, which is stored as the `condition` in our metadata data frame.
 
