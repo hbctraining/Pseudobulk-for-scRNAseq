@@ -31,7 +31,7 @@ I. Please **study the contents** and **work through all the code** within the fo
 <br>
         </details>
 
-  2. [DE analayis of pseudobulk data using DESeq2](../lessons/04_pseudobulk_DE_analysis.md)
+  2. [DE analysis of pseudobulk data using DESeq2](../lessons/04_pseudobulk_DE_analysis.md)
       <details>
        <summary><i>Click here for a preview of this lesson</i></summary>
        <br> The next step is to take the DESeq2 object and run through the analysis workflow to identify differentially expressed genes. <br><br>In this lesson you will:<br>
@@ -58,7 +58,7 @@ II. **Submit your work**:
 |:-----------:|:----------:|:--------:|
 | 09:30 - 10:15 | Self-learning lessons discussion | All |
 | 10:15 - 10:20|  Break |  |
-| 10:20 - 12:00 | [Visaualization of differentially expressed genes](../lessons/05_pseudobulk_DE_visualizations.md) | |
+| 10:20 - 12:00 | [Visualization of differentially expressed genes](../lessons/05_pseudobulk_DE_visualizations.md) | |
 
 ### Before the next class:
 
