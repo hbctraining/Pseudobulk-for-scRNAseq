@@ -63,7 +63,16 @@ II. **Submit your work**:
 ### Before the next class:
 
 I. Please **study the contents** and **work through all the code** within the following lessons:
-   1. [Functional Analysis]()
+   1. [Comparison of results from different DE approaches](../lessons/06_DE_comparisons.md)
+      <details>
+       <summary><i>Click here for a preview of this lesson</i></summary>
+         <br> In this workshop we have covered different methds for finding differentially expressed genes in scRNA-seq data. A common question is how do these results comapre to one another? <br><br>In this lesson, we will:<br>
+             - Evaluate gene lists from each method <br>
+             - Describe benchmarking studies and how different tools perform <br>
+             - Identify biologically meaningful results<br><br>
+        </details>
+
+   2. [Functional Analysis](../lessons/07_functional_analysis_pseudobulk.md)
       <details>
        <summary><i>Click here for a preview of this lesson</i></summary>
          <br>Now that we have significant genes, let's gain some biological insight <br><br>In this lesson, we will:<br>
