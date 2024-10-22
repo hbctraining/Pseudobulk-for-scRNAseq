@@ -12,7 +12,12 @@ Approximate time: 40 minutes
 * 
 
 
-## Significant genes and visualization
+## Visualization of differentially expressed genes
+
+**INCLUDE A SHORT INTRO BLURB FOR THIS LESSON HERE ON WHY VISUALIZATION IS IMPORTANT**
+
+
+### Identufy significant genes
 
 Next, we can filter our table for only the significant genes using a p-adjusted threshold of 0.05
 
@@ -50,7 +55,7 @@ With these results we can use a few different visualization techniques to explor
 - Heatmap of expression for all significant genes
 - Scatterplot of normalized expression of top genes
 
-## Volcano plot 
+### Volcano plot 
 
 ```r
 EnhancedVolcano(sig_res,
@@ -65,7 +70,7 @@ EnhancedVolcano(sig_res,
 </p>
 
 
-## Pseudobulk normalized counts heatmap
+### Normalized pseudobulk counts heatmap
 
 ```r
 # Extract normalized expression for significant genes from the samples
@@ -98,7 +103,7 @@ pheatmap(norm_sig,
 </p>
 
 
-## Single-cell normalized counts heatmap
+### Single-cell normalized counts heatmap
 
 TODO fix
 
@@ -120,7 +125,7 @@ TODO fix
 #     height = 20)
 ```
 
-# Top 6 genes
+### Top 6 genes
 
 It is important to take a look at some of the top genes that show up. In particular, it is important to evaluate why these genes showed up in the pseudobulked results and contrast it against the gene expression levels at a single-cell level as well.
 
@@ -140,7 +145,7 @@ genes
 [1] "Rgs5"  "Mt1"   "Emd"   "Nr4a2" "Cwc25" "Cebpb"
 ```
 
-## Pseudobulked normalized expression scatterplot
+### Normalized pseudobulk expression scatterplot
 
 Now that we have identified the significant genes, we can plot a scatterplot of the top 6 significant genes. This plot is a good check to make sure that we are interpreting our fold change values correctly, as well.
 
@@ -170,7 +175,7 @@ plot_grid(plotlist=plot_list)
 </p>
 
 
-## Single-cell normalized expression violin plot
+### Single-cell normalized expression violin plot
 
 Ultimately, we are evaluating the gene expression at a single-cell level. Therefore it is prudent to go back to the cellular level to see what these same results look like for each individual cell.
 
@@ -184,7 +189,7 @@ VlnPlot(seurat_vsm, genes, idents=c("cold7", "TN"))
 <img src="../img/pb_sig_vln_sc.png" height="500">
 </p>
 
-## UMAP
+### UMAP
 
 ```r
 # Grab the umap coordinates and condition information for each cell
