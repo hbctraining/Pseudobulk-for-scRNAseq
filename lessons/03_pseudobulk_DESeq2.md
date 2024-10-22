@@ -96,43 +96,7 @@ meta
 ## Aggregate counts for pseudobulk analysis
 Now, before we transform our single-cell level dataset into one sample-level dataset per cell type (cluster) there are a few data wrangling steps involved. We know that we want to aggregate cells of a particular celltype and that we want to collapse the down by sample.
 
-First, we create a vector of unique sample names:
-
-```r
-identity <- sort(unique(seurat@meta.data[["sample"]]))
-identity
-```
-
-```
- [1] "Sample_1"  "Sample_10" "Sample_11" "Sample_12" "Sample_13" "Sample_14"
- [7] "Sample_15" "Sample_16" "Sample_2"  "Sample_3"  "Sample_4"  "Sample_6" 
-[13] "Sample_7"  "Sample_8"  "Sample_9" 
-```
-
-Next, we create a vector of unique celltypes:
-
-```r
-groups <- sort(unique(seurat@meta.data[["celltype"]]))
-groups
-```
-
-```
-[1] "Adipo"    "AP"       "EC"       "ECAP"     "Lymph"    "Pericyte" "Schwann" 
-[8] "VSM"      "VSM-AP"  
-```
-
-And finally, a vector of the different groups we will be comparing:
-
-```r
-comparisons <- sort(unique(seurat@meta.data[["condition"]]))
-comparisons
-```
-
-```
-[1] "cold2" "cold7" "RT"    "TN" 
-```
-
-To aggregate the counts, we will use the `AggregateExpression()` function from Seurat. It will take as input a Seurat object, and returns summed counts ("pseudobulk") for each identity class. The default is to return a matrix with genes as rows, and identity classes as columns. We have set `return.seurat` to  `TRUE`, which means rather than a matrix we will get an object of class Seurat. We have also specified which factors to aggregate on, using the `group.by` argument.
+To aggregate the counts, we will **use the `AggregateExpression()` function from Seurat**. It will take as input a Seurat object, and returns summed counts ("pseudobulk") for each identity class. The default is to return a matrix with genes as rows, and identity classes as columns. We have set `return.seurat` to  `TRUE`, which means rather than a matrix we will get an object of class Seurat. We have also specified which factors to aggregate on, using the `group.by` argument.
 
 
 ```r
@@ -144,7 +108,7 @@ bulk <- AggregateExpression(
 )
 ```
 
-Now our Seurat object has 'cells' which correspond to aggregated counts. We will see that the samples have the a name "{celltype}_{sample}_{condition}" to show that we are grouping together counts based on sample, celltype, and condition. The metadata columns that were used as input are included in this new Seurat object as well.
+Now our Seurat object has 'cells' which correspond to aggregated counts. We will see that the samples have the a name "{celltype}\_{sample}\_{condition}" to show that we are grouping together counts based on sample, celltype, and condition. The metadata columns that were used as input are included in this new Seurat object as well.
 
 ```r
 # each 'cell' is a sample-condition-celltype pseudobulk profile
@@ -206,6 +170,42 @@ Mrpl15                   135                  2037
 ### Aggregating counts for multiple celltypes
 
 **ADD FOR LOOPS AUTOMATION CODE HERE**
+
+First, we create a vector of unique sample names:
+
+```r
+identity <- sort(unique(seurat@meta.data[["sample"]]))
+identity
+```
+
+```
+ [1] "Sample_1"  "Sample_10" "Sample_11" "Sample_12" "Sample_13" "Sample_14"
+ [7] "Sample_15" "Sample_16" "Sample_2"  "Sample_3"  "Sample_4"  "Sample_6" 
+[13] "Sample_7"  "Sample_8"  "Sample_9" 
+```
+
+Next, we create a vector of unique celltypes:
+
+```r
+groups <- sort(unique(seurat@meta.data[["celltype"]]))
+groups
+```
+
+```
+[1] "Adipo"    "AP"       "EC"       "ECAP"     "Lymph"    "Pericyte" "Schwann" 
+[8] "VSM"      "VSM-AP"  
+```
+
+And finally, a vector of the different groups we will be comparing:
+
+```r
+comparisons <- sort(unique(seurat@meta.data[["condition"]]))
+comparisons
+```
+
+```
+[1] "cold2" "cold7" "RT"    "TN" 
+```
 
 
 ## Differential gene expression with DESeq2
