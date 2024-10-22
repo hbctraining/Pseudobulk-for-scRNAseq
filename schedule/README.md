@@ -21,21 +21,23 @@
 
 I. Please **study the contents** and **work through all the code** within the following lessons:
  
-   1. [Aggregating by celltype using pseudobulk approach]()
+   1. [Aggregating counts by celltype using pseudobulk approach](../lessons/03_pseudobulk_DESeq2.md)
       <details>
        <summary><i>Click here for a preview of this lesson</i></summary>
-       <br> Running DESeq2 on the aggregated count matrix. <br><br>In this lesson you will:<br>
-             - Aggregate counts for each celltype<br>
-             - Sample level QC for a given celltype (PCA and hierarchical clustering)<br>
-             - Visualizations to bring it back to the single cell level <br><br>
+       <br> Forming pseudobulk samples is important to perform accurate differential expression analysis. Treating each cell as an independent replicate leads to underestimation of the variance and misleadingly small p-values. Working on the level of pseudobulk ensures reliable statistical tests because the samples correspond to the actual units of replication.  <br><br>In this lesson you will:<br>
+             - Aggregate counts for a given celltype<br>
+             - Demonstrate an efficent way to aggregate counts for multiple celltypes<br>
+             - Use the aggregated counts to create a DESeq2 object for downstream analysis<br>
 <br>
         </details>
 
-  2. [Automating pseudobulk aggregation using for loops]()
+  2. [DE analayis of pseudobulk data using DESeq2](../lessons/04_pseudobulk_DE_analysis.md)
       <details>
        <summary><i>Click here for a preview of this lesson</i></summary>
-       <br> Demonstrate how to run this for different celltypes. <br><br>In this lesson you will:<br>
-             - Complete exercise for running through with another celltype<br><br>
+       <br> The next step is to take the DESeq2 object and run through the analysis workflow to identify differentially expressed genes. <br><br>In this lesson you will:<br>
+           - Perform sample level QC<br>   
+           - Evaluate gene-wise dispersions to evalute model fit<br>
+           - Extract results and understand the statistics generated<br><br>
         </details>       
          
 
@@ -56,7 +58,7 @@ II. **Submit your work**:
 |:-----------:|:----------:|:--------:|
 | 09:30 - 10:15 | Self-learning lessons discussion | All |
 | 10:15 - 10:20|  Break |  |
-| 10:20 - 12:00 | [Pseudobulk Differential Expression Analysis using DESeq2]() | |
+| 10:20 - 12:00 | [Visaualization of differentially expressed genes](../lessons/05_pseudobulk_DE_visualizations.md) | |
 
 ### Before the next class:
 
