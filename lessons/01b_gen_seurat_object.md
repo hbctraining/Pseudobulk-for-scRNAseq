@@ -8,24 +8,22 @@ Approximate time: 15 minutes
 
 ## Learning Objectives 
 
-* Understand the steps taken to generate the seurat object used for the workshop.
+* Understand the steps taken to generate the Seurat object used as input for the workshop.
 
 ## Sample data
 
-For this workshop, we will be working with a single-cell RNA-seq dataset from [Tseng et al, 2021](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8076094/). The data is available on GEO under the ID [GSE160585](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE160585). The file we will need to create the fully processed seurat object are:
+For this workshop, we will be working with a single-cell RNA-seq dataset from [Tseng et al, 2021](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8076094/). The data is available on GEO [GSE160585](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE160585). The files we will need to create the fully processed Seurat object include:
 
 - Metadata csv file
 - Counts matrix
 - List of features (genes)
 - List of cell barcodes
 
-This information comes from a final, completely processed dataset. We have [materials](https://hbctraining.github.io/scRNA-seq_online/) on how to  on how to generate a similarly fully annotated, filtered dataset from single-cell RNA-seq data.
+We have an entire workshop of [materials](https://hbctraining.github.io/scRNA-seq_online/) that go through the whole process step-by-step on how to generate a similarly fully annotated, filtered dataset from single-cell RNA-seq data. **In this lesson we provide mostly code**, so you can reproduce the object yourself. If you want an in-depth explanation of each step we encourage you to peruse the materials linked above.
 
 ## Pre-processing steps
 
-Here we have provided the code used to generate the seurat object that will be used for the workshop. The parameters for each step were chosen based upon the descriptions in the methods section.
-
-1. Download and unzip the dataset from GEO using bash
+1. **Download and unzip** the dataset from GEO using bash:
 
 ```bash
 #!/bin/bash
@@ -45,7 +43,7 @@ gunzip data/meta.csv.gz
 ```
 
 
-2. Data wrangling of the metadata
+2. **Data wrangling of the metadata**
 
 ```r
 library(tidyverse)
@@ -89,7 +87,7 @@ meta$seurat_clusters <- factor(meta$seurat_clusters, levels=sorted_cluster)
 ```
 
 
-3. Generate seurat object from files
+3. **Generate Seurat object** using downloaded files as input
 
 ```r
 library(Seurat)
@@ -113,8 +111,9 @@ seurat <- CreateSeuratObject(
     meta.data = meta)
 ```
 
+> **NOTE**. In the next few steps we have provided the code to process the Seurat object. The parameters for each step were chosen based upon the descriptions provided in the [Methods section of the paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8076094/).
 
-4. Log-normalization and highly variable genes
+4. **Log-normalization and highly variable genes**
 
 ```r
 # Log normalization
@@ -128,7 +127,7 @@ seurat <- FindVariableFeatures(seurat,
 ```
 
 
-5. SCTransform and regress out cell cycle scores
+5. **SCTransform and regress out cell cycle scores**
 
 ```r
 # Split seurat object by sample
@@ -145,7 +144,7 @@ for (i in 1:length(split_seurat)) {
 ```
 
 
-6. CCA integration
+6. **CCA integration**
 
 ```r
 # Select the most variable features to use for integration
@@ -167,7 +166,7 @@ seurat_integrated[["RNA"]] <- JoinLayers(seurat_integrated[["RNA"]])
 ```
 
 
-7. PCA, nearest neighbors, UMAP
+7. **PCA, nearest neighbors, UMAP**
 
 ```r
 seurat_integrated <- RunPCA(seurat_integrated, verbose = FALSE)
