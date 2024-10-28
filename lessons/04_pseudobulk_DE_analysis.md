@@ -10,6 +10,7 @@ Approximate time: 40 minutes
 
 * Recognize the importance of methods for sample-level QC
 * Explain the different steps involved in running `DESeq()`
+* Generating a table of differentially expressed genes
 
 
 ## Sample-level QC
@@ -226,11 +227,33 @@ mcols(res, use.names=T)
 * `padj`: BH adjusted p-values
  
 
-Although we Then, we need to perform shrinkage of the log2 fold changes to correct for the fact that the baseline expression level of a gene affects its estimated fold change (for a given gene, a difference in the average read counts between the 2 contrasted groups of 10 will have a greater impact if the baseline expression level of this gene is 20 than if it is 500; therefore, lowly expressed genes are more likely to show inflated log2 fold change values). Here, we use the apeglm method ([Zhu et al., 2018](https://doi.org/10.1093/bioinformatics/bty895)) for shrinkage estimator calculations. Alternative options for shrinkage estimation and the papers to cite if you use them are further described in the [DESeq2 vignette](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#altshrink).
+The main statistics we use for filtering these results and identifying significant genes are: `pvalue`, `padj`, and `log2FoldChange`. The fold changes reported in the results table are calculated by:
+
+```r
+log2 (normalized_counts_group1 / normalized_counts_group2)
+```
+
+The problem is, these fold change estimates are not entirely accurate as they do not account for the large dispersion we observe with low read counts. To address this, the **log2 fold changes need to be adjusted**. For example, a 5 fold change for a gene which has a low mean count (e.g. 10) is not equivalent to a simialr fold change observed in genes with extremeley high count (e.g. > 1000). To generate more accurate log2 foldchange (LFC) estimates, DESeq2 allows for the **shrinkage of the LFC estimates toward zero** when the information for a gene is low, which could include:
+
+- Low counts
+- High dispersion values
+
+DESeq2 uses the distribution of LFC estimates for all genes to generate a prior (black solid line) to shrink the original LFC estimates of each gene (colored solid line) towards more likely (lower) LFC estimates (colored dotted line). As shown in the figure below, there is only observable shrinkage for genes with little information or high dispersion (purple gene). 
+
+<p align="center">
+<img src="../img/deseq2_shrunken_lfc.png" width="500">
+</p>
+
+*Illustration taken from the [DESeq2 paper](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8).*
+
+
+> **NOTE:** **Shrinking the log2 fold changes will not change the total number of genes that are identified as significantly differentially expressed at a given padj.** The shrinkage of fold change is to help with downstream assessment of results. For example, if you wanted to subset your significant genes based on fold change for further evaluation, you may want to use shrunken values. Additionally, for functional analysis tools such as GSEA which require fold change values as input you would want to provide shrunken values.
+
+
+Here, we use the apeglm method ([Zhu et al., 2018](https://doi.org/10.1093/bioinformatics/bty895)) for shrinkage estimator calculations. Alternative options for shrinkage estimation and the papers to cite if you use them are further described in the [DESeq2 vignette](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#altshrink).
 
 
 ```r
-
 # Shrink the log2 fold changes to be more appropriate using the apeglm method - should cite [paper]() when using this method
 res <- lfcShrink(dds, 
                 coef = "condition_cold7_vs_TN",
@@ -238,19 +261,17 @@ res <- lfcShrink(dds,
                 type = "apeglm")
 ```
 
+If you take a look at the results table now, you will find fold change cvalues may differ for some genes.
 
 
-
-**INCLUDE A BRIEF OVERVIEW OF GENE-WISE FILTERING THAT IS APPLIED.**
-
-
-This is a great spot to store the results of the comparison
+This is a great spot to store the results of the comparison:
 
 ```r
 write.csv(res, "results/VSM_cold7_vs_TN.csv")
 ```
 
-
+> #### Why do I see so many NA values in my resulst table?
+> The missing values represent genes that have undergone filtering as part of the DESeq() function. Prior to differential expression analysis it is beneficial to omit genes that have little or no chance of being detected as differentially expressed. This will increase the power to detect differentially expressed genes. DESeq2 does not physically remove any genes from the original counts matrix, and so all genes will be present in your results table. For more detailed information, take a look at this lesson on [gene-level filtering](https://hbctraining.github.io/DGE_workshop_salmon_online/lessons/05b_wald_test_results.html#gene-level-filtering).
 
 ***
 
