@@ -215,7 +215,7 @@ comparisons
 **NEED TO MODIFY THE WORKFLOW IMAGE SO IT INCLUDES AGGREGATE STEP**
 
 <p align="center">
-  <img src="../img/de_workflow_salmon.png" width="400">
+  <img src="../img/pseudobulk_de_workflow.png" width="400">
 </p>
 
 
