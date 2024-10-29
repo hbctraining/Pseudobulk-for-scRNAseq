@@ -199,7 +199,7 @@ Now let's take a look at **what information is stored** in the results:
 res %>% head()
 ```
 
-**CHANGE THESE VALUES AND PASTE IN THE ACTUAL RESULTS**
+**CHANGE THESE VALUES AND PASTE IN THE UNSHRUNKEN RESULTS. WHERE IS THE WALD TEST STAT? **
 
 ```r
         baseMean log2FoldChange     lfcSE     pvalue      padj
@@ -211,6 +211,10 @@ Sox17    6.30657      0.0509278  0.256791 0.57599002 0.8147941
 Mrpl15 267.61120     -0.0334181  0.147426 0.78522621 0.9185463
 Lypla1 152.10108      0.4480539  0.159921 0.00120728 0.0133217
 ```
+
+> #### Why do I see so many NA values in my results table?
+> The missing values represent genes that have undergone filtering as part of the DESeq() function. Prior to differential expression analysis it is beneficial to omit genes that have little or no chance of being detected as differentially expressed. This will increase the power to detect differentially expressed genes. DESeq2 does not physically remove any genes from the original counts matrix, and so all genes will be present in your results table. For more detailed information, take a look at this lesson on [gene-level filtering](https://hbctraining.github.io/DGE_workshop_salmon_online/lessons/05b_wald_test_results.html#gene-level-filtering).
+
 
 We should have six columns of information reported for each gene (row). We can use the `mcols()` function to extract information on what the values stored in each column represent:
 
@@ -261,7 +265,7 @@ res <- lfcShrink(dds,
                 type = "apeglm")
 ```
 
-If you take a look at the results table now, you will find fold change cvalues may differ for some genes.
+If you take a look at the results table now, you will find fold change values may differ for some genes.
 
 
 This is a great spot to store the results of the comparison:
@@ -270,8 +274,6 @@ This is a great spot to store the results of the comparison:
 write.csv(res, "results/VSM_cold7_vs_TN.csv")
 ```
 
-> #### Why do I see so many NA values in my resulst table?
-> The missing values represent genes that have undergone filtering as part of the DESeq() function. Prior to differential expression analysis it is beneficial to omit genes that have little or no chance of being detected as differentially expressed. This will increase the power to detect differentially expressed genes. DESeq2 does not physically remove any genes from the original counts matrix, and so all genes will be present in your results table. For more detailed information, take a look at this lesson on [gene-level filtering](https://hbctraining.github.io/DGE_workshop_salmon_online/lessons/05b_wald_test_results.html#gene-level-filtering).
 
 ***
 
