@@ -62,7 +62,7 @@ _Image credit: Hafemeister C and Satija R. Normalization and variance stabilizat
 Often with single cell RNA-seq we are working with multiple samples which correspond to different sample groups, multiple experiments or different modalities. If we want to ultimately compare celltype expression between groups it is recommended to integrate the data. Integration is a powerful method that uses these shared sources of greatest variation to identify shared sub-populations across conditions or datasets [Stuart and Butler et al. (2018)]. There are several steps involved in performing intergration in Seurat. Once complete, we use visualization methods to ensure a good integration before we proceed to cluster cells.
 
 <p align="center">
-<img src="../img/unintegrated_umap.png" width="500">
+<img src="../img/unintegrated_umap.png" width="450">
 </p>
 
 > **NOTE:** Integration is optional. We recommend going through the workflow without integration to decide whether or not it is necessary for your data. 
@@ -72,7 +72,7 @@ Often with single cell RNA-seq we are working with multiple samples which corres
 Clusters of cells are obtained by grouping cells based on the similarity of their gene expression profiles. Expression profile similarity is determined via distance metrics, which often take dimensionality‐reduced representations as input. Seurat assigns cells to clusters based on their PCA scores derived from the expression of the integrated most variable genes. 
 
 <p align="center">
-<img src="../img/SC_umap_SCTv2.png" width="500">
+<img src="../img/SC_umap_SCTv2.png" width="450">
 </p>
 
 ### 5. Cluster quality evaluation
@@ -84,14 +84,14 @@ The clusters identified in our data represent groups of cells that presumably be
    * **c.** Explore the cell type identities by looking at the expression for known markers across the clusters.
 
 <p align="center">
-<img src="../img/cell_cycle_not_regressed.png" width="500">
+<img src="../img/SC_metrics_umpa_loadObj_SCTv2.png" width="500">
 </p>
 
 ## Marker Identification and Celltype Assignment
 Often the known marker expression evaluation gives us some hints as to which celltype is represented within a cluster, but sometimes it is not so obvious. In situations where there is uncertainty of the cell type assignment it is good practice to check which genes exhibit a high expression profile among cells (i.e FindMarkers). The list of genes can provide insight on celltype and/or can be the impetus for removal of a group of cells. After this step we hope to obtain a fully annotated dataset that we can move forward with for downstream analysis.
 
 <p align="center">
-<img src="../img/cell_cycle_not_regressed.png" width="500">
+<img src="../img/umap_labeled_SCTv2.png" width="500">
 </p>
 
 
