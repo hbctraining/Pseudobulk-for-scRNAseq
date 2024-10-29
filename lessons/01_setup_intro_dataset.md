@@ -66,6 +66,7 @@ Look inside your project space and you will find that a directory structure has 
 ```
 DGE_scRNA/
 ├── data
+├── meta
 ├── results
 └── figures
 ```
