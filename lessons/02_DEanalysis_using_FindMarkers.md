@@ -29,7 +29,7 @@ library(tidyverse)
 
 One option to identify biologically meaningful differences would be to use the **`FindMarkers()` function to determine the genes that are differentially expressed between two specific groups**. 
 
-> **NOTE:** The default is a Wilcoxon Rank Sum test, but there are other options available. 
+> **NOTE:** The default is a Wilcoxon Rank Sum test, but there are other options available that we will discuess later in this lesson. 
 
 <p align="center">
     <img src="../img/marker_ident_function3.png" width="350">
@@ -120,7 +120,7 @@ write.csv(dge_vsm, "results/findmarkers_vsm.csv")
 
 ### Significant genes
 
-We want to subset our results to show just our significant genes so we can begin visualizating and analysing the results. To do this, we filter out rows based upon the `p_val_adj` column.
+We want to subset our results to show just our significant genes so we can begin visualizating and analysing the results. To do this, we filter out rows based upon the `p_val_adj` column and subsetting any genes that do not meet our significance threshold of 0.05.
 
 ```r
 dge_vsm_sig <- dge_vsm %>% subset(p_val_adj < 0.05)
@@ -137,7 +137,11 @@ Rpl21   2.319987e-190 -0.6377144 0.967 0.998 4.586847e-186
 Rpl9    1.249444e-187 -0.6824496 0.954 0.999 2.470276e-183
 ```
 
-To get a general idea of what the results look like, we can start by generating a volcano plot:
+#### Volcano plot
+
+To get a first look at the genes that are retained, we can generated a volcano plot using the `EnhancedVolcano()` function. This is a visualization that allows us to quickly see trends in the significant genes. The x-axis here represents the average log2 fold change value, showing the degree of difference between the two conditions. On the y-axis, we see our `p_val_adj` column represented after a negative log10 transformation is applied to better see the spread of our p-values.  
+
+Volcano plots show us a great overview of which genes are up-regulated (positive on the x-axis) or down-regulated (negative on the x-axis).
 
 ```r
 EnhancedVolcano(dge_vsm_sig,
@@ -152,10 +156,17 @@ EnhancedVolcano(dge_vsm_sig,
 </p>
 
 
-We can also take a look at the top 6 genes according to our results:
+#### Violin plots
+
+While looking at the overall trends in the data is a great starting point, we can also start looking at genes that have large differences between `TN` and `cold7`. To do this, we can take a look at the top 6 genes with the largest log-fold change. We take the absolute value of the fold-change as we want to visualize both up and down-regulated genes.
 
 ```r
-genes <- dge_vsm_sig %>% arrange(desc(abs(avg_log2FC))) %>% row.names() %>% head(6)
+# Sort by average log fold change
+# Get the gene names and get the first 6 values
+genes <- dge_vsm_sig %>%
+            arrange(desc(abs(avg_log2FC))) %>%
+            row.names() %>%
+            head(6)
 genes
 ```
 
@@ -163,8 +174,7 @@ genes
 [1] "Tmed5"  "Cox4i2" "Crip1"  "Azin1"  "Fap"    "Nov"   
 ```
 
-And begin to see how these genes distribute across our populations:
-
+With these genes selected, we can now being to visualize the distribution of expression across our two conditions using the `VlnPlot()` function.
 
 ```r
 Idents(seurat_vsm) <- "condition"
@@ -176,7 +186,9 @@ VlnPlot(seurat_vsm, genes, ncol=3, idents=c("TN", "cold7"))
 </p>
 
 
-And how they fall on the UMAP:
+#### UMAP plots
+
+When comparing two different conditions, we recommend creating a UMAP that clearly shows where the cells fall for each condition. To do so, we first need to get the UMAP coordinates for every cell of interest. When creating the scatterplot, the first thing we do is put a layer of light gray points that show the entire dataset to understand where all the cells fall. Then, we take the UMAP coordinates of the condition (`TN` or `cold7` in our example) and plot those on top with a color to clearly indicate where those cells are located. 
 
 ```r
 # Grab the umap coordinates and condition information for each cell
@@ -184,23 +196,29 @@ df <- FetchData(seurat_vsm, c("umap_1", "umap_2", "condition"))
 df_tn <- df %>% subset(condition == "TN")
 df_cold7 <- df %>% subset(condition == "cold7")
 
+# Scatterplot of TN cells
 p_tn <- ggplot() +
   geom_point(data=df, aes(x=umap_1, y=umap_2), color="lightgray", alpha=0.5) +
   geom_point(data=df_tn, aes(x=umap_1, y=umap_2), color="#F8766D") +
   theme_classic() +
   ggtitle("VSM: TN cells")
 
+# Scatterplot of cold7 cells
 p_cold7 <- ggplot() +
   geom_point(data=df, aes(x=umap_1, y=umap_2), color="lightgray", alpha=0.5) +
   geom_point(data=df_cold7, aes(x=umap_1, y=umap_2), color="#00B8E7") +
   theme_classic() +
   ggtitle("VSM: cold7 cells")
 
+# TN anc cold7 UMAPs side by side
 p_tn + p_cold7
 ```
+
 <p align="center">
     <img src="../img/fm_tn_cold7_umap.png" width="700">
 </p>
+
+This allows us to better understand our results when we look at any follow-up informatin on our UMAP. For example, we can begin to look at distribution of gene expression for each of the top 6 genes with a better understanding of where the cells for each condition lay:
 
 ```r
 FeaturePlot(seurat_vsm, genes, ncol=3)
@@ -209,3 +227,35 @@ FeaturePlot(seurat_vsm, genes, ncol=3)
 <p align="center">
     <img src="../img/fm_sig_umap.png" width="700">
 </p>
+
+
+### FindMarkers methods
+
+You'll recall that when we looked at the extra explanations for the `FindMarkers()` function, there was a parameter called `test.use`. By default, the method for calculating DGEs will be a wilcox test, which is what we ran above. There a multitude of different algorithms that can be used to, which are documented on the FindMarkers [documentation page](https://www.rdocumentation.org/packages/Seurat/versions/5.0.3/topics/FindMarkers). For this workshop we want to highly a few of these methods:
+
+
+* `wilcox` : Identifies differentially expressed genes between two groups of cells using a Wilcoxon Rank Sum test (default)
+* `MAST` : Identifies differentially expressed genes between two groups of cells using a hurdle model tailored to scRNA-seq data. Utilizes the MAST package to run the DE testing.
+
+> **NOTE:** Instead of using the FindMarkers implementation, we recommend directly using the [MAST](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-015-0844-5) algorithm from the package itself for the best results.
+
+* `DESeq2` : Identifies differentially expressed genes between two groups of cells based on a model using DESeq2 which uses a negative binomial distribution (Love et al, Genome Biology, 2014).This test does not support pre-filtering of genes based on average difference (or percent detection rate) between cell groups. However, genes may be pre-filtered based on their minimum detection rate (min.pct) across both cell groups.
+
+
+Here we will make use of the DESeq2 implementation in `FindMarkers()` and save the results to later compare the results against pseudobulk `DESeq2` results:
+
+```r
+# Determine differentiating markers for TN and cold7
+dge_vsm_deseq2 <- FindMarkers(seurat_vsm,
+                        ident.1="cold7",
+                        ident.2="TN",
+                        test.use="deseq2"
+                    )
+write.csv(dge_vsm_deseq2, "results/findmarkers_deseq2_vsm.csv")
+```
+
+
+***
+
+
+*This lesson has been developed by members of the teaching team at the [Harvard Chan Bioinformatics Core (HBC)](http://bioinformatics.sph.harvard.edu/). These are open access materials distributed under the terms of the [Creative Commons Attribution license](https://creativecommons.org/licenses/by/4.0/) (CC BY 4.0), which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.*
