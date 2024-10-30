@@ -233,8 +233,8 @@ bulk_vsm <- subset(bulk, subset= (celltype == "VSM") & (condition %in% c("TN", "
 Before moving on to a pseudobulk DGE analysis, it is important to identify **how many cells we aggregated for each sample**. We need to make sure that we have enough cells per sample after subsetting to one celltype. We can see that with the exception of one sample, the TN group has many cells and the cold7 samples have much fewer cells.
 
 ```r
-ggplot(bulk_vsm@meta.data) +
-    geom_bar(aes(x=sample, y=n_cells, fill=condition), stat="identity", color="black") +
+ggplot(bulk_vsm@meta.data, aes(x=sample, y=n_cells, fill=condition)) +
+    geom_bar(stat="identity", color="black") +
     theme_classic() +
     theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
     labs(x="Sample name", y="Number of cells") +
