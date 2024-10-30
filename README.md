@@ -66,7 +66,7 @@ BiocManager::install("EnhancedVolcano")
 & so on ...
 ```
 
-**(2)** Install the 6 packages listed below from **CRAN** using the `install.packages()` function. 
+**(2)** Install the 7 packages listed below from **CRAN** using the `install.packages()` function. 
 
 ```
 install.packages(Seurat)
@@ -75,6 +75,7 @@ install.packages(pheatmap)
 install.packages(RColorBrewer)
 install.packages(cowplot)
 install.packages(dplyr)
+install.package(ggalluvial)
 ```
 
 **Please install them one-by-one as follows:**
@@ -99,6 +100,7 @@ library(DESeq2)
 library(EnhancedVolcano)
 library(SingleCellExperiment)
 library(miloR)
+library(ggalluvial)
 ```
 
 **(4)** Once all packages have been loaded, run sessionInfo().  
