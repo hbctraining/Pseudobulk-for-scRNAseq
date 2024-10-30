@@ -56,7 +56,7 @@ We have described in more detail what each of these arguments mean as well as so
 
 You could use any combination of these arguments depending on how stringent/lenient you want to be. 
 
-Before we start our comparisons we will explicitly set our default assay, we want to use the **normalized data, but not the integrated data**.
+Before we start our comparisons we will explicitly set our default assay, we want to use the **normalized data, not the integrated data**.
 
 ```r
 DefaultAssay(seurat) <- "RNA"
@@ -81,9 +81,9 @@ seurat_vsm <- subset(seurat, subset = (celltype == "VSM"))
 Idents(seurat_vsm) <- "condition"
 # Determine differentiating markers for TN and cold7
 dge_vsm <- FindMarkers(seurat_vsm,
-                        ident.1="cold7",
-                        ident.2="TN"
-                    )
+                       ident.1="cold7",
+                       ident.2="TN"
+                       )
 
 dge_vsm %>% head()
 ```
@@ -98,7 +98,7 @@ Rpl21   2.319987e-190 -0.6377144 0.967 0.998 4.586847e-186
 Rpl9    1.249444e-187 -0.6824496 0.954 0.999 2.470276e-183
 ```
 
-**The output from the `FindMarkers()` function**, is a matrix containing a ranked list of putative markers listed by gene ID for the group we specified, and associated statistics. Note that the same set of statistics are computed for each group (in our case, `cold7` and `TN`). We describe some of these columns below:
+**The output from the `FindMarkers()` function** is a matrix containing a ranked list of putative markers listed by gene ID for the group we specified, and associated statistics. Note that the same set of statistics are computed for each group (in our case, `cold7` and `TN`). We describe some of these columns below:
 
 - **gene:** gene symbol
 - **p_val:** p-value not adjusted for multiple test correction for condition
@@ -107,10 +107,9 @@ Rpl9    1.249444e-187 -0.6824496 0.954 0.999 2.470276e-183
 - **pct.2:** percentage of cells where the gene is detected on average in the other groups for condition
 - **p_val_adj:** adjusted p-value for condition, based on bonferroni correction using all genes in the dataset, used to determine significance
 
+>**NOTE:** Since each cell is being treated as a replicate, this will result in inflated p-values within each group! A gene may have an incredibly low p-value < 1e-50, but that doesn't translate as a highly reliable marker gene. 
 
->**NOTE:** Since each cell is being treated as a replicate this will result in inflated p-values within each group! A gene may have an incredibly low p-value < 1e-50 but that doesn't translate as a highly reliable marker gene. 
-
-When looking at the output, **we suggest looking for markers with large differences in expression between `pct.1` and `pct.2` and larger fold changes**. For instance if `pct.1` = 0.90 and `pct.2` = 0.80, it may not be as exciting of a marker. However, if `pct.2` = 0.1 instead, the bigger difference would be more convincing. Also, of interest is if the majority of cells expressing the marker is in my group of interest. If `pct.1` is low, such as 0.3, it may not be as interesting. Both of these are also possible parameters to include when running the function, as described above.
+When looking at the output, **we suggest looking for markers with large differences in expression between `pct.1` and `pct.2` and larger fold changes**. For instance if `pct.1` = 0.90 and `pct.2` = 0.80, it may not be as exciting of a marker. However, if `pct.2` = 0.1 instead, the bigger difference would be more convincing. Also of interest is whether the majority of cells expressing the marker are in your group of interest. If `pct.1` is low, such as 0.3, it may not be as interesting. Both of these are also possible parameters to include when running the function, as described above.
 
 This is a great spot to pause and save your results!
 
@@ -120,7 +119,7 @@ write.csv(dge_vsm, "results/findmarkers_vsm.csv")
 
 ### Significant genes
 
-We want to subset our results to show just our significant genes so we can begin visualizating and analysing the results. To do this, we filter out rows based upon the `p_val_adj` column and subsetting any genes that do not meet our significance threshold of 0.05.
+We want to subset our results to show just our significant genes so we can begin visualizating and analysing the results. To do this, we filter out rows based upon the `p_val_adj` column and subsetting any genes that do not meet our multiple testing-corrected significance threshold of 0.05.
 
 ```r
 dge_vsm_sig <- dge_vsm %>% subset(p_val_adj < 0.05)
@@ -155,7 +154,6 @@ EnhancedVolcano(dge_vsm_sig,
     <img src="../img/pb_volcano.png" width="700">
 </p>
 
-
 #### Violin plots
 
 While looking at the overall trends in the data is a great starting point, we can also start looking at genes that have large differences between `TN` and `cold7`. To do this, we can take a look at the top 6 genes with the largest log-fold change. We take the absolute value of the fold-change as we want to visualize both up and down-regulated genes.
@@ -184,7 +182,6 @@ VlnPlot(seurat_vsm, genes, ncol=3, idents=c("TN", "cold7"))
 <p align="center">
     <img src="../img/fm_sig_vln.png" width="700">
 </p>
-
 
 #### UMAP plots
 
@@ -218,7 +215,7 @@ p_tn + p_cold7
     <img src="../img/fm_tn_cold7_umap.png" width="700">
 </p>
 
-This allows us to better understand our results when we look at any follow-up informatin on our UMAP. For example, we can begin to look at distribution of gene expression for each of the top 6 genes with a better understanding of where the cells for each condition lay:
+This allows us to better understand our results when we look at any follow-up information on our UMAP. For example, we can begin to look at distribution of gene expression for each of the top 6 genes with a better understanding of where the cells for each condition lie:
 
 ```r
 FeaturePlot(seurat_vsm, genes, ncol=3)
@@ -231,16 +228,14 @@ FeaturePlot(seurat_vsm, genes, ncol=3)
 
 ### FindMarkers methods
 
-You'll recall that when we looked at the extra explanations for the `FindMarkers()` function, there was a parameter called `test.use`. By default, the method for calculating DGEs will be a wilcox test, which is what we ran above. There a multitude of different algorithms that can be used to, which are documented on the FindMarkers [documentation page](https://www.rdocumentation.org/packages/Seurat/versions/5.0.3/topics/FindMarkers). For this workshop we want to highly a few of these methods:
-
+You'll recall that when we looked at the extra explanations for the `FindMarkers()` function, there was a parameter called `test.use`. By default, the method for calculating DGEs will be a wilcox test, which is what we ran above. There a multitude of different algorithms that can be used to call DGEs, which are documented on the FindMarkers [documentation page](https://www.rdocumentation.org/packages/Seurat/versions/5.0.3/topics/FindMarkers). For this workshop we want to highlight a few of these methods:
 
 * `wilcox` : Identifies differentially expressed genes between two groups of cells using a Wilcoxon Rank Sum test (default)
 * `MAST` : Identifies differentially expressed genes between two groups of cells using a hurdle model tailored to scRNA-seq data. Utilizes the MAST package to run the DE testing.
 
 > **NOTE:** Instead of using the FindMarkers implementation, we recommend directly using the [MAST](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-015-0844-5) algorithm from the package itself for the best results.
 
-* `DESeq2` : Identifies differentially expressed genes between two groups of cells based on a model using DESeq2 which uses a negative binomial distribution (Love et al, Genome Biology, 2014).This test does not support pre-filtering of genes based on average difference (or percent detection rate) between cell groups. However, genes may be pre-filtered based on their minimum detection rate (min.pct) across both cell groups.
-
+* `DESeq2` : Identifies differentially expressed genes between two groups of cells based on a model using DESeq2 which uses a negative binomial distribution (Love et al, Genome Biology, 2014). This test does not support pre-filtering of genes based on average difference (or percent detection rate) between cell groups. However, genes may be pre-filtered based on their minimum detection rate (min.pct) across both cell groups.
 
 Here we will make use of the DESeq2 implementation in `FindMarkers()` and save the results to later compare the results against pseudobulk `DESeq2` results:
 
