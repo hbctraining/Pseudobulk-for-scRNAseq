@@ -57,11 +57,11 @@ TODO: image of file explorer or GIF
 
 ## Project organization
 
-One of the most important parts of research that involves large amounts of data, is how best to manage it. We tend to prioritize the analysis, but there are many other important aspects of **data management that are often overlooked** in the excitement to get a first look at new data. The [HMS Data Management Working Group](https://datamanagement.hms.harvard.edu/), discusses in-depth some things to consider beyond the data creation and analysis.
+One of the most important parts of research that involves large amounts of data is how best to manage it. We tend to prioritize the analysis, but there are many other important aspects of **data management that are often overlooked** in the excitement to get a first look at new data. The [HMS Data Management Working Group](https://datamanagement.hms.harvard.edu/) discusses in-depth some things to consider beyond the data creation and analysis.
 
 For each experiment you work on and analyze data for, it is considered best practice to get organized by creating **a planned storage space (directory structure)**. We will do that for our single-cell analysis. 
 
-Look inside your project space and you will find that a directory structure has been setup for you:
+Look inside your project space and you will find that a directory structure has been set up for you:
 
 ```
 DGE_scRNA/
@@ -72,7 +72,6 @@ DGE_scRNA/
 ```
 
 > **NOTE FOR WINDOWS OS users** - When you open the project folder after unzipping, please check if you have a `data` folder with a sub folder also called `data`. If this is the case, please move all the files from the subfolder into the parent `data` folder.
-
 
 ## Loading single-cell RNA-seq count data 
 
@@ -102,7 +101,7 @@ library(ggalluvial)
 
 ### Load Seurat object
 
-We generated this Seurat object using the using the files that were deposited to GEO. More details on how this seurat object is detailed in [another lesson](01b_gen_seurat_object.md), where we provide more clarity on what parameters were used for normalization, integration, and clustering. 
+We generated this Seurat object using the using the files that were deposited to GEO. More details on how this Seurat object was generated are detailed in [another lesson](01b_gen_seurat_object.md), where we provide more clarity on what parameters were used for normalization, integration, and clustering. 
 
 Let's begin by looking at what metadata is stored inside the Seurat object, paying close attention to sample identities and celltype annotations.
 
@@ -149,12 +148,12 @@ DimPlot(seurat, group.by=c("sample", "condition"))
     <img src="../img/sample_info_sample_umap.png" width="1000">
 </p>
 
-
 ### Celltype annotation
+
 We had also mentioned that the cells had been annotated into 8 major non-immune cell types:
     
 1. Pdgfra+ adipose preogenitors
-2. Vasculat endothelial
+2. Vascular endothelial
 3. Lymphatic endothelial
 4. Vascular smooth muscle cells
 5. Pericytes
@@ -196,7 +195,6 @@ LabelClusters(p, id = "ident",  fontface = "bold", size = 4,
     <img src="../img/sample_info_celltype_umap.png" width="40%">
 </p>
 
-
 We can identify celltypes that could be interesting based upon the proportion of conditions found in each celltype.
 
 ```r
@@ -211,8 +209,6 @@ ggplot(seurat@meta.data) +
 <p align="center" style="display:flex">
     <img src="../img/sample_info_celltype_prop.png" width="60%">
 </p>
-
-
 
 ***
 
