@@ -46,7 +46,7 @@ For this workshop, we will be working within an RStudio project. In order to fol
 
 > If you haven't done this already, the project can be accessed using [this link](https://www.dropbox.com/scl/fi/z1urlupkhury5kzqww0p9/DGE_scRNA.zip?rlkey=jsb42iez2nsdhglh29rl1sbds&st=3ybcugue&dl=1).
 
-Once downloaded, you should see a file called `TODO` on your computer (likely, in your `Downloads` folder). 
+Once downloaded, you should see a file called `DGE_scRNA.zip` on your computer (likely, in your `Downloads` folder). 
 
 1. Unzip this file. It will result in a folder of the same name. 
 2. **Move the folder to the location on your computer where you would like to perform the analysis.**
