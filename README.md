@@ -6,7 +6,7 @@
 
 ### Description
 
-This repository has teaching materials for a hands-on **Differential expression analysis of single-cell RNA-seq analysis** workshop. This workshop will inform participants on various approaches for differential expression analysis of single cell RNA-seq and provide some discussion on differential abundance of cells. This will be a hands-on workshop in which we will focus on using .....
+This repository has teaching materials for a hands-on **Differential expression analysis of single-cell RNA-seq analysis** workshop. This workshop will inform participants on various approaches for differential expression analysis of single cell RNA-seq and provide some discussion on differential abundance of cells. This will be a hands-on workshop in which we will begin with a processed Seurat object in order to run `FindMarkers`, pseudobulk to use `DESeq2`, and evaluate differential abundance with `MiloR`.
 
 Working knowledge of R is required or completion of the [Introduction to R workshop](https://hbctraining.github.io/Intro-to-R/). 
 
@@ -15,8 +15,13 @@ Working knowledge of R is required or completion of the [Introduction to R works
 > These materials were developed for a trainer-led workshop, but are also amenable to self-guided learning.
 
 ### Learning Objectives
-* LO1
-* 
+
+* Understanding considerations for when to use different DGE algorithms on scRNA-seq data
+* Using FindMarkers to evaluate significantly different genes
+* Pseudobulking a counts matrix in order to run DESeq2 for a DGE analysis
+* Visualizing and evaluating expression patterns of differentially expressed genes
+* Calculating differential abundance with MiloR
+
 
 ### Lessons
 * [Workshop schedule (trainer-led learning)](schedule/)
@@ -46,24 +51,38 @@ https://mac.r-project.org/tools/gfortran-12.2-universal.pkg
 
 **(1)** Install the 4 packages listed below from **Bioconductor** using the the `BiocManager::install()` function.
 
+```
+BiocManager::install(DESeq2)
+BiocManager::install(EnhancedVolcano)
+BiocManager::install(SingleCellExperiment)
+BiocManager::install(miloR)
+```
 
 **Please install them one-by-one as follows:**
 
 ```r
-BiocManager::install("AnnotationHub")
-BiocManager::install("ensembldb")
+BiocManager::install("DESeq2")
+BiocManager::install("EnhancedVolcano")
 & so on ...
 ```
 
-**(2)** Install the 8 packages listed below from **CRAN** using the `install.packages()` function. 
+**(2)** Install the 6 packages listed below from **CRAN** using the `install.packages()` function. 
 
+```
+install.packages(Seurat)
+install.packages(tidyverse)
+install.packages(pheatmap)
+install.packages(RColorBrewer)
+install.packages(cowplot)
+install.packages(dplyr)
+```
 
 **Please install them one-by-one as follows:**
 
 ```r
+install.packages("Seurat")
 install.packages("tidyverse")
-install.packages("Matrix")
-install.packages("RCurl")
+install.packages("pheatmap")
 & so on ...
 ```
 
@@ -71,7 +90,15 @@ install.packages("RCurl")
 
 ```r
 library(Seurat)
-
+library(tidyverse)
+library(pheatmap)
+library(RColorBrewer)
+library(cowplot)
+library(dplyr)
+library(DESeq2)
+library(EnhancedVolcano)
+library(SingleCellExperiment)
+library(miloR)
 ```
 
 **(4)** Once all packages have been loaded, run sessionInfo().  
@@ -81,4 +108,3 @@ sessionInfo()
 ```
 
 ---
-
