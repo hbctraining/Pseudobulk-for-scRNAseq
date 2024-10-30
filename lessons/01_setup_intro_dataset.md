@@ -223,7 +223,7 @@ ggplot(seurat@meta.data) +
     geom_bar(aes(x=celltype, fill=condition), 
                  position=position_fill(), color="black") +
     theme_classic() +
-    labs(x="Cluster", y="Proportion of cells")
+    labs(x="Celltype", y="Proportion of cells")
 ```
 
 <p align="center" style="display:flex">
