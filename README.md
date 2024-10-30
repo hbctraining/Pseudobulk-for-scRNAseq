@@ -75,7 +75,7 @@ install.packages(pheatmap)
 install.packages(RColorBrewer)
 install.packages(cowplot)
 install.packages(dplyr)
-install.package(ggalluvial)
+install.packages(ggalluvial)
 ```
 
 **Please install them one-by-one as follows:**
