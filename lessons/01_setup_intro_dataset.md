@@ -127,6 +127,7 @@ A nice way to observe patterns or trends in the data is to visualize it, especia
 Recall from the summary above that we have cells from four different conditions. We can use a barplot to show the number of cells for each replicate, coloring each sample by the temperature condition the mice were subjected to.
 
 ```r
+# Number of cells per sample
 ggplot(seurat@meta.data) +
     geom_bar(aes(x=sample, fill=condition),
              stat="count", color="black") +
@@ -141,7 +142,8 @@ ggplot(seurat@meta.data) +
 
 We can also see the distribution of cells across the UMAP for each replicate and sample.
 
-```r
+```r'
+# UMAPs of condition and sample
 DimPlot(seurat, group.by=c("sample", "condition"))
 ```
 
@@ -151,7 +153,19 @@ DimPlot(seurat, group.by=c("sample", "condition"))
 
 ### Celltype annotation
 
-We had also mentioned that the cells had been annotated into 8 major non-immune cell types:
+Intially, cells were clustered at a range of resolutions. The authors chose a resolution 1.2 as it grouped cells adequately into the celltypes of interest.
+
+```r
+# UMAP clusters
+p <- DimPlot(seurat, group.by="seurat_clusters") + NoLegend()
+LabelClusters(p, id = "seurat_clusters",  fontface = "bold", size = 5, bg.colour = "white", bg.r = .2, force = 0)
+```
+
+<p align="center">
+    <img src="../img/sample_info_cluster_umap.png" height="500">
+</p>
+
+Using these clusters and a variety of marker genes, the cells were annotated into 8 major non-immune cell types:
     
 1. Pdgfra+ adipose preogenitors
 2. Vascular endothelial
@@ -162,9 +176,14 @@ We had also mentioned that the cells had been annotated into 8 major non-immune 
 7. Myelinating Schwann cells
 8. Non-myelinating Schwann cells
    
-Intiallly, cells were clustered at a range of resolutions. The authors chose a resolution 0.2 and celltypes were assigned based upon expression of a variety of marker genes. The mapping of cluster to celltype annotation is being represented here as an **alluvial plot**.
+The mapping of cluster to celltypes is being represented here as an **alluvial plot**.
 
 ```r
+# Order clusters numerically
+order_cluster <- unique(seurat$seurat_clusters) %>% as.numeric() %>% sort() %>% as.character()
+seurat$seurat_clusters <- factor(seurat$seurat_clusters, levels=order_cluster)
+
+# Map clusters to celltypes
 ggplot(seurat@meta.data,
         aes(axis1 = seurat_clusters,
             axis2 = celltype,
@@ -182,7 +201,7 @@ ggplot(seurat@meta.data,
     <img src="../img/sample_info_celltype_map.png" height="500">
 </p>
 
-We can also use celltype labels, and see how they distribute on the UMAP. 
+With these updated celltype labels, we can see how they distribute on the UMAP. 
 
 ```r
 # UMAP celltype
@@ -210,6 +229,8 @@ ggplot(seurat@meta.data) +
 <p align="center" style="display:flex">
     <img src="../img/sample_info_celltype_prop.png" width="60%">
 </p>
+
+Now that we have a better understanding of what data we have available to us, we can begin our analysis!
 
 ***
 
