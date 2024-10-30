@@ -168,7 +168,7 @@ One of the many advantages of using R is the ability to automate processes that 
 First, we create a vector of unique celltypes in our data so that we can iterate over each one of them.
 
 ```r
-celltype <- sort(unique(seurat@meta.data[["celltype"]]))
+celltypes <- sort(unique(seurat@meta.data[["celltype"]]))
 celltypes
 ```
 
