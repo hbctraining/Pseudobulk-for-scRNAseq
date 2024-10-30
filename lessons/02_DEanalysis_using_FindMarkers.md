@@ -242,10 +242,10 @@ Here we will make use of the DESeq2 implementation in `FindMarkers()` and save t
 ```r
 # Determine differentiating markers for TN and cold7
 dge_vsm_deseq2 <- FindMarkers(seurat_vsm,
-                        ident.1="cold7",
-                        ident.2="TN",
-                        test.use="deseq2"
-                    )
+                              ident.1="cold7",
+                              ident.2="TN",
+                              test.use="DESeq2"
+                              )
 write.csv(dge_vsm_deseq2, "results/findmarkers_deseq2_vsm.csv")
 ```
 
