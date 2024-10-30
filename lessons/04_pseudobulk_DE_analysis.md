@@ -193,17 +193,20 @@ Now let's take a look at **what information is stored** in the results:
 res %>% head()
 ```
 
-**CHANGE THESE VALUES AND PASTE IN THE UNSHRUNKEN RESULTS. WHERE IS THE WALD TEST STAT? **
+**WHERE IS THE WALD TEST STAT? **
 
-```r
-        baseMean log2FoldChange     lfcSE     pvalue      padj
-       <numeric>      <numeric> <numeric>  <numeric> <numeric>
-Xkr4     2.80496     -0.0119983  0.258923 0.86291417 0.9487990
-Gm1992   0.00000             NA        NA         NA        NA
-Rp1      0.00000             NA        NA         NA        NA
-Sox17    6.30657      0.0509278  0.256791 0.57599002 0.8147941
-Mrpl15 267.61120     -0.0334181  0.147426 0.78522621 0.9185463
-Lypla1 152.10108      0.4480539  0.159921 0.00120728 0.0133217
+```
+log2 fold change (MLE): condition cold7 vs TN 
+Wald test p-value: condition cold7 vs TN 
+DataFrame with 6 rows and 6 columns
+        baseMean log2FoldChange     lfcSE      stat     pvalue      padj
+       <numeric>      <numeric> <numeric> <numeric>  <numeric> <numeric>
+Xkr4     2.80496     -0.1625561  0.941450 -0.172666 0.86291417 0.9487990
+Gm1992   0.00000             NA        NA        NA         NA        NA
+Rp1      0.00000             NA        NA        NA         NA        NA
+Sox17    6.30657      0.3843884  0.687326  0.559252 0.57599002 0.8147941
+Mrpl15 267.61120     -0.0477763  0.175316 -0.272515 0.78522621 0.9185463
+Lypla1 152.10108      0.5126464  0.158363  3.237154 0.00120728 0.0133217
 ```
 
 > #### Why do I see so many NA values in my results table?
