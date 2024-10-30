@@ -145,7 +145,7 @@ Adipo_Sample-14_cold2 Adipo_Sample-14_cold2    Adipo Sample-14     cold2     491
 Adipo_Sample-15_cold7 Adipo_Sample-15_cold7    Adipo Sample-15     cold7      15
 ```
 
-The output of this aggregation is a sparse matrix, and when we take a quick look, we can see that it is a gene by cell type-sample matrix.
+The output of this aggregation is a sparse matrix, and when we take a quick look, we can see that it is a gene by celltype-sample matrix.
 
 ```r
 bulk[["RNA"]]$counts[1:5, 1:5]
@@ -169,26 +169,13 @@ Mrpl15                   135                  2037
 
 ### Aggregating counts for multiple celltypes
 
-**ADD FOR LOOPS AUTOMATION CODE HERE**
+One of the many advantages of using R is the ability to automate processes that we want to repeat multiple times. For example, if we wanted to pseudobulk on each celltype in the dataset, we can utilize a for loop to run the aggregation step on each group. 
 
-First, we create a vector of unique sample names:
-
-```r
-identity <- sort(unique(seurat@meta.data[["sample"]]))
-identity
-```
-
-```
- [1] "Sample_1"  "Sample_10" "Sample_11" "Sample_12" "Sample_13" "Sample_14"
- [7] "Sample_15" "Sample_16" "Sample_2"  "Sample_3"  "Sample_4"  "Sample_6" 
-[13] "Sample_7"  "Sample_8"  "Sample_9" 
-```
-
-Next, we create a vector of unique celltypes:
+First, we create a vector of unique celltypes in our data so that we can iterate over each one of them.
 
 ```r
-groups <- sort(unique(seurat@meta.data[["celltype"]]))
-groups
+celltype <- sort(unique(seurat@meta.data[["celltype"]]))
+celltypes
 ```
 
 ```
@@ -196,16 +183,38 @@ groups
 [8] "VSM"      "VSM-AP"  
 ```
 
-And finally, a vector of the different groups we will be comparing:
+Next, we want to store the aggregated, pseudobulked expression for each celltype as a list of seurat object. Therefore we are going to use the same steps we ran above with the `AggregateExpression()` function and adding the number of cells in each group as a metadata column. 
 
 ```r
-comparisons <- sort(unique(seurat@meta.data[["condition"]]))
-comparisons
+pb_list <- list()
+for (ct in celltypes) {
+  
+  # Subset cells to one celltype
+  seurat_ct <- subset(seurat, subset=(celltype == ct))
+  
+  # Aggregate to get pseudobulk
+  bulk_ct <- AggregateExpression(
+              seurat_ct,
+              return.seurat = T,
+              assays = "RNA",
+              group.by = c("celltype", "sample", "condition")
+            )
+  
+  # Add number of cells per sample
+  n_cells <- seurat_ct@meta.data %>% 
+                dplyr::count(sample, celltype) %>% 
+                rename("n"="n_cells")
+  n_cells$sample <- str_replace(n_cells$sample, "_", "-")
+  meta_bulk_ct <- left_join(bulk_ct@meta.data, n_cells)
+  rownames(meta_bulk_ct) <- meta_bulk_ct$orig.ident
+  bulk_ct@meta.data <- meta_bulk_ct
+  
+  pb_list[[ct]] <- bulk_ct
+  
+}
 ```
 
-```
-[1] "cold2" "cold7" "RT"    "TN" 
-```
+With this list of pseudobulked seurat objects, we are able to run the following DESeq2 differential expression steps easily on every celltype as we have the aggregated counts handy.
 
 
 ## Differential gene expression with DESeq2
