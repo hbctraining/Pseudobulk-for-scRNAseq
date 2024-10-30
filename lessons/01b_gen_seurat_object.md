@@ -181,6 +181,9 @@ seurat_integrated <- FindNeighbors(seurat_integrated, dims = 1:50)
 8. Save seurat object
 
 ```r
+Idents(seurat_integrated) <- "condition"
+DefaultAssay(seurat_integrated) <- "RNA"
+
 saveRDS(seurat_integrated, "data/BAT_GSE160585.rds")
 ```
 
