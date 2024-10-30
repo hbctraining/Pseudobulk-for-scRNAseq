@@ -133,6 +133,9 @@ seurat <- FindVariableFeatures(seurat,
 # Split seurat object by sample
 split_seurat <- SplitObject(seurat, split.by = "condition")
 
+# Allow R to use more memory
+options(future.globals.maxSize = 4000 * 1024^2)
+
 # Run SCTranform on each sample individually
 for (i in 1:length(split_seurat)) {
     # Regress out cell cycle scores
