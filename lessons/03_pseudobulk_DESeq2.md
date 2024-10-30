@@ -11,11 +11,9 @@ Approximate time: 40 minutes
 * Understand how to prepare single-cell RNA-seq raw count data for pseudobulk differential expression analysis
 * Create a DESeq2 object for differential expression analysis on a specific cell type cluster
 
-
-
 ## Pseudobulk differential expression analysis
 
-In the previous lesson we demonstrated how to perform a differential expression analysis using the `FindMarkers()` function in Seurat. The major limitation of this approach is that it treats each individual cell as replicate, which inflates the p-value resulting in many false positives. In this lesson we introduce you to the pseudobulk approach, in which cells belonging to a cluster are aggregated within each sample to create a gene by sample count matrix. This count matrix resembles the input we use for bulk RNA-seq, and we use a similar workflow to idenitfy differentially expressed genes.
+In the previous lesson we demonstrated how to perform a differential expression analysis using the `FindMarkers()` function in Seurat. The major limitation of this approach is that it treats each individual cell as a replicate, which inflates the p-value, resulting in many false positives. In this lesson we introduce you to the pseudobulk approach, in which cells belonging to a cluster are aggregated within each sample to create a gene by sample count matrix. This count matrix resembles the input we use for bulk RNA-seq, and we use a similar workflow to idenitfy differentially expressed genes.
 
 **CREATE A FIGURE TO DEMONSTRATE THE AGGREGATION**
 
@@ -26,9 +24,7 @@ Using a pseudobulk approach involves the following steps:
 1. Subsetting to the cells for the cell type(s) of interest to perform the DE analysis;
 2. Extracting the raw counts after QC filtering of cells to be used for the DE analysis;
 3. Aggregating the counts and metadata to the sample level; 
-4. Performing the DE analysis (Need at least two biological replicates per condition to perform the analysis, but more replicates are recommended).
-
-
+4. Performing the DE analysis (you need at least two biological replicates per condition to perform the analysis, but more replicates are recommended).
 
 ## Setting up
 
@@ -59,7 +55,7 @@ library(dplyr)
 
 ### Create metadata
 
-We will want to create a dataframe with all of the sample-level metadata, this will be used during the aggregation step but aso later with differential expression analysis.
+We will want to create a dataframe with all of the sample-level metadata, this will be used during the aggregation step but also later with differential expression analysis.
 
 > _**NOTE:** Other relevant metadata for a pseudobulk differential expression analysis include information about the individuals that will be contrasted (age, sex, clinical presentation, etc.). The more information you can collect about your study samples, the better!_
 
@@ -94,10 +90,9 @@ meta
 ```
 
 ## Aggregate counts for pseudobulk analysis
-Now, before we transform our single-cell level dataset into one sample-level dataset per cell type (cluster) there are a few data wrangling steps involved. We know that we want to aggregate cells of a particular celltype and that we want to collapse the down by sample.
+Now, before we transform our single-cell level dataset into one sample-level dataset per cell type (cluster), there are a few data wrangling steps involved. We know that we want to aggregate cells of a particular celltype and that we want to collapse them down by sample.
 
-To aggregate the counts, we will **use the `AggregateExpression()` function from Seurat**. It will take as input a Seurat object, and returns summed counts ("pseudobulk") for each identity class. The default is to return a matrix with genes as rows, and identity classes as columns. We have set `return.seurat` to  `TRUE`, which means rather than a matrix we will get an object of class Seurat. We have also specified which factors to aggregate on, using the `group.by` argument.
-
+To aggregate the counts, we will **use the `AggregateExpression()` function from Seurat**. It will take as input a Seurat object, and return summed counts ("pseudobulk") for each identity class. The default is to return a matrix with genes as rows, and identity classes as columns. We have set `return.seurat` to  `TRUE`, which means rather than a matrix we will get an object of class Seurat. We have also specified which factors to aggregate on, using the `group.by` argument.
 
 ```r
 bulk <- AggregateExpression(
@@ -108,14 +103,14 @@ bulk <- AggregateExpression(
 )
 ```
 
-Now our Seurat object has 'cells' which correspond to aggregated counts. We will see that the samples have the a name "{celltype}\_{sample}\_{condition}" to show that we are grouping together counts based on sample, celltype, and condition. The metadata columns that were used as input are included in this new Seurat object as well.
+Now our Seurat object has 'cells' that correspond to aggregated counts. We will see that the samples have the name "{celltype}\_{sample}\_{condition}" to show that we are grouping together counts based on sample, celltype, and condition. The metadata columns that were used as input are included in this new Seurat object as well.
 
 ```r
 # each 'cell' is a sample-condition-celltype pseudobulk profile
 tail(Cells(bulk))
 ```
 
-Now would be the time to add to your metadata, any other information you have on the samples. For example, adding the number of cells we aggregated on is useful information to include.
+Now would be the time to add to your metadata any other information you have on the samples. For example, adding the number of cells we aggregated on is useful information to include.
 
 ```r
 # Number of cells by sample and celltype
@@ -134,7 +129,6 @@ bulk$condition <- factor(bulk$condition, levels=c("TN", "RT", "cold2", "cold7"))
 bulk@meta.data %>% head()
 ```
 
-
 ```
                                  orig.ident celltype    sample condition  n_cells
 Adipo_Sample-1_TN         Adipo_Sample-1_TN    Adipo  Sample-1        TN       5
@@ -145,7 +139,7 @@ Adipo_Sample-14_cold2 Adipo_Sample-14_cold2    Adipo Sample-14     cold2     491
 Adipo_Sample-15_cold7 Adipo_Sample-15_cold7    Adipo Sample-15     cold7      15
 ```
 
-The output of this aggregation is a sparse matrix, and when we take a quick look, we can see that it is a gene by celltype-sample matrix.
+The output of this aggregation is a sparse matrix and, when we take a quick look, we can see that it is a gene by celltype-sample matrix.
 
 ```r
 bulk[["RNA"]]$counts[1:5, 1:5]
@@ -183,7 +177,7 @@ celltypes
 [8] "VSM"      "VSM-AP"  
 ```
 
-Next, we want to store the aggregated, pseudobulked expression for each celltype as a list of seurat object. Therefore we are going to use the same steps we ran above with the `AggregateExpression()` function and adding the number of cells in each group as a metadata column. 
+Next, we want to store the aggregated, pseudobulked expression for each celltype as a list of Seurat objects. Therefore we are going to use the same steps we ran above with the `AggregateExpression()` function and adding the number of cells in each group as a metadata column. 
 
 ```r
 pb_list <- list()
@@ -214,18 +208,15 @@ for (ct in celltypes) {
 }
 ```
 
-With this list of pseudobulked seurat objects, we are able to run the following DESeq2 differential expression steps easily on every celltype as we have the aggregated counts handy.
-
+With this list of pseudobulked Seurat objects, we are able to run the following DESeq2 differential expression steps easily on every celltype as we have the aggregated counts handy.
 
 ## Differential gene expression with DESeq2
 
 **We will be using [DESeq2](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8) for the pseudobulk DE analysis, and the analysis steps with DESeq2 are shown in the flowchart below in green and blue**. DESeq2 first normalizes the count data to account for differences in library sizes and RNA composition between samples. Then, we will use the normalized counts to make some plots for QC at the gene and sample level. The final step is to use the appropriate functions from the DESeq2 package to perform the differential expression analysis. We will go into each of these steps briefly, but additional details and helpful suggestions regarding DESeq2 can be found in [our materials](https://hbctraining.github.io/DGE_workshop_salmon_online/schedule/links-to-lessons.html) detailing the workflow for bulk RNA-seq analysis, as well as in the [DESeq2 vignette](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html).
 
-
 <p align="center">
   <img src="../img/pseudobulk_de_workflow.png" width="400">
 </p>
-
 
 ## Creating a DESeq2 object
 
@@ -233,16 +224,13 @@ From the pseudobulk Seurat object, we can easily extract the information require
 
 We use the `subset()` function to get the data we need:
 
-
 ```r
 bulk_vsm <- subset(bulk, subset= (celltype == "VSM") & (condition %in% c("TN", "cold7")))
 ```
 
-
 ### Number of cells
 
-Before moving on to a pseudobulk DGE analysis, it is important to identify **how many cells did we aggregate fo each sample**. We need to make sure that we have enough cells per sample after subsetting to one celltype. We can see that with the exception of one sample, the TN group has many cells and the cold7 samples have much fewer cells.
-
+Before moving on to a pseudobulk DGE analysis, it is important to identify **how many cells we aggregated for each sample**. We need to make sure that we have enough cells per sample after subsetting to one celltype. We can see that with the exception of one sample, the TN group has many cells and the cold7 samples have much fewer cells.
 
 ```r
 ggplot(bulk_vsm@meta.data) +
@@ -257,9 +245,7 @@ ggplot(bulk_vsm@meta.data) +
   <img src="../img/pb_ncells_vsm.png" width="600">
 </p>
 
-
-
-Now we can create our DESeq2 object to prepare to run the DE analysis. We need to **include the counts, metadata, and design formula for our comparison of interest**. In the design formula we should also include any other columns in the metadata for which we want to regress out the variation (e.g. batch, sex, age, etc.). For this dataset, we only have our comparison of interest, which is stored as the `condition` in our metadata data frame.
+Now we can create our DESeq2 object to prepare to run the DE analysis. We need to **include the counts, metadata, and design formula for our comparison of interest**. In the design formula we should also include any other columns in the metadata for which we want to regress out the variation (batch, sex, age, etc.). For this dataset, we only have our comparison of interest, which is stored as the `condition` in our metadata data frame.
 
 More information about the DESeq2 workflow and design formulas can be found in our [DESeq2 materials](https://hbctraining.github.io/DGE_workshop_salmon_online/lessons/04a_design_formulas.html).
 
