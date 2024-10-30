@@ -106,7 +106,8 @@ We generated this Seurat object using the using the files that were deposited to
 Let's begin by looking at what metadata is stored inside the Seurat object, paying close attention to sample identities and celltype annotations.
 
 ```r
-seurat <- readRDS("data/BAT_GSE160585.rds")
+# Load Seurat object
+seurat <- readRDS("data/BAT_GSE160585_final.rds")
 colnames(seurat@meta.data)
 ```
 
