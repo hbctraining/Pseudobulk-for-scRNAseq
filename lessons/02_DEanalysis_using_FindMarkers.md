@@ -23,6 +23,7 @@ _**Recommendations:**_
 ```r
 library(Seurat)
 library(tidyverse)
+library(EnhancedVolcano)
 ```
 
 ## FindMarkers()
@@ -69,11 +70,9 @@ The default assay should have already been `RNA`, but we encourage you to run th
 >
 > Now if we consider the `SCT` assay, functions for finding markers would use the `scale.data` slot which is the pearson residuals that come out of regularized NB regression. Differential expression on these values can be difficult interpret. Additionally, only the variable features are represented in this assay and so we may not have data for some of our marker genes.
 
-
 For this lesson, we are focusing on `VSM` cells. So step one would be subsetting our cells to our celltype of interest. Then we can actually run the `FindMarkers()` function on the subsetted seurat object.
 
 The comparison we will be running is `TN` vs. `cold7`.
-
 
 ```r
 seurat_vsm <- subset(seurat, subset = (celltype == "VSM"))
@@ -207,7 +206,7 @@ p_cold7 <- ggplot() +
   theme_classic() +
   ggtitle("VSM: cold7 cells")
 
-# TN anc cold7 UMAPs side by side
+# TN and cold7 UMAPs side by side
 p_tn + p_cold7
 ```
 
@@ -248,7 +247,6 @@ dge_vsm_deseq2 <- FindMarkers(seurat_vsm,
                               )
 write.csv(dge_vsm_deseq2, "results/findmarkers_deseq2_vsm.csv")
 ```
-
 
 ***
 
