@@ -13,7 +13,7 @@ Approximate time: 40 minutes
 
 ## Pseudobulk differential expression analysis
 
-In the previous lesson we demonstrated how to perform a differential expression analysis using the `FindMarkers()` function in Seurat. The major limitation of this approach is that it treats each individual cell as a replicate, which inflates the p-value, resulting in many false positives. In this lesson we introduce you to the pseudobulk approach, in which cells belonging to a cluster are aggregated within each sample to create a gene by sample count matrix. This count matrix resembles the input we use for bulk RNA-seq, and we use a similar workflow to idenitfy differentially expressed genes.
+In the previous lesson we demonstrated how to perform a differential expression analysis using the `FindMarkers()` function in Seurat. The major limitation of this approach is that it treats each individual cell as a replicate, which inflates the p-value, resulting in many false positives. In this lesson we introduce you to the pseudobulk approach, in which cells belonging to a cluster are aggregated within each sample to create a gene by sample count matrix. This count matrix resembles the input we use for bulk RNA-seq, and we use a similar workflow to identify differentially expressed genes.
 
 **CREATE A FIGURE TO DEMONSTRATE THE AGGREGATION**
 
