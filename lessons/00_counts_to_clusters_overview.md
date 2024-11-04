@@ -16,7 +16,7 @@ In this lesson, we highlight for you the important steps involved in a typical w
 
 
 <p align="center">
-<img src="../img/sc_workflow_2022.jpg" width="630">
+<img src="../img/scRNA_basic.png" width="500">
 </p>
 
 ## Filtering data
