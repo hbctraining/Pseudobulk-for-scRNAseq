@@ -1,4 +1,3 @@
-Test
 
 # Workshop Schedule
 
