@@ -218,10 +218,21 @@ Now that we have identified which cells belong to which neighborhoods, we can qu
 
 ```r
 traj_milo <- countCells(traj_milo, 
-                        meta.data = data.frame(colDat(traj_milo)), 
+                        meta.data = data.frame(colData(traj_milo)), 
                         sample="sample")
 
 nhoodCounts(traj_milo) %>% head()
+```
+
+```
+6 x 8 sparse Matrix of class "dgCMatrix"
+  Sample_1 Sample_2 Sample_9 Sample_10 Sample_7 Sample_8 Sample_15 Sample_16
+1       31        1        .         8        .        .         .         .
+2        3        .       14        26        .        .         .         .
+3        .        .        .        12        .        .         .         .
+4       33        2        .         .        .        .         .         .
+5        1        1        5        26        .        .         .         .
+6        .        .        .         .        7        8        16         4
 ```
 
 ## Creating metadata
