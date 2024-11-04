@@ -254,6 +254,18 @@ traj_design <- traj_design[colnames(nhoodCounts(traj_milo)), , drop=FALSE]
 traj_design
 ```
 
+```
+          condition
+Sample_1         TN
+Sample_2         TN
+Sample_9         TN
+Sample_10        TN
+Sample_7      cold7
+Sample_8      cold7
+Sample_15     cold7
+Sample_16     cold7
+```
+
 ## Run differential abundance
 
 Milo uses an adaptation of the Spatial FDR correction introduced by cydar, which accounts for the overlap between neighbourhoods. Specifically, each hypothesis test P-value is weighted by the reciprocal of the kth nearest neighbour distance. To use this statistic we first need to store the distances between nearest neighbors in the Milo object.
@@ -270,9 +282,19 @@ da_results <- testNhoods(traj_milo,
 da_results %>% head()
 ```
 
+```
+      logFC   logCPM         F       PValue         FDR Nhood  SpatialFDR
+1  5.383966 11.80962  3.997345 0.0456731668 0.150747056     1 0.147279465
+2  5.439519 11.84264  4.145856 0.0418350534 0.150747056     2 0.147279465
+3  3.514925 10.98646  1.607903 0.2048973695 0.252574320     3 0.249984729
+4  5.353711 11.79050  3.950876 0.0469489658 0.150747056     4 0.147279465
+5  5.063808 11.63182  3.576596 0.0587072653 0.150747056     5 0.147279465
+6 -7.876050 13.52804 13.522319 0.0002403926 0.006379396     6 0.009554048
+```
+
 ## Visualization
 
-Lastlye, we can visualize the differential abundance results using the UMAP coordinates that we initially supplied. 
+Lastly, we can visualize the differential abundance results using the UMAP coordinates that we initially supplied. 
 
 Each dot represents a different neighborhood, with the size of the dot representing how many cells belong to that neighborhood. The color of the circle represent the log-fold change for that neighborhood, from the `da_results` object.
 
@@ -280,3 +302,12 @@ Each dot represents a different neighborhood, with the size of the dot represent
 traj_milo <- buildNhoodGraph(traj_milo)
 plotNhoodGraphDA(traj_milo, da_results, alpha=0.05)
 ```
+
+<p align="center">
+<img src="../img/milo_umap.png" height="500">
+</p>
+
+
+---
+
+*This lesson has been developed by members of the teaching team at the [Harvard Chan Bioinformatics Core (HBC)](http://bioinformatics.sph.harvard.edu/). These are open access materials distributed under the terms of the [Creative Commons Attribution license](https://creativecommons.org/licenses/by/4.0/) (CC BY 4.0), which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.*
