@@ -52,10 +52,10 @@ https://mac.r-project.org/tools/gfortran-12.2-universal.pkg
 **(1)** Install the 4 packages listed below from **Bioconductor** using the the `BiocManager::install()` function.
 
 ```
-BiocManager::install(DESeq2)
-BiocManager::install(EnhancedVolcano)
-BiocManager::install(SingleCellExperiment)
-BiocManager::install(miloR)
+BiocManager::install("DESeq2")
+BiocManager::install("EnhancedVolcano")
+BiocManager::install("SingleCellExperiment")
+BiocManager::install("miloR")
 ```
 
 **Please install them one-by-one as follows:**
@@ -69,13 +69,13 @@ BiocManager::install("EnhancedVolcano")
 **(2)** Install the 7 packages listed below from **CRAN** using the `install.packages()` function. 
 
 ```
-install.packages(Seurat)
-install.packages(tidyverse)
-install.packages(pheatmap)
-install.packages(RColorBrewer)
-install.packages(cowplot)
-install.packages(dplyr)
-install.packages(ggalluvial)
+install.packages("Seurat")
+install.packages("tidyverse")
+install.packages("pheatmap")
+install.packages("RColorBrewer")
+install.packages("cowplot")
+install.packages("dplyr")
+install.packages("ggalluvial")
 ```
 
 **Please install them one-by-one as follows:**
