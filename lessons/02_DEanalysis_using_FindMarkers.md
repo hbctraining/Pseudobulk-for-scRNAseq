@@ -150,25 +150,26 @@ EnhancedVolcano(dge_vsm_sig,
 ```
 
 <p align="center">
-    <img src="../img/pb_volcano.png" width="700">
+    <img src="../img/fm_sig_volcano.png" width="700">
 </p>
 
 #### Violin plots
 
-While looking at the overall trends in the data is a great starting point, we can also start looking at genes that have large differences between `TN` and `cold7`. To do this, we can take a look at the top 6 genes with the largest log-fold change. We take the absolute value of the fold-change as we want to visualize both up and down-regulated genes.
+While looking at the overall trends in the data is a great starting point, we can also start looking at genes that have large differences between `TN` and `cold7`. To do this, we can take a look at the top 6 genes with the smallest p-values. We additionally disregard the ribsomal genes in this visualization step.
 
 ```r
-# Sort by average log fold change
 # Get the gene names and get the first 6 values
+# Ignore ribosomal genes
 genes <- dge_vsm_sig %>%
-            arrange(desc(abs(avg_log2FC))) %>%
-            row.names() %>%
-            head(6)
+  rownames_to_column(var="gene") %>%
+  filter(!str_detect(gene, "Rpl|Rps")) %>% 
+  head(6)
+genes <- genes$gene
 genes
 ```
 
 ```
-[1] "Tmed5"  "Cox4i2" "Crip1"  "Azin1"  "Fap"    "Nov"   
+[1] "Gm42418" "Ubb"     "H3f3b"   "Nr4a2"   "Cebpb"   "Fau"    
 ```
 
 With these genes selected, we can now being to visualize the distribution of expression across our two conditions using the `VlnPlot()` function.
@@ -236,17 +237,7 @@ You'll recall that when we looked at the extra explanations for the `FindMarkers
 
 * `DESeq2` : Identifies differentially expressed genes between two groups of cells based on a model using DESeq2 which uses a negative binomial distribution (Love et al, Genome Biology, 2014). This test does not support pre-filtering of genes based on average difference (or percent detection rate) between cell groups. However, genes may be pre-filtered based on their minimum detection rate (min.pct) across both cell groups.
 
-Here we will make use of the DESeq2 implementation in `FindMarkers()` and save the results to later compare the results against pseudobulk `DESeq2` results:
-
-```r
-# Determine differentiating markers for TN and cold7
-dge_vsm_deseq2 <- FindMarkers(seurat_vsm,
-                              ident.1="cold7",
-                              ident.2="TN",
-                              test.use="DESeq2"
-                              )
-write.csv(dge_vsm_deseq2, "results/findmarkers_deseq2_vsm.csv")
-```
+> **NOTE:** The creators of the Seurat package [no longer recommend](https://github.com/satijalab/seurat/issues/2938) using the FindMarkers() implementation of DESeq2.
 
 ***
 
