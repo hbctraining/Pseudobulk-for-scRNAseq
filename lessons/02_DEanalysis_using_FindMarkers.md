@@ -18,14 +18,14 @@ Approximate time: 75 minutes
 
 In our current UMAP, we have merged samples across the different conditions and used integration to align cells of the same celltype across samples. Now, what of we were interested in a particular celltype and **understanding how gene expression changes across the different conditions?**
 
-The `FindMarkers()` function in the Seurat package is used to perform differential expression analysis between groups of cells. We provide arguments to specify `ident.1` and `ident.2` the two groups of cells we are interesetd in comparing. Typically, this function is used to compare two different clusters of cells and resulting gene lists are used to help determine the celltype annotation. 
+The `FindMarkers()` function in the Seurat package is used to perform differential expression analysis between groups of cells. We provide arguments to specify `ident.1` and `ident.2` the two groups of cells we are interested in comparing. Typically, this function is used to compare two different clusters of cells and resulting gene lists are used to help determine the celltype annotation. 
 
 <p align="center">
     <img src="../img/marker_ident_function3.png" width="350">
 </p>
 
 
-We can use this same function to compare two groups of cells which represent differnt conditions by modifying the `ident` values provided. The `FindMarkers()` function has **several important arguments** which provide thresholds for determining whether a gene is a differentially expressed. To view what these parameters are, we can access the help page on this function:
+We can use this same function to compare two groups of cells which represent differnt conditions by modifying the `ident` values provided. The `FindMarkers()` function has **several important arguments** we can modify when running it. To view what these parameters are, we can access the help page on this function:
 
 ```r
 ?FindMarkers
