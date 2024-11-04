@@ -59,6 +59,7 @@ MiloR generates the neighborhoods based upon the UMAP coordinates supplied, so w
 
 ```r
 # Re-calculate PCA and UMAP
+seurat_vsm <- ScaleData(seurat_vsm)
 seurat_vsm <- RunPCA(seurat_vsm, verbose = FALSE)
 seurat_vsm <- RunUMAP(seurat_vsm, dims = 1:50)
 seurat_vsm <- FindNeighbors(seurat_vsm, dims = 1:50)
