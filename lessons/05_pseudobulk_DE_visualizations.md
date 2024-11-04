@@ -8,18 +8,18 @@ Approximate time: 40 minutes
 
 ## Learning Objectives:
 
-* ...
-* 
+* Subset DESeq2 results to significant genes
+* Investigate top genes to better understand the changes between conditions
+* Visualize expression at both the pseudobulked and single-cell level
 
 
 ## Visualization of differentially expressed genes
 
-**INCLUDE A SHORT INTRO BLURB FOR THIS LESSON HERE ON WHY VISUALIZATION IS IMPORTANT**
+Visualization is a key step for understanding the results of our analysis. In particular, we want to focus on the significant genes that are differential between the two conditions of interest. In doing so, we can better understand patterns in gene expression and any outlier genes that may bring up further questions in a downstream analysis. Additionally, these visualizations are a great way to quickly demonstrate the changes brough about due to an experimental condition to others.
 
+### Identify significant genes
 
-### Identufy significant genes
-
-Next, we can filter our table for only the significant genes using a p-adjusted threshold of 0.05
+Now that we have a table of genes with their associated p-values and log-fold-change scores, we need to filter the results. In particular, we are are only interest in significant differential genes that pass a p-adjusted threshold of 0.05.
 
 ```r
 # Set thresholds
@@ -55,7 +55,11 @@ With these results we can use a few different visualization techniques to explor
 - Heatmap of expression for all significant genes
 - Scatterplot of normalized expression of top genes
 
-### Volcano plot 
+#### Volcano plot 
+
+To get a first look at the genes that are retained, we can generated a volcano plot using the `EnhancedVolcano()` function. This is a visualization that allows us to quickly see trends in the significant genes. The x-axis here represents the average log2 fold change value, showing the degree of difference between the two conditions. On the y-axis, we see our p_val_adj column represented after a negative log10 transformation is applied to better see the spread of our p-values.
+
+Volcano plots show us a great overview of which genes are up-regulated (positive on the x-axis) or down-regulated (negative on the x-axis).
 
 ```r
 EnhancedVolcano(sig_res,
@@ -70,7 +74,11 @@ EnhancedVolcano(sig_res,
 </p>
 
 
-### Normalized pseudobulk counts heatmap
+#### Normalized pseudobulk counts heatmap
+
+Another way to look at global patterns of gene expression on our pseudobulked normalized expression, we can generate a heatmap. The rows corresponds to a significant gene, columns are samples, and each value is the pseudobulked normalized expression. 
+
+Using the `pheatmap()` function, we can also cluster samples and genes together based upon their similarity. We can clearly see that samples are clustering together based upon which experimental condition they belong to (`TN` and `cold7`). Similarly, the genes are being grouped together based upon their expression values, where we can see which genes are up and down-regulated in each condition.
 
 ```r
 # Extract normalized expression for significant genes from the samples
@@ -103,7 +111,7 @@ pheatmap(norm_sig,
 </p>
 
 
-### Single-cell normalized counts heatmap
+#### Single-cell normalized counts heatmap
 
 TODO fix
 
@@ -136,7 +144,7 @@ We may also be interested in determining the total number of significantly upreg
 genes <- sig_res %>% 
             arrange(padj) %>% 
             subset(abs(log2FoldChange) > 0.6) %>% 
-            head()
+            head(6)
 genes <- genes$gene
 genes
 ```
@@ -145,9 +153,11 @@ genes
 [1] "Rgs5"  "Mt1"   "Emd"   "Nr4a2" "Cwc25" "Cebpb"
 ```
 
-### Normalized pseudobulk expression scatterplot
+#### Normalized pseudobulk expression scatterplot
 
 Now that we have identified the significant genes, we can plot a scatterplot of the top 6 significant genes. This plot is a good check to make sure that we are interpreting our fold change values correctly, as well.
+
+Each point represents a sample with the y-axis representing the pseudobulked normalized expression. Ideally we should see a clear shift in expression between our two conditions.
 
 ```r
 plot_list <- list()
@@ -175,9 +185,9 @@ plot_grid(plotlist=plot_list)
 </p>
 
 
-### Single-cell normalized expression violin plot
+#### Single-cell normalized expression violin plot
 
-Ultimately, we are evaluating the gene expression at a single-cell level. Therefore it is prudent to go back to the cellular level to see what these same results look like for each individual cell.
+Ultimately, we want to evaluate the gene expression at a single-cell level. The results we have been visualizing so far represent the sample averages for gene expression. Therefore it is prudent to go back to the cellular level to see what these same results look like for each individual cell. To do so, we will make use of our original seurat object `seurat_vsm`.
 
 ```r
 DefaultAssay(seurat_vsm) <- "RNA"
@@ -189,7 +199,9 @@ VlnPlot(seurat_vsm, genes, idents=c("cold7", "TN"))
 <img src="../img/pb_sig_vln_sc.png" height="500">
 </p>
 
-### UMAP
+#### UMAP
+
+When comparing two different conditions, we recommend creating a UMAP that clearly shows where the cells fall for each condition. To do so, we first need to get the UMAP coordinates for every cell of interest. When creating the scatterplot, the first thing we do is put a layer of light gray points that show the entire dataset to understand where all the cells fall. Then, we take the UMAP coordinates of the condition (`TN` or `cold7` in our example) and plot those on top with a color to clearly indicate where those cells are located.
 
 ```r
 # Grab the umap coordinates and condition information for each cell
@@ -216,6 +228,8 @@ p_tn + p_cold7
 <img src="../img/pb_tn_cold7_umap.png" height="500">
 </p>
 
+This allows us to better understand our results when we look at any follow-up information on our UMAP. For example, we can begin to look at distribution of gene expression for each of the top 6 genes with a better understanding of where the cells for each condition lay:
+
 ```r
 FeaturePlot(seurat_vsm, genes, ncol=3)
 ```
@@ -223,6 +237,8 @@ FeaturePlot(seurat_vsm, genes, ncol=3)
 <p align="center">
 <img src="../img/pb_sig_umap.png" height="500">
 </p>
+
+By now, you may have noticed that the top genes from DESeq2 are different from the ones we identified with FindMarkers. In the next lesson we can compare the results to better evaluate why these differences exist.
 
 ***
 
