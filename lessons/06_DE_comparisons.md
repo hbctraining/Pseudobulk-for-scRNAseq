@@ -57,7 +57,7 @@ ggvenn(sig_genes)
 ```
 
 <p align="center">
-  <img src="../img/DE_venn.png" width="400">
+  <img src="../img/DE_venn.png" width="600">
 </p>
 
 For a more conservative approach, we could continue our downstream analysis by using just the conserved significant genes for both conditions. First let us identify which genes those are by first merging and cleaning our dataset.
@@ -106,7 +106,7 @@ ggplot(dge, aes(x=sig, fill=sig)) +
 ```
 
 <p align="center">
-  <img src="../img/DE_ncells.png" width="400">
+  <img src="../img/DE_ncells.png" width="800">
 </p>
 
 With all of this information, we can begin comparing the p-values and average log2-fold changes from each method. To start, we will first remove the genes that are not significant in either method to more clearly see the differences.
@@ -126,7 +126,7 @@ ggplot(dge, aes(x=padj_deseq2, y=padj_fm, color=sig)) +
 ```
 
 <p align="center">
-  <img src="../img/DE_padj.png" width="400">
+  <img src="../img/DE_padj.png" width="800">
 </p>
 
 ```r
@@ -138,7 +138,7 @@ ggplot(dge, aes(x=padj_deseq2, y=padj_fm, color=sig)) +
 ```
 
 <p align="center">
-  <img src="../img/DE_LFC.png" width="400">
+  <img src="../img/DE_LFC.png" width="800">
 </p>
 
 
@@ -167,7 +167,7 @@ pct_1 + pct_2
 ```
 
 <p align="center">
-  <img src="../img/DE_LFC_pct.png" width="400">
+  <img src="../img/DE_LFC_pct.png" width="800">
 </p>
 
 
