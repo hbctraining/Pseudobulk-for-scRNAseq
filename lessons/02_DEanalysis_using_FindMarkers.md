@@ -254,21 +254,38 @@ FeaturePlot(seurat_vsm, genes, ncol=3)
 
 ## Other statistical tests
 
-When we looked at the extra explanations for the `FindMarkers()` function, there was a parameter called `test.use`. By default, the method for calculating differentially expressed genes will be a Wilcoxon Rank sum test, which is often described as the non-parametric version of the two-sample t-test. It ranks the data and compares the sum of ranks within each group, to identify significant differences.
-
-This is a fairly simple statistical approach, and there a multitude of different algorithms that can be specified. These other options are documented on the `FindMarkers()` [documentation page](https://www.rdocumentation.org/packages/Seurat/versions/5.0.3/topics/FindMarkers). For this workshop we want to highlight a few of these methods:
-
-### `MAST` : 
-
-Identifies differentially expressed genes between two groups of cells using a hurdle model tailored to scRNA-seq data. Utilizes the MAST package to run the DE testing.
-
-> **NOTE:** Instead of using the FindMarkers implementation, we recommend directly using the [MAST](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-015-0844-5) algorithm from the package itself for the best results.
+When we looked at the extra explanations for the `FindMarkers()` function, there was a parameter called `test.use`. By default, the method for calculating differentially expressed genes will be a Wilcoxon Rank sum test. This is a fairly simple statistical approach, and there a multitude of different algorithms that can be specified. These other options are documented on the `FindMarkers()` [documentation page](https://www.rdocumentation.org/packages/Seurat/versions/5.0.3/topics/FindMarkers). For this workshop we want to highlight a few of these methods:
 
 
-### `DESeq2`
-Identifies differentially expressed genes between two groups of cells based on a model using DESeq2 which uses a negative binomial distribution (Love et al, Genome Biology, 2014). This test does not support pre-filtering of genes based on average difference (or percent detection rate) between cell groups. However, genes may be pre-filtered based on their minimum detection rate (min.pct) across both cell groups.
+**Wilcoxon Rank Sum test**
 
-> **NOTE:** The creators of the Seurat package [no longer recommend](https://github.com/satijalab/seurat/issues/2938) using the FindMarkers() implementation of DESeq2.
+* Often described as the non-parametric version of the two-sample t-test. 
+* Beneficial because it can reduce the impact of outliers, which can skew the results of parametric testing.
+* It ranks the data and compares the sum of ranks within each group, to identify significant differences.
+ 
+
+**DESeq2**
+
+* Identifies differentially expressed genes between two groups of cells based on a model using DESeq2 which uses a negative binomial distribution (Love et al, Genome Biology, 2014). More information on DESeq2 will be provided in an upcoming lesson in this workshop.
+* This test option does not support pre-filtering of genes based on average difference (or percent detection rate) between cell groups. However, genes may be pre-filtered based on their minimum detection rate (min.pct) across both cell groups.
+
+> **NOTE:** The creators of the Seurat package [no longer recommend](https://github.com/satijalab/seurat/issues/2938) using the `FindMarkers()` implementation of DESeq2.
+ 
+ 
+ **MAST**
+
+* Implements an approach that accounts for the stochastic dropout and characteristic bimodal expression distributions in which expression is either strongly non-zero or non-detectable.
+    *  A two-part, generalized linear model for such bimodal data that parameterizes both of these features    
+* Also allows for estimation and control of the “cellular detection rate” (CDR) while simultaneously estimating treatment effects. This addresses the fact that cells scale transcript copy number with cell volume. 
+* Permits the analysis of complex experiments, such as repeated single-cell measurements under various treatments or longitudinal sampling of single cells from multiple subjects with a variety of background characteristics (e.g., sex, age), because it can easily be extended to accommodate random effects.
+
+
+> **NOTE:** Instead of using the `FindMarkers()` implementation, we recommend directly using the [MAST](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-015-0844-5) algorithm from the package itself for the best results.
+>
+> If you are interested in exploring code to run MAST on this dataset, please see the scritp provided below.
+
+
+
 
 ***
 
