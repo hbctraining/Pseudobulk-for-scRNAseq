@@ -257,14 +257,14 @@ FeaturePlot(seurat_vsm, genes, ncol=3)
 When we looked at the extra explanations for the `FindMarkers()` function, there was a parameter called `test.use`. By default, the method for calculating differentially expressed genes will be a Wilcoxon Rank sum test. This is a fairly simple statistical approach, and there a multitude of different algorithms that can be specified. These other options are documented on the `FindMarkers()` [documentation page](https://www.rdocumentation.org/packages/Seurat/versions/5.0.3/topics/FindMarkers). For this workshop we want to highlight a few of these methods:
 
 
-**Wilcoxon Rank Sum test**
+### Wilcoxon Rank Sum test
 
 * Often described as the non-parametric version of the two-sample t-test. 
 * Beneficial because it can reduce the impact of outliers, which can skew the results of parametric testing.
 * It ranks the data and compares the sum of ranks within each group, to identify significant differences.
  
 
-**DESeq2**
+### DESeq2
 
 * Identifies differentially expressed genes between two groups of cells based on a model using DESeq2 which uses a negative binomial distribution (Love et al, Genome Biology, 2014). More information on DESeq2 will be provided in an upcoming lesson in this workshop.
 * This test option does not support pre-filtering of genes based on average difference (or percent detection rate) between cell groups. However, genes may be pre-filtered based on their minimum detection rate (min.pct) across both cell groups.
@@ -272,7 +272,7 @@ When we looked at the extra explanations for the `FindMarkers()` function, there
 > **NOTE:** The creators of the Seurat package [no longer recommend](https://github.com/satijalab/seurat/issues/2938) using the `FindMarkers()` implementation of DESeq2.
  
  
- **MAST**
+ ### MAST
 
 * Implements an approach that accounts for the stochastic dropout and characteristic bimodal expression distributions in which expression is either strongly non-zero or non-detectable.
     *  A two-part, generalized linear model for such bimodal data that parameterizes both of these features    
