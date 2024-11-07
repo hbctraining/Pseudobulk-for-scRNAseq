@@ -109,6 +109,9 @@ write.csv(cluster_summary, "results/clusterProfiler_VSM_TNv.csv")
 > **NOTE:** Instead of saving just the results summary from the `ego` object, it might also be beneficial to save the object itself. The `save()` function enables you to save it as a `.rda` file, e.g. `save(ego, file="results/ego.rda")`. The statistsics stored in the object can be used for downstream visualization.
 
 
+"In VSMs, extracellular matrix organization, angiogenesis, cell division, cell junction assembly, epithelial cell migration, and response to TGFB stimulus were significantly over-represented in the transcripts whose expression was upregulated by cold (Extended Data Figure 3a-b). In the transcripts downregulated in cold, regulation of RNA splicing, ribosome biogenesis, striated muscle development, and G1/S transition of cell cycle were significantly over-represented (Extended Data Figure 3c-d)."
+
+
 
 ***
 
