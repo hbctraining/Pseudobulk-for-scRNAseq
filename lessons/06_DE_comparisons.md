@@ -291,18 +291,16 @@ avg_pb_tn <- norm_sig[idx] %>%
 
 # Scatterplot
 avg_exp <- merge(avg_exp, merge(avg_pb_cold7, avg_pb_tn))
-png("img/DE_avg_pb.png", width=7, height=5, units="in", res=500)
 ggplot(avg_exp, aes(x=avg_pb.1, y=avg_pb.2, color=sig)) +
   geom_point() +
   scale_x_log10() + scale_y_log10() + 
   theme_bw() + geom_abline(slope=1) +
   labs(x="cold7: Average pseudo-bulk expression",
        y="TN: Average pseudo-bulk expression")
-dev.off()
 ```
 
 <p align="center">
-  <img src="../img/DE_avg_sc.png" width="600">
+  <img src="../img/DE_avg_pb.png" width="600">
 </p>
 
 
