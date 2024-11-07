@@ -7,6 +7,20 @@ Approximate time: 40 minutes
 * Compare and contrast results from `DESeq2` and `FindMarkers`
 * Evaluate why there are differences in results
 
+## Studies benchmarking methods
+
+There have been many studies that test the difference between a variety of DGE methods for single-cell experiments. First we must ask ourselves what we must consider when contrasting the results for each method:
+
+1. DESeq2 takes into account biological variability between samples, while the Wilcox test does not
+2. Pseudo-bulking the count matrix reduces the sparsity of the data
+3. 
+
+Bearing all of these changes in mind, it has been shown that including variability between 
+
+> Accounting for this variability dictates the biological accuracy of statistical methods. 
+
+
+
 ## Comparing DGE results
 
 
@@ -26,6 +40,7 @@ library(Seurat)
 library(tidyverse)
 # install.packages("ggvenn")
 library("ggvenn")
+library(pheatmap)
 ```
 
 ### Load previous results
@@ -60,7 +75,7 @@ ggvenn(sig_genes)
   <img src="../img/DE_venn.png" width="600">
 </p>
 
-For a more conservative approach, we could continue our downstream analysis by using just the conserved significant genes for both conditions. First let us identify which genes those are by first merging and cleaning our dataset.
+For a more conservative approach, we could continue our downstream analysis by using just the conserved significant genes for both conditions. For now though, let us try to understand why these differences in results exist at all. To begin, let us clean our dataset to better understand the results.
 
 ```r
 # Merge FindMarkers and DESeq2 results together
@@ -145,7 +160,7 @@ ggplot(dge, aes(x=padj_deseq2, y=padj_fm, color=sig)) +
 Next we might ask ourselves, what could be the cause of the differences in the results? If we think back to how we generated the pseudo-bulked results we can consider how the number of cells could effect the final results. There are a couple of different senarios to think of:
 
 * A gene that is highly expressed in very few cells will have a high level of expression at the pseudo-bulk level
-* Celltypes where there are few cells will have even fewer cells to aggregate on in the 
+* 
 
 Therefore, an important metric to consider is the number or percentage of cells that express the genes we are looking at. We have the columns `pct.1` and `pct.2` which represent the proportion of cells in our dataset that belong to `TN` and `cold7` respectively. So let us consider the data with this additional metric in mind.
 
@@ -171,7 +186,169 @@ pct_1 + pct_2
 </p>
 
 
+Now we can ask ourselves, is there one particular method where we see any trends with these percentage values. To most clearly identify these, let's create a boxplot of the percentage scores grouped by which method they were significant in. The clearest way to see the differences in the proportion of cells that express each gene within condition is to take the difference.
 
+
+```r
+# Percentage difference
+dge$pct_diff <- abs(dge$pct.1 - dge$pct.2)
+
+# Boxplot of percentage differences
+ggplot(dge) +
+  geom_boxplot(aes(x=pct_diff, fill=sig)) +
+  theme_bw() + coord_flip()  
+```
+
+<p align="center">
+  <img src="../img/DE_boxplot_pct.png" width="800">
+</p>
+
+
+Here we can see a pattern where `FindMakers()` finds more differential genes that have a larger difference in the proportion of cells. However, the analagous question can then be asked about what happens at different levels of expression? 
+
+To address this question, we start by looking at the single-cell expression values for each 
+
+```r
+# Difference
+avg_exp <- dge %>% select(gene, sig)
+
+# pct.1 = cold7
+seurat_1 <- subset(seurat_vsm, subset = (condition == "cold7"))
+avg_cold7 <- AverageExpression(seurat_1, features=avg_exp$gene, assay="RNA") %>%
+  data.frame() %>%
+  rename("RNA"="avg_sc.1") %>%
+  rownames_to_column("gene")
+
+# pct.2 = TN
+seurat_2 <- subset(seurat_vsm, subset = (condition == "TN"))
+avg_TN <- AverageExpression(seurat_2, features=avg_exp$gene, assay="RNA") %>%
+  data.frame() %>%
+  rename("RNA"="avg_sc.2") %>%
+  rownames_to_column("gene")
+
+# Merge
+avg_exp <- merge(avg_exp, merge(avg_cold7, avg_TN), by="gene")
+
+ggplot(avg_exp, aes(x=avg_sc.1, y=avg_sc.2, color=sig)) +
+  geom_point() +
+  scale_x_log10() + scale_y_log10() + 
+  theme_bw() + geom_abline(slope=1) +
+  labs(x="cold7: Average single-cell expression",
+       y="TN: Average single-cell expression")
+```
+
+<p align="center">
+  <img src="../img/DE_avg_sc.png" width="600">
+</p>
+
+
+Here we can see that there is a clear divide between results significant in DESeq2 and FindMarkers based upon the expression values at the single-cell level. 
+
+Now we can look the pseudo-bulked normalized expression values:
+
+```r
+### Code to recreate the DESeq2 object dds
+# # Average pb expression
+# # Aggregate count matrix by sample/celltype
+# bulk_vsm <- AggregateExpression(
+#   seurat_vsm,
+#   return.seurat = T,
+#   assays = "RNA",
+#   group.by = c("celltype", "sample", "condition")
+# )
+# # Get count matrix
+# cluster_counts <- FetchData(bulk_vsm, layer="counts", vars=rownames(bulk_vsm))
+
+# # Create DESeq2 object
+# # transpose it to get genes as rows
+# dds <- DESeqDataSetFromMatrix(t(cluster_counts),
+#                               colData = bulk_vsm@meta.data,
+#                               design = ~ condition)
+# dds <- estimateSizeFactors(dds)
+
+
+# Extract normalized expression for significant genes from the samples
+normalized_counts <- counts(dds, normalized=T) %>% as.data.frame()
+norm_sig <- normalized_counts %>% 
+  dplyr::filter(row.names(normalized_counts) %in% dge$gene)
+
+# Cold7
+idx <- endsWith(colnames(norm_sig), "_cold7")
+avg_pb_cold7 <- norm_sig[idx] %>% 
+  rowMeans() %>% 
+  as.data.frame() %>% 
+  rownames_to_column("gene") %>%
+  rename("."="avg_pb.1")
+
+# TN
+idx <- endsWith(colnames(norm_sig), "_TN")
+avg_pb_tn <- norm_sig[idx] %>% 
+  rowMeans() %>% 
+  as.data.frame() %>% 
+  rownames_to_column("gene") %>%
+  rename("."="avg_pb.2")
+
+
+# Scatterplot
+avg_exp <- merge(avg_exp, merge(avg_pb_cold7, avg_pb_tn))
+png("img/DE_avg_pb.png", width=7, height=5, units="in", res=500)
+ggplot(avg_exp, aes(x=avg_pb.1, y=avg_pb.2, color=sig)) +
+  geom_point() +
+  scale_x_log10() + scale_y_log10() + 
+  theme_bw() + geom_abline(slope=1) +
+  labs(x="cold7: Average pseudo-bulk expression",
+       y="TN: Average pseudo-bulk expression")
+dev.off()
+```
+
+<p align="center">
+  <img src="../img/DE_avg_sc.png" width="600">
+</p>
+
+
+### DESeq2 
+
+```r
+# DESEq2
+anno_col <- data.frame(sample=colnames(norm_sig), condition=NA)
+idx <- endsWith(colnames(norm_sig), "_cold7")
+anno_col[idx, "condition"] <- "cold7"
+idx <- endsWith(colnames(norm_sig), "_TN")
+anno_col[idx, "condition"] <- "TN"
+anno_col <- anno_col %>% column_to_rownames("sample")
+
+anno_row <- dge %>% select(gene, sig) %>% remove_rownames() %>% column_to_rownames("gene")
+pheatmap(norm_sig, show_rownames=FALSE, annotation_row=anno_row, annotation_col=anno_col, scale="row")
+```
+
+  <img src="../img/DE_pb_heatmap.png" width="600">
+</p>
+
+
+### FindMarkers
+
+> Instead, the most pronounced differences between pseudobulk and single-cell methods emerged among highly expressed genes.
+
+
+
+### Conservative approach
+
+If we were to go with the most conservative approach, we could make use of the significant genes found in common between both methods and continue any follow-up analysis with those results.
+
+```r
+dge_both <- dge %>% subset(sig == "both")
+dge_both %>% head()
+```
+
+```
+            gene log2FC_fm pct.1 pct.2      padj_fm log2FC_deseq2  padj_deseq2  sig pct_diff
+26 1190005I06Rik 1.5945858 0.064 0.017 1.758535e-12    1.54078149 3.828017e-04 both    0.047
+33 1600002K03Rik 0.9009812 0.117 0.042 2.555606e-14    0.69788439 2.542513e-02 both    0.075
+63 1810011H11Rik 9.5035075 0.022 0.000 5.303901e-21    0.05955526 1.855213e-02 both    0.022
+70 1810041L15Rik 3.0031918 0.018 0.002 2.519259e-08    2.03918404 1.719238e-02 both    0.016
+80 2010300C02Rik 1.4785492 0.059 0.012 1.063096e-16    1.68576066 2.052197e-03 both    0.047
+84 2200002D01Rik 1.2138988 0.470 0.258 9.323751e-34    1.40923201 4.064154e-12 both    0.212
+```
 
 ***
 
