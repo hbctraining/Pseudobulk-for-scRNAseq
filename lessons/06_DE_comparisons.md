@@ -5,7 +5,7 @@ Approximate time: 40 minutes
 ## Learning Objectives:
 
 * Compare and contrast results from `DESeq2` and `FindMarkers`
-* Evaluate why there are differences in results
+* Evaluate what is causing differences in results
 
 ## Studies benchmarking methods
 
@@ -18,6 +18,12 @@ There have been many studies that test the difference between a variety of DGE m
 Bearing all of these changes in mind, it has been shown that including variability between 
 
 > Accounting for this variability dictates the biological accuracy of statistical methods. 
+
+<p align="center">
+  <img src="../img/DE_performance.png" width="600">
+</p>
+
+Image credit: [Nguyen et al, Nat Communnications: Fig 7c](https://www.nature.com/articles/s41467-023-37126-3#Abs1)
 
 
 
@@ -100,13 +106,14 @@ dge %>% head()
 ```
 
 ```
-           gene log2FC_fm pct.1 pct.2      padj_fm log2FC_deseq2 padj_deseq2
-1 0610009B22Rik 0.4919641 0.238 0.138 6.745178e-07   0.178619741   0.5217744
-2 0610009O20Rik 0.3421628 0.259 0.152 2.299513e-06   0.021075663   0.9539047
-3 0610010K14Rik 0.3505411 0.163 0.088 1.093917e-05  -0.004912021   0.9819494
-4 0610012D04Rik 1.1632519 0.033 0.010 3.048507e-03   0.610698014   0.1015138
-5 0610012G03Rik 0.1019817 0.497 0.379 1.000000e+00   0.040974487   0.8935888
-6 0610030E20Rik 0.6008081 0.147 0.077 6.292494e-06   0.058878725   0.8641972
+           gene log2FC_fm pct.1 pct.2      padj_fm log2FC_deseq2 padj_deseq2             sig
+1 0610009B22Rik 0.4919641 0.238 0.138 6.745178e-07   0.178619741   0.5217744     FindMarkers
+2 0610009O20Rik 0.3421628 0.259 0.152 2.299513e-06   0.021075663   0.9539047     FindMarkers
+3 0610010K14Rik 0.3505411 0.163 0.088 1.093917e-05  -0.004912021   0.9819494     FindMarkers
+4 0610012D04Rik 1.1632519 0.033 0.010 3.048507e-03   0.610698014   0.1015138     FindMarkers
+5 0610012G03Rik 0.1019817 0.497 0.379 1.000000e+00   0.040974487   0.8935888 Not Significant
+6 0610030E20Rik 0.6008081 0.147 0.077 6.292494e-06   0.058878725   0.8641972     FindMarkers
+
 ```
 
 We can again visualize how many genes are not significant and the number significant for each method. You'll notice that we have a few genes that listed `NA`, which is the result of DESeq2 giving an NA for the p-value.
@@ -206,43 +213,8 @@ ggplot(dge) +
 
 Here we can see a pattern where `FindMakers()` finds more differential genes that have a larger difference in the proportion of cells. However, the analagous question can then be asked about what happens at different levels of expression? 
 
-To address this question, we start by looking at the single-cell expression values for each 
 
-```r
-# Difference
-avg_exp <- dge %>% select(gene, sig)
-
-# pct.1 = cold7
-seurat_1 <- subset(seurat_vsm, subset = (condition == "cold7"))
-avg_cold7 <- AverageExpression(seurat_1, features=avg_exp$gene, assay="RNA") %>%
-  data.frame() %>%
-  rename("RNA"="avg_sc.1") %>%
-  rownames_to_column("gene")
-
-# pct.2 = TN
-seurat_2 <- subset(seurat_vsm, subset = (condition == "TN"))
-avg_TN <- AverageExpression(seurat_2, features=avg_exp$gene, assay="RNA") %>%
-  data.frame() %>%
-  rename("RNA"="avg_sc.2") %>%
-  rownames_to_column("gene")
-
-# Merge
-avg_exp <- merge(avg_exp, merge(avg_cold7, avg_TN), by="gene")
-
-ggplot(avg_exp, aes(x=avg_sc.1, y=avg_sc.2, color=sig)) +
-  geom_point() +
-  scale_x_log10() + scale_y_log10() + 
-  theme_bw() + geom_abline(slope=1) +
-  labs(x="cold7: Average single-cell expression",
-       y="TN: Average single-cell expression")
-```
-
-<p align="center">
-  <img src="../img/DE_avg_sc.png" width="600">
-</p>
-
-
-Here we can see that there is a clear divide between results significant in DESeq2 and FindMarkers based upon the expression values at the single-cell level. 
+### DESeq2 normalization
 
 Now we can look the pseudo-bulked normalized expression values:
 
@@ -303,8 +275,7 @@ ggplot(avg_exp, aes(x=avg_pb.1, y=avg_pb.2, color=sig)) +
   <img src="../img/DE_avg_pb.png" width="600">
 </p>
 
-
-### DESeq2 
+We can also look at the overall trends as a heatmap
 
 ```r
 # DESEq2
@@ -323,11 +294,50 @@ pheatmap(norm_sig, show_rownames=FALSE, annotation_row=anno_row, annotation_col=
 </p>
 
 
-### FindMarkers
+
+
+### FindMarkers normalization
 
 > Instead, the most pronounced differences between pseudobulk and single-cell methods emerged among highly expressed genes.
 
 
+To address this question, we start by looking at the single-cell expression values for each 
+
+```r
+# Difference
+avg_exp <- dge %>% select(gene, sig)
+
+# pct.1 = cold7
+seurat_1 <- subset(seurat_vsm, subset = (condition == "cold7"))
+avg_cold7 <- AverageExpression(seurat_1, features=avg_exp$gene, assay="RNA") %>%
+  data.frame() %>%
+  rename("RNA"="avg_sc.1") %>%
+  rownames_to_column("gene")
+
+# pct.2 = TN
+seurat_2 <- subset(seurat_vsm, subset = (condition == "TN"))
+avg_TN <- AverageExpression(seurat_2, features=avg_exp$gene, assay="RNA") %>%
+  data.frame() %>%
+  rename("RNA"="avg_sc.2") %>%
+  rownames_to_column("gene")
+
+# Merge
+avg_exp <- merge(avg_exp, merge(avg_cold7, avg_TN), by="gene")
+
+ggplot(avg_exp, aes(x=avg_sc.1, y=avg_sc.2, color=sig)) +
+  geom_point() +
+  scale_x_log10() + scale_y_log10() + 
+  theme_bw() + geom_abline(slope=1) +
+  labs(x="cold7: Average single-cell expression",
+       y="TN: Average single-cell expression")
+```
+
+<p align="center">
+  <img src="../img/DE_avg_sc.png" width="600">
+</p>
+
+
+Here we can see that there is a clear divide between results significant in DESeq2 and FindMarkers based upon the expression values at the single-cell level. 
 
 ### Conservative approach
 
