@@ -167,7 +167,7 @@ LabelClusters(p, id = "seurat_clusters",  fontface = "bold", size = 5, bg.colour
 
 Using these clusters and a variety of marker genes, the cells were annotated into 8 major non-immune cell types:
     
-1. Pdgfra+ adipose preogenitors (AP)
+1. Pdgfra+ adipose progenitors (AP)
 2. Vascular endothelial (ECAP, EC)
 3. Lymphatic endothelial (Lymph)
 4. Vascular smooth muscle cells (VSM)
