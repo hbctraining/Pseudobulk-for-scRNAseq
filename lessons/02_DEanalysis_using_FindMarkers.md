@@ -313,7 +313,7 @@ When we looked at the extra explanations for the `FindMarkers()` function, there
 > &#35; Here our model includes:
 > &#9;&#35; The number of genes expressed (ngeneson)
 > &#9;&#35; Experimental condition (condition)
-> &#9;&#35; Sample as a random variable ((1 | sample))</br>
+> &#9;&#35; Sample as a random variable ((1 | sample))
 >
 > zlmCond <- zlm(~condition + cngeneson + (1 | sample), 
 >                sca, method="glmer", ebayes=FALSE)
