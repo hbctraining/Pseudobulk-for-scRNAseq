@@ -31,8 +31,8 @@ ggplot(bulk_APC@meta.data, aes(x = sample, y = n_cells, fill = condition)) +
 
 <details>
 	<summary><b><i>Click here for code to plot the two barplots side-by-side</i></b></summary>
-	<br>Note that this R code below uses the ggpubr library. In order to run this you will need to first install the package and then load the library.<br>
-<pre>bash
+	<br>Note that this R code below uses the <b>ggpubr library</b>. In order to run this you will need to first install the package and then load the library.<br>
+<pre>
 # Plot VSM and APC side by side
 plot_cell_number_vsm <- ggplot(bulk_vsm@meta.data, aes(x = sample, y = n_cells, fill = condition)) +
   geom_bar(stat = "identity", color = "black") +
@@ -41,6 +41,7 @@ plot_cell_number_vsm <- ggplot(bulk_vsm@meta.data, aes(x = sample, y = n_cells, 
   labs(x = "Sample name", y = "Number of cells") +
   geom_text(aes(label = n_cells), vjust = -0.5) +
   ggtitle("VSM")
+
 plot_cell_number_APC <- ggplot(bulk_APC@meta.data, aes(x = sample, y = n_cells, fill = condition)) +
   geom_bar(stat = "identity", color = "black") +
   theme_classic() +
@@ -48,6 +49,7 @@ plot_cell_number_APC <- ggplot(bulk_APC@meta.data, aes(x = sample, y = n_cells, 
   labs(x = "Sample name", y = "Number of cells") +
   geom_text(aes(label = n_cells), vjust = -0.5) +
   ggtitle("APC")
+
 ggpubr::ggarrange(plot_cell_number_vsm, plot_cell_number_APC, nrow = 1,
                   common.legend = TRUE, legend = "right")
 </pre>
