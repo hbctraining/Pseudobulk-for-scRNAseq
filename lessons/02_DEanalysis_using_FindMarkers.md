@@ -285,12 +285,12 @@ When we looked at the extra explanations for the `FindMarkers()` function, there
 > If you are interested in exploring code to run MAST on this dataset directly using the package, please see the script at the link below. We recommend including the sample in the model to improve results by taking into account biological variability. Please note that this is a **computationally intensive** calculation and may take **a long time to run**.
 > <details>
 >	<summary><b><i>Click here for code to plot the two barplots side-by-side</i></b></summary>
->	<br>Note that this R code below uses the <b>MAST library</b>. In order to run this you will need to first install the required packagea and then > load the libraries.</br>
+>	<br>Note that this R code below uses the <b>MAST library</b>. In order to run this you will need to first install the required packagea and then > load the libraries.
 > <pre>
 > library(Seurat)
 > library(dplyr)
 > library(SingleCellExperiment)
-> library(MAST)</br>
+> library(MAST)
 >
 > &#35; Seurat to SingleCellExperiment
 > DefaultAssay(seurat_vsm) &lt;- "RNA"
