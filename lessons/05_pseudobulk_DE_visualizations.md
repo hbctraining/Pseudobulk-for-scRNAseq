@@ -15,7 +15,7 @@ Approximate time: 40 minutes
 
 ## Visualization of differentially expressed genes
 
-Visualization is a key step for understanding the results of our analysis. In particular, we want to focus on the significant genes that are differential between the two conditions of interest. In doing so, we can better understand patterns in gene expression and any outlier genes that may bring up further questions in a downstream analysis. Additionally, these visualizations are a great way to quickly demonstrate the changes brough about due to an experimental condition to others.
+Visualization is a key step for understanding the results of our analysis. In particular, we want to focus on the significant genes that are differential between the two conditions of interest. In doing so, we can better understand patterns in gene expression and any outlier genes that may bring up further questions in a downstream analysis. Additionally, these visualizations are a great way to quickly demonstrate the changes brought about due to an experimental condition compared to others.
 
 ### Identify significant genes
 
@@ -76,7 +76,7 @@ EnhancedVolcano(sig_res,
 
 #### Normalized pseudobulk counts heatmap
 
-Another way to look at global patterns of gene expression on our pseudobulked normalized expression, we can generate a heatmap. The rows corresponds to a significant gene, columns are samples, and each value is the pseudobulked normalized expression. 
+Another way to look at global patterns of gene expression on our pseudobulked normalized expression is to generate a heatmap. The rows corresponds to a significant gene, columns are samples, and each value is the pseudobulked normalized expression. 
 
 Using the `pheatmap()` function, we can also cluster samples and genes together based upon their similarity. We can clearly see that samples are clustering together based upon which experimental condition they belong to (`TN` and `cold7`). Similarly, the genes are being grouped together based upon their expression values, where we can see which genes are up and down-regulated in each condition.
 
@@ -115,7 +115,7 @@ pheatmap(norm_sig,
 
 It is important to take a look at some of the top genes that show up. In particular, it is important to evaluate why these genes showed up in the pseudobulked results and contrast it against the gene expression levels at a single-cell level as well.
 
-We may also be interested in determining the total number of significantly upregulated or downregulated genes above a certain fold change threshold (for example log2 fold change (in absolute value) >0.58, which corresponds to a ~50% increase (or ~30% decrease) in gene expression.
+We may also be interested in determining the total number of significantly upregulated or downregulated genes above a certain fold change threshold, for example log2 fold change (in absolute value) >0.58, which corresponds to a ~50% increase (or ~30% decrease) in gene expression.
 
 
 ```r
@@ -206,7 +206,7 @@ p_tn + p_cold7
 <img src="../img/pb_tn_cold7_umap.png" height="500">
 </p>
 
-This allows us to better understand our results when we look at any follow-up information on our UMAP. For example, we can begin to look at distribution of gene expression for each of the top 6 genes with a better understanding of where the cells for each condition lay:
+This allows us to better understand our results when we look at any follow-up information on our UMAP. For example, we can begin to look at distribution of gene expression for each of the top 6 genes with a better understanding of where the cells for each condition lie:
 
 ```r
 FeaturePlot(seurat_vsm, genes, ncol=3)
