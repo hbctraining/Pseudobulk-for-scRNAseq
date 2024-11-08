@@ -220,7 +220,7 @@ With this list of pseudobulked Seurat objects, we are able to run the following 
 
 ## Creating a DESeq2 object
 
-From the pseudobulk Seurat object, we can easily extract the information required for input to DESeq2. First, we need to do is decide which cell type we wish to focus on, and then retrieve the corresponding data from the object. We are going to look for differntially expressed genes between the `TN` and `cold7` condition for the **`VSM` cells**. 
+From the pseudobulk Seurat object, we can easily extract the information required for input to DESeq2. First, we need to do is decide which cell type we wish to focus on, and then retrieve the corresponding data from the object. We are going to look for differntially expressed genes between the `TN` and `cold7` condition for the **vascular smooth muscle (`VSM`) cells**. 
 
 We use the `subset()` function to get the data we need:
 
