@@ -13,12 +13,7 @@ Approximate time: 40 minutes
 *  Run clusterProfiler methods on significnat genes from pseudobulk DE analysis
 
 ## Functional analysis of differentially expressed genes
-In the workshop so far, we have run differential expression analysis using two different approaches: 
-
-1. Using `FindMarkers()` and treating individual cells as replicates
-2. Aggregating counts from all cells in sample to run pseudobulk DE
-
-An overview of the comparison between results was provided in the [previous lesson](06_DE_comparisons.md). In this lesson we will take **the results from the pseudobulk DE** and run different **functional analysis** methods to obtain some biological insight. When it comes to functional analysis there are **various analyses** that can be done:
+When it comes to functional analysis there are **various analyses** that can be done:
 
 - Determine whether there is enrichment of known biological functions, interactions, or pathways
 - Identify genes' involvement in novel pathways or networks by grouping genes together based on similar trends
@@ -35,7 +30,7 @@ In this lesson, we will walk you through both an over-representation analysis an
 ## Over-representation analysis
 Over-representation analysis (ORA) is used to determine which a priori defined gene sets are more present (over-represented) in a subset of “interesting” genes than what would be expected by chance [(Huang et al, 2009)](https://pmc.ncbi.nlm.nih.gov/articles/PMC2615629/). Most genes in the genome have some pre-existing annotation associated with it which has been compiled through a combination of manual curation and computational algorithms. There are a number of existing databases which define genes using a controlled vocabulary and then categorize genes into groups (gene sets) based on shared function, or involvement in a pathway, or presence in a specific cellular location etc. A very commonly used gene annotataion resource is the [Gene Ontology (GO) database](https://geneontology.org/), and is what we will use in our workflow.
 
-We then use those categorizations to assess enrichment amongst our DE gene results and compare this to the enrichment observed in teh larger univers eof genes, to identify whether or not the enrichment observed is significant.
+We then use those categorizations to assess enrichment amongst our DE gene results and compare this to the enrichment observed in teh larger universe of genes, to identify whether or not the enrichment observed is significant.
 
 <p align="center">
 <img src="../img/go_proportions.png" width="500">
@@ -56,7 +51,14 @@ The calculation of probability of k successes follows the formula:
 This test will result in an adjusted p-value (after multiple test correction) for each category tested.
 
 ### Running ORA with clusterProfiler
-Now that we know more about what ORA is doing, let's take our significant genes and see if there are any GO terms over-represented that align with what we expect to be hapepening in VSM cells with change of temperature.
+Now that we know more about what ORA is doing, let's take our significant genes and see if there are any GO terms over-represented that align with what we expect to be happening in VSM cells with change of temperature.
+
+In the workshop so far, we have run differential expression analysis using two different approaches: 
+
+1. Using `FindMarkers()` and treating individual cells as replicates
+2. Aggregating counts from all cells in sample to run pseudobulk DE
+
+We will take **the results from the pseudobulk DE** and run different **functional analysis** methods to obtain some biological insight.
 
 Open up a new R script and let's call it `functional-analysis.R`. The first thing we'll do is load the required libraries:
 
