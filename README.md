@@ -6,7 +6,13 @@
 
 ### Description
 
-This repository has teaching materials for a hands-on **Differential expression analysis of single-cell RNA-seq analysis** workshop. This workshop will inform participants on various approaches for differential expression analysis of single cell RNA-seq and provide some discussion on differential abundance of cells. This will be a hands-on workshop in which we will begin with a processed Seurat object in order to run `FindMarkers`, pseudobulk to use `DESeq2`, and evaluate differential abundance with `MiloR`.
+This repository has teaching materials for a hands-on **Differential expression analysis of single-cell RNA-seq analysis** workshop. 
+After clustering cells as part of a single-cell RNA-seq experiment, investigators are often interested in carrying out a differential expression analysis between conditions within certain cell types. When the experimental design includes replicates with multi-conditions there is power in identifying differentially expressed genes using a pseudbulk approach.  This workshop will:
+
+- Discuss various approaches for differential expression using single cell RNA-seq data
+- Prepare single-cell RNA-seq raw count data for pseudobulk analysis
+- Perform differential expression analysis on pseudobulk counts using DESeq2
+- Present approaches for evaluating differential proportions of cells between conditions
 
 Working knowledge of R is required or completion of the [Introduction to R workshop](https://hbctraining.github.io/Intro-to-R/). 
 
@@ -17,10 +23,10 @@ Working knowledge of R is required or completion of the [Introduction to R works
 ### Learning Objectives
 
 * Understanding considerations for when to use different DGE algorithms on scRNA-seq data
-* Using FindMarkers to evaluate significantly different genes
-* Pseudobulking a counts matrix in order to run DESeq2 for a DGE analysis
-* Visualizing and evaluating expression patterns of differentially expressed genes
-* Calculating differential abundance with MiloR
+* Using FindMarkers to evaluate significantly DE genes
+* Aggregating single cell expression data into a pseudobulk counts matrix to run a DESeq2 workflow
+* Evaluating expression patterns of differentially expressed genes at the pseudobulk and single cell level
+* Application of methods for evaluating differential proportions of cells between conditions
 
 
 ### Lessons
