@@ -23,6 +23,10 @@ ggplot(bulk_APC@meta.data, aes(x = sample, y = n_cells, fill = condition)) +
   geom_text(aes(label = n_cells), vjust = -0.5)
 ```
 
+<p align="center">
+<img src="../img/answer_key_cell_counts_VSM_vs_APC.png" width="600">
+</p>
+
 Overall we see far fewer cells, by an order of magnitude (scale goes to 2,000 for VSM but only 600 for APC).
 There is also a different distribution: the counts for Sample-10 and Sample-9 go down relative to other samples, while Sample-8 goes up.
 
@@ -56,7 +60,11 @@ rld_APC <- rlog(dds_APC, blind = TRUE)
 plotPCA(rld_APC, intgroup = c("condition")) + theme_classic()
 ```
 
-Samples still segregate by TN/cold7 but there is greater variaibility than in VSM cells.
+<p align="center">
+<img src="../img/answer_key_PCA_APC.png" width="600">
+</p>
+
+Samples still segregate by TN/cold7 but there is greater variability than in VSM cells.
 
 **Evaluate the sample similarity using a correlation heatmap. How does this compare with the trends observed in the PCA plot?**
 
@@ -77,6 +85,10 @@ anno <- bulk_APC@meta.data %>%
 pheatmap(rld_APC_cor, annotation_col = anno, annotation_row = anno)
 ```
 
+<p align="center">
+<img src="../img/answer_key_correlation_APC.png" width="600">
+</p>
+
 Unfortunately, the samples do not neatly separate by condition in this celltype. As shown in the PCA plot, three cold7 samples (7,8,15) are closely related on PC1, while the last cold7 sample (16) is more distant and groups with two TN samples (9,10) on PC2.
 
 **Using the code below, run DESeq2 for the Pdgfr α+ APCs data. Following that draw the dispersion plot. Based on this plot do you think there is a reasonable fit to the model?**
@@ -87,6 +99,10 @@ dds_APC <- DESeq(dds_APC)
 # Plot gene-wise dispersion estimates to check model fit
 plotDispEsts(dds_APC)
 ```
+
+<p align="center">
+<img src="../img/answer_key_dispersion_APC.png" width="600">
+</p>
 
 We do see an inverse relationship between mean and dispersion (line slopes downward from left to right). This indicates that our data is a good fit for the model.
 
