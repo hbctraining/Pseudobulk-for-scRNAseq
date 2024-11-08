@@ -164,25 +164,21 @@ Sox17                      .                     .
 Mrpl15                   135                  2037
 ```
 
-### Aggregating counts for multiple celltypes
+<details>
+	<summary><b><i>Click here for alternative code for aggregating counts for multiple celltypes</i></b></summary>
+	<br>Note that this code <b>uses a for loop</b>. This will first subset out cells by celltype and then aggregate, creating a list of pseudobulked Seurat objects. First, we create a vector of unique celltypes in our data so that we can iterate over each one of them. <br>
 
-One of the many advantages of using R is the ability to automate processes that we want to repeat multiple times. For example, if we wanted to pseudobulk on each celltype in the dataset, we can utilize a for loop to run the aggregation step on each group. 
-
-First, we create a vector of unique celltypes in our data so that we can iterate over each one of them.
-
-```r
+<pre>
 celltypes <- sort(unique(seurat@meta.data[["celltype"]]))
 celltypes
-```
 
-```
 [1] "Adipo"    "AP"       "EC"       "ECAP"     "Lymph"    "Pericyte" "Schwann" 
 [8] "VSM"      "VSM-AP"  
-```
+</pre> <br>
 
-Next, we want to store the aggregated, pseudobulked expression for each celltype as a list of Seurat objects. Therefore we are going to use the same steps we ran above with the `AggregateExpression()` function and adding the number of cells in each group as a metadata column. 
+Next, we want to store the aggregated, pseudobulked expression for each celltype as a list of Seurat objects. Therefore we are going to use the same steps we ran above with the `AggregateExpression()` function and adding the number of cells in each group as a metadata column. <br>
 
-```r
+<pre>
 pb_list <- list()
 for (ct in celltypes) {
   
@@ -209,10 +205,9 @@ for (ct in celltypes) {
   pb_list[[ct]] <- bulk_ct
   
 }
-```
-
-With this list of pseudobulked Seurat objects, we are able to run the following DESeq2 differential expression steps easily on every celltype as we have the aggregated counts handy.
-
+</pre><br>
+ </details>
+ 
 ## Differential gene expression with DESeq2
 
 **We will be using [DESeq2](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8) for the pseudobulk DE analysis, and the analysis steps with DESeq2 are shown in the flowchart below in green and blue**. DESeq2 first normalizes the count data to account for differences in library sizes and RNA composition between samples. Then, we will use the normalized counts to make some plots for QC at the gene and sample level. The final step is to use the appropriate functions from the DESeq2 package to perform the differential expression analysis. We will go into each of these steps briefly, but additional details and helpful suggestions regarding DESeq2 can be found in [our materials](https://hbctraining.github.io/DGE_workshop_salmon_online/schedule/links-to-lessons.html) detailing the workflow for bulk RNA-seq analysis, as well as in the [DESeq2 vignette](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html).
