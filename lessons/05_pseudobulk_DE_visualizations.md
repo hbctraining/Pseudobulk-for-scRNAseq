@@ -111,28 +111,6 @@ pheatmap(norm_sig,
 </p>
 
 
-#### Single-cell normalized counts heatmap
-
-TODO fix
-
-```r
-# df <- t(FetchData(seurat_vsm, sig_res$gene, assay="RNA", layer="data"))
-# anno <- FetchData(seurat_vsm, c("condition", "celltype"))
-
-# pheatmap(df, 
-#     color = heat_colors,
-#     cluster_cols = F,
-#     cluster_rows = T, 
-#     show_rownames = F,
-#     show_colnames = F,
-#     annotation = anno, 
-#     border_color = NA, 
-#     fontsize = 10, 
-#     scale = "row", 
-#     fontsize_row = 10, 
-#     height = 20)
-```
-
 ### Top 6 genes
 
 It is important to take a look at some of the top genes that show up. In particular, it is important to evaluate why these genes showed up in the pseudobulked results and contrast it against the gene expression levels at a single-cell level as well.

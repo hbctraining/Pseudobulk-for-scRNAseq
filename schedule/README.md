@@ -11,10 +11,10 @@
 
 | Time |  Topic  | Instructor |
 |:-----------:|:----------:|:--------:|
-| 09:30 - 09:45 | [Workshop introduction]() |  |
-| 09:45 - 10:30| [Project setup and data exploration ](../lessons/01_setup_intro_dataset.md) |
+| 09:30 - 09:45 | [Workshop introduction]() |  Noor |
+| 09:45 - 10:30| [Project setup and data exploration ](../lessons/01_setup_intro_dataset.md) | Noor |
 | 10:30 - 10:40 | Break |
-| 10:40 - 11:45 | [Differential expression analysis using `FindMarkers()`](../lessons/02_DEanalysis_using_FindMarkers.md) |  |
+| 10:40 - 11:45 | [Differential expression analysis using `FindMarkers()`](../lessons/02_DEanalysis_using_FindMarkers.md) | Meeta |
 | 11:45 - 12:00 | Overview of self-learning materials and homework submission | Meeta |
 
 
@@ -59,7 +59,7 @@ II. **Submit your work**:
 |:-----------:|:----------:|:--------:|
 | 09:30 - 10:15 | Self-learning lessons discussion | All |
 | 10:15 - 10:20|  Break |  |
-| 10:20 - 12:00 | [Visualization of differentially expressed genes](../lessons/05_pseudobulk_DE_visualizations.md) | |
+| 10:20 - 12:00 | [Visualization of differentially expressed genes](../lessons/05_pseudobulk_DE_visualizations.md) | Meeta |
 
 ### Before the next class:
 
@@ -97,10 +97,10 @@ II. **Submit your work**:
 | Time |  Topic  | Instructor |
 |:-----------:|:----------:|:--------:|
 | 09:30 - 10:15 | Self-learning lessons discussion | All |
-| 10:15 - 11:15| [Methods for Differental Abundance]()  |  |
+| 10:15 - 11:15| [Methods for Differental Abundance]()  | Noor  |
 | 11:15 - 11:20 | Break |
-| 11:25 - 12:00| Discussion and Q&A |  |
-| 11:45 - 12:00| [Wrap-up]() |  |
+| 11:25 - 12:00| Discussion and Q&A | All |
+| 11:45 - 12:00| [Wrap-up]() | Meeta |
 
 ***
 

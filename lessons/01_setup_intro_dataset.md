@@ -167,15 +167,25 @@ LabelClusters(p, id = "seurat_clusters",  fontface = "bold", size = 5, bg.colour
 
 Using these clusters and a variety of marker genes, the cells were annotated into 8 major non-immune cell types:
     
-1. Pdgfra+ adipose preogenitors
-2. Vascular endothelial
-3. Lymphatic endothelial
-4. Vascular smooth muscle cells
-5. Pericytes
-6. Adipocytes
-7. Myelinating Schwann cells
-8. Non-myelinating Schwann cells
-   
+1. Pdgfra+ adipose preogenitors (AP)
+2. Vascular endothelial (ECAP, EC)
+3. Lymphatic endothelial (Lymph)
+4. Vascular smooth muscle cells (VSM)
+5. Pericytes (Pericyte)
+6. Adipocytes (Adipo)
+7. Myelinating Schwann cells (Schwann)
+8. Non-myelinating Schwann cells (Schwann)
+
+Notable marker genes from the paper are represented here using the `FeaturePlot()` function.
+
+```r
+FeaturePlot(seurat, c("Pdgfra", "Acta2", "Cdh5", "Lyve1", "Ucp1", "Mpz"))
+```
+
+<p align="center">
+    <img src="../img/sample_info_marker_genes.png" width="600">
+</p>
+
 The mapping of cluster to celltypes is being represented here as an **alluvial plot**.
 
 ```r
@@ -235,4 +245,3 @@ Now that we have a better understanding of what data we have available to us, we
 ***
 
 *This lesson has been developed by members of the teaching team at the [Harvard Chan Bioinformatics Core (HBC)](http://bioinformatics.sph.harvard.edu/). These are open access materials distributed under the terms of the [Creative Commons Attribution license](https://creativecommons.org/licenses/by/4.0/) (CC BY 4.0), which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.*
-

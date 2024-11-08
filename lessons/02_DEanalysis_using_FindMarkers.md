@@ -286,6 +286,56 @@ When we looked at the extra explanations for the `FindMarkers()` function, there
 
 
 
+Here we show an example script of how to run MAST directly using the package. We recommend including the sample in the model to improve results by taking into account biological variability. Please note that this is a computationally intensive calculation and may take a long time to run.
+
+```r
+library(Seurat)
+library(dplyr)
+library(SingleCellExperiment)
+library(MAST)
+
+
+# Seurat to SingleCellExperiment
+DefaultAssay(seurat_vsm) <- "RNA"
+sce <- as.SingleCellExperiment(seurat_vsm)
+
+# Apply log transformation
+assay(sce, "logcounts") <- log2(counts(sce) + 1)
+
+# Create new sce object (with only 'logcounts' matrix)
+sce_1 <- SingleCellExperiment(assays = list(logcounts = assay(sce, "logcounts")))
+colData(sce_1) <- colData(sce)
+
+# Change to SingleCellAssay
+sca <- SceToSingleCellAssay(sce_1)
+
+# Calculate number of genes expressed per cell and scale the value
+cdr2 <- colSums(SummarizedExperiment::assay(sca) > 0)
+colData(sca)$cngeneson <- scale(cdr2)
+
+# Takes a long time to calculate!
+# Here our model includes:
+	# the number of genes epxressed (ngeneson)
+	# experimental condition (condition) 
+	# sample as a random variable ((1 | sample))
+zlmCond <- zlm(~condition + cngeneson + (1 | sample), 
+               sca, method="glmer", ebayes=FALSE)
+
+# Only test the condition coefficient.
+summaryCond <- summary(zlmCond, doLRT='conditionTN') 
+
+# Some data wranging of the results
+summaryDt <- summaryCond$datatable
+fcHurdle <- merge(summaryDt[contrast=='conditionTN' & component=='H',.(primerid, `Pr(>Chisq)`)], #hurdle P values
+                  summaryDt[contrast=='conditionTN' & component=='logFC', 
+                            .(primerid, coef, ci.hi, ci.lo)], by='primerid') #logFC coefficients
+
+fcHurdle[,fdr:=p.adjust(`Pr(>Chisq)`, 'fdr')]
+```
+
+* `DESeq2` : Identifies differentially expressed genes between two groups of cells based on a model using DESeq2 which uses a negative binomial distribution (Love et al, Genome Biology, 2014). This test does not support pre-filtering of genes based on average difference (or percent detection rate) between cell groups. However, genes may be pre-filtered based on their minimum detection rate (min.pct) across both cell groups.
+
+
 
 ***
 
