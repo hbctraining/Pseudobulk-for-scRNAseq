@@ -247,7 +247,7 @@ ggplot(bulk_vsm@meta.data, aes(x=sample, y=n_cells, fill=condition)) +
 
 ***
 
-**Excercise**
+**Exercise**
 
 Another cell type in this dataset that was particularly interesting to the authors were the **Pdgfr α+ APCs**.
 
@@ -289,7 +289,7 @@ Now that the DESeq2 object is created, we are ready to continue with our analysi
 
 ***
 
-**Excercise**
+**Exercise**
 
 1. Using the code below, create a DESeq2 object for the **Pdgfr α+ APCs** data. There is nothing to submit for this exercise, but please run the code as you will need `dds_APC` for future exercises.
 
