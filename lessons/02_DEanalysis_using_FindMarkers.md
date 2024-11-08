@@ -285,50 +285,50 @@ When we looked at the extra explanations for the `FindMarkers()` function, there
 > If you are interested in exploring code to run MAST on this dataset directly using the package, please see the script at the link below. We recommend including the sample in the model to improve results by taking into account biological variability. Please note that this is a **computationally intensive** calculation and may take **a long time to run**.
 > <details>
 >	<summary><b><i>Click here for code to plot the two barplots side-by-side</i></b></summary>
->	<br>Note that this R code below uses the <b>MAST library</b>. In order to run this you will need to first install the required packagea and then > load the libraries.<br>
+>	<br>Note that this R code below uses the <b>MAST library</b>. In order to run this you will need to first install the required packagea and then > load the libraries.</br>
 > <pre>
 > library(Seurat)
 > library(dplyr)
 > library(SingleCellExperiment)
 > library(MAST)
-> # Seurat to SingleCellExperiment
-DefaultAssay(seurat_vsm) <- "RNA"
-sce <- as.SingleCellExperiment(seurat_vsm)
-> # Apply log transformation
-> assay(sce, "logcounts") <- log2(counts(sce) + 1)
+> &#35; Seurat to SingleCellExperiment
+> DefaultAssay(seurat_vsm) &lt;- "RNA"
+> sce <- as.SingleCellExperiment(seurat_vsm)
+> &#35; Apply log transformation
+> assay(sce, "logcounts") &lt;- log2(counts(sce) + 1)
 >
-> # Create new sce object (with only 'logcounts' matrix)
-> sce_1 <- SingleCellExperiment(assays = list(logcounts = assay(sce, "logcounts")))
-> colData(sce_1) <- colData(sce)
+> &#35; Create new sce object (with only 'logcounts' matrix)
+> sce_1 &lt;- SingleCellExperiment(assays = list(logcounts = assay(sce, "logcounts")))
+> colData(sce_1) &lt;- colData(sce)
 > 
-> # Change to SingleCellAssay
+> &#35; Change to SingleCellAssay
 > sca <- SceToSingleCellAssay(sce_1)
 > 
-> # Calculate number of genes expressed per cell and scale the value
-> cdr2 <- colSums(SummarizedExperiment::assay(sca) > 0)
-> colData(sca)$cngeneson <- scale(cdr2)
+> &#35; Calculate number of genes expressed per cell and scale the value
+> cdr2 &lt;- colSums(SummarizedExperiment::assay(sca) &gt; 0)
+> colData(sca)$cngeneson &lt;- scale(cdr2)
 > 
-> # Takes a long time to calculate!
-> # Here our model includes:
+> &#35; Takes a long time to calculate!
+> &#35; Here our model includes:
 > 	# the number of genes epxressed (ngeneson)
 > 	# experimental condition (condition) 
 > 	# sample as a random variable ((1 | sample))
 > zlmCond <- zlm(~condition + cngeneson + (1 | sample), 
 >                sca, method="glmer", ebayes=FALSE)
 > 
-> # Only test the condition coefficient.
-> summaryCond <- summary(zlmCond, doLRT='conditionTN') 
+> &#35; Only test the condition coefficient.
+> summaryCond &lt;- summary(zlmCond, doLRT='conditionTN') 
 > 
-> # Some data wranging of the results
-> summaryDt <- summaryCond$datatable
-> fcHurdle <- merge(summaryDt[contrast=='conditionTN' & component=='H',.(primerid, `Pr(>Chisq)`)], #hurdle P values
+> &#35; Some data wranging of the results
+> summaryDt &lt;- summaryCond$datatable
+> fcHurdle &lt;- merge(summaryDt[contrast=='conditionTN' & component=='H',.(primerid, `Pr(>Chisq)`)], #hurdle P values
 >                  summaryDt[contrast=='conditionTN' & component=='logFC', 
 >                            .(primerid, coef, ci.hi, ci.lo)], by='primerid') #logFC coefficients
 >
 > fcHurdle[,fdr:=p.adjust(`Pr(>Chisq)`, 'fdr')]
 > 
 > </pre>
->  </details>
+> </details>
 
 
 
