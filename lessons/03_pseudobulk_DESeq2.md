@@ -245,6 +245,17 @@ ggplot(bulk_vsm@meta.data, aes(x=sample, y=n_cells, fill=condition)) +
   <img src="../img/pb_ncells_vsm.png" width="600">
 </p>
 
+***
+
+**Excercise**
+
+Another cell type in this dataset that was particularly interesting to the authors were the **Pdgfr α+ APCs**.
+
+1. Subset the `bulk` object to isolate only this cell type for the TN and cold7 conditions.
+2. Plot the cell number distribution across samples. How do the numbers compare to VSM cells?
+
+***
+
 Now we can create our DESeq2 object to prepare to run the DE analysis. We need to **include the counts, metadata, and design formula for our comparison of interest**. In the design formula we should also include any other columns in the metadata for which we want to regress out the variation (batch, sex, age, etc.). For this dataset, we only have our comparison of interest, which is stored as the `condition` in our metadata data frame.
 
 More information about the DESeq2 workflow and design formulas can be found in our [DESeq2 materials](https://hbctraining.github.io/DGE_workshop_salmon_online/lessons/04a_design_formulas.html).
