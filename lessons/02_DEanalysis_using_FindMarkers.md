@@ -291,6 +291,7 @@ When we looked at the extra explanations for the `FindMarkers()` function, there
 > library(dplyr)
 > library(SingleCellExperiment)
 > library(MAST)
+>
 > &#35; Seurat to SingleCellExperiment
 > DefaultAssay(seurat_vsm) &lt;- "RNA"
 > sce <- as.SingleCellExperiment(seurat_vsm)
@@ -310,9 +311,9 @@ When we looked at the extra explanations for the `FindMarkers()` function, there
 > 
 > &#35; Takes a long time to calculate!
 > &#35; Here our model includes:
-> <ul><li>The number of genes expressed (ngeneson)</li>
-> <li>experimental condition (condition)</li> 
-> <li>sample as a random variable ((1 | sample))</li></ul>
+>     &#35; The number of genes expressed (ngeneson)
+>     &#35; Experimental condition (condition)
+>     &#35; Sample as a random variable ((1 | sample))
 > zlmCond <- zlm(~condition + cngeneson + (1 | sample), 
 >                sca, method="glmer", ebayes=FALSE)
 > 
