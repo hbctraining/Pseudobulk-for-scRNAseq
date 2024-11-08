@@ -13,9 +13,12 @@ Approximate time: 40 minutes
 
 ## Pseudobulk differential expression analysis
 
-In the previous lesson we demonstrated how to perform a differential expression analysis using the `FindMarkers()` function in Seurat. The major limitation of this approach is that it treats each individual cell as a replicate, which inflates the p-value, resulting in many false positives. In this lesson we introduce you to the pseudobulk approach, in which cells belonging to a cluster are aggregated within each sample to create a gene by sample count matrix. This count matrix resembles the input we use for bulk RNA-seq, and we use a similar workflow to identify differentially expressed genes.
+In the previous lesson we demonstrated how to perform a differential expression analysis using the `FindMarkers()` function in Seurat. The major limitation of this approach is that it treats each individual cell as a replicate, which inflates the p-value, resulting in many false positives. In this lesson we introduce you to the pseudobulk approach, in which **cells belonging to a cluster are aggregated within each sample** to create a gene by sample count matrix. This count matrix resembles the input we use for bulk RNA-seq, and we use a similar workflow to identify differentially expressed genes.
 
-**CREATE A FIGURE TO DEMONSTRATE THE AGGREGATION**
+<p align="center">
+  <img src="../img/Pseudobulk_process.png" width="600">
+</p>
+
 
 Forming pseudobulk samples is important to perform accurate differential expression analysis. Cells from the same sample/individual are more similar to each other than to cells from another individual. This means treating each cell as an independent sample leads to underestimation of the variance and misleadingly small p-values. Working on the level of pseudobulk ensures reliable statistical tests because the samples correspond to the units of replication.
 
@@ -251,7 +254,7 @@ ggplot(bulk_vsm@meta.data, aes(x=sample, y=n_cells, fill=condition)) +
 
 Another cell type in this dataset that was particularly interesting to the authors were the **Pdgfr α+ adipose progentior cells (APCs)**.
 
-1. Subset the `bulk` object to isolate only adipose progenitor cells for the TN and cold7 conditions. Assign it to variable called `bulk_APC`. **Hint**: You may need to review `celltypes` to determine what this cell type is called in our data.
+1. Subset the `bulk` object to isolate only adipose progenitor cells for the TN and cold7 conditions. Assign it to variable called `bulk_APC`. _**Hint**: You may need to review `celltypes` to determine what this cell type is called in our data._
 2. Plot the cell number distribution across samples. How do the numbers compare to VSM cells?
 
 ***
