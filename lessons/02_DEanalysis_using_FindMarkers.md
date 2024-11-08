@@ -65,7 +65,7 @@ To use the function to look for a DE genes betwenn conditions, there are two thi
 1. Subset the Seurat object to our celltype of interest
 2. Set our active Idents to be the metadata column which specifies what condition each cell is
    
-In our example we are focusing on `VSM` cells. The comparison we will be making is `TN` vs. `cold7`.
+In our example we are focusing on vascular smooth muscle (`VSM`) cells. The comparison we will be making is `TN` vs. `cold7`.
 
 ```r
 # Subset the object
