@@ -310,9 +310,9 @@ When we looked at the extra explanations for the `FindMarkers()` function, there
 > 
 > &#35; Takes a long time to calculate!
 > &#35; Here our model includes:
-> 	# the number of genes epxressed (ngeneson)
-> 	# experimental condition (condition) 
-> 	# sample as a random variable ((1 | sample))
+> <ul><li>The number of genes expressed (ngeneson)</li>
+> <li>experimental condition (condition)</li> 
+> <li>sample as a random variable ((1 | sample))</li></ul>
 > zlmCond <- zlm(~condition + cngeneson + (1 | sample), 
 >                sca, method="glmer", ebayes=FALSE)
 > 
