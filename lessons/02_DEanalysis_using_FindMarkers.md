@@ -328,7 +328,6 @@ When we looked at the extra explanations for the `FindMarkers()` function, there
 >                            .(primerid, coef, ci.hi, ci.lo)], by='primerid') #logFC coefficients
 >
 > fcHurdle[,fdr:=p.adjust(`Pr(>Chisq)`, 'fdr')]
-> 
 > </pre>
 > </details>
 
