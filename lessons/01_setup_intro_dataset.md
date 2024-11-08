@@ -94,7 +94,11 @@ Next, let's open a new Rscript file, and start with some comments to indicate wh
 
 Save the Rscript as `metadata.R`. Your working directory should look something like this:
 
-**TODO: image of file explorer**
+A GIF demonstrating this step is shown below:
+
+<p align="center">
+<img src="../img/R_script_creation.gif" width="1000">
+</p>
 
 ### Loading libraries 
 
