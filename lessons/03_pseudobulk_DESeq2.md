@@ -251,7 +251,7 @@ ggplot(bulk_vsm@meta.data, aes(x=sample, y=n_cells, fill=condition)) +
 
 Another cell type in this dataset that was particularly interesting to the authors were the **Pdgfr α+ APCs**.
 
-1. Subset the `bulk` object to isolate only this cell type for the TN and cold7 conditions.
+1. Subset the `bulk` object to isolate only this cell type for the TN and cold7 conditions. Assign it to variable called `bulk_APC`.
 2. Plot the cell number distribution across samples. How do the numbers compare to VSM cells?
 
 ***
@@ -286,6 +286,26 @@ colData names(5): orig.ident celltype sample condition n_cells
 ```
 
 Now that the DESeq2 object is created, we are ready to continue with our analysis!
+
+***
+
+**Excercise**
+
+1. Using the code below, create a DESeq2 object for the **Pdgfr α+ APCs** data. There is nothing to submit for this exercise, but please run the code as you will need `dds_APC` for future exercises.
+
+```
+# Get count matrix
+APC_counts <- FetchData(bulk_APC, layer="counts", vars=rownames(bulk_APC))
+
+# Create DESeq2 object
+# transpose it to get genes as rows
+dds_APC <- DESeqDataSetFromMatrix(t(APC_counts),
+                                colData = bulk_APC@meta.data,
+                                design = ~ condition)
+
+dds
+```
+
 
 ***
 
