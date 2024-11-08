@@ -12,7 +12,7 @@ Approximate time: 40 minutes
 *  Discuss functional analysis using over-representation analysis, and functional class scoring
 *  Run clusterProfiler methods on significnat genes from pseudobulk DE analysis
 
-## Functional analysis of differentially expressed genes
+## Functional analysis of pseudobulk differentially expressed genes
 When it comes to functional analysis there are **various analyses** that can be done:
 
 - Determine whether there is enrichment of known biological functions, interactions, or pathways
@@ -112,30 +112,76 @@ write.csv(cluster_summaryUp, "results/clusterProfiler_VSM_TNvsCold7_upregulated.
 > **NOTE:** Instead of saving just the results summary from the `ego` object, it might also be beneficial to save the object itself. The `save()` function enables you to save it as a `.rda` file, e.g. `save(ego, file="results/ego.rda")`. The statistsics stored in the object can be used for downstream visualization.
         
 
+### Exploring results from over-representation analysis
 Let's take a look at what terms are identified as over-represented in the genes up-regulated in cold conditions.
 
 ```r
 View(cluster_summaryUp)
 ```
 
-In the first few columns we see the GO identfier and the term listed. In the 
+In the first few columns we see the GO identifier and the descriptive term name. In the next two columns that follow, we observe GeneRatio and BgRatio. These values allows us to compare the overlaps to the background.
+
+* **BgRatio:** M/N
+  * The total number of genes in the GO term gene set (_M_), divided by the total number of genes in universe (_N_)
+* **GeneRatio**: k/n
+  *  The total number of genes in our sig DE gene set which overlap with the GO term gene set (_k_), divided by the total number of genes in our sig DE gene set that overlap with the universe gene set (_n_)
+
+Other columns of interest are the **p.adjust** column (by which results are ordered by default), and the **geneID** column which lists the gene symbols of the overlapping genes.
+
 
 <p align="center">  
 <img src="../img/ego_up_clusterprofiler.png" width="600">
 </p>
 
-When cold induces a response in vascular smooth muscle cells (VSMCs), the primary transcriptional change observed is an upregulation of genes related to vasoconstriction (Vasoconstriction is what healthcare providers call it when the muscles around your blood vessels tighten to make the space inside smaller.), 
 
+When cold induces a response in vascular smooth muscle cells (VSMCs), the primary transcriptional change observed is an upregulation of genes related to vasoconstriction. Vasoconstriction is when the muscles around your blood vessels tighten to make the space inside smaller. In our results table we see **significant terms such as extracellular matrix organization, and cell proliferation** which makes sense because the cold temperatures will lead to a shift towards a more **contractile phenotype**. We also observe Uuregulation of genes involved in **cell adhesion and tight junction formation**,  which are processes related to **maintaining vascular integrity**.
 
-in cell proliferation, extracellular matrix organization, and the regulation of vascular tone, with cold temperatures generally leading to a shift towards a more contractile phenotype and increased expression of genes related to maintaining vascular integrity
+***
 
-Increased expression of genes encoding calcium handling proteins, enhancing vascular contractility. 
-Upregulation of genes involved in cell adhesion and tight junction formation, maintaining vascular integrity.
+**Exercise:**
 
-"In VSMs, extracellular matrix organization, angiogenesis, cell division, cell junction assembly, epithelial cell migration, and response to TGFB stimulus were significantly over-represented in the transcripts whose expression was upregulated by cold (Extended Data Figure 3a-b). In the transcripts downregulated in cold, regulation of RNA splicing, ribosome biogenesis, striated muscle development, and G1/S transition of cell cycle were significantly over-represented (Extended Data Figure 3c-d)."
+1. Using the code above as a template, run the over-reresentation analysis on the significantly down-regulated genes from the pseudobulk analysis.
+   * How many significant terms do you find?
+   * What are some of the prominent biological processes that are observed?
+  
+***
 
+### Visualizing over-representation analysis results
+`clusterProfiler` has a variety of options for viewing the over-represented GO terms. We will explore the dotplot and the enrichment plot in this lesson.
 
-"In VSMs, extracellular matrix organization, angiogenesis, cell division, cell junction assembly, epithelial cell migration, and response to TGFB stimulus were significantly over-represented in the transcripts whose expression was upregulated by cold (Extended Data Figure 3a-b). In the transcripts downregulated in cold, regulation of RNA splicing, ribosome biogenesis, striated muscle development, and G1/S transition of cell cycle were significantly over-represented (Extended Data Figure 3c-d)."
+The **dotplot** shows statistics associated with a user-selected top number of significant terms. The color of the dots represent the p-adjusted values for these terms, and size of the dots corresponds to the total count of sig DE genes annotated with the GO term (count). This plot displays the top 20 GO terms by gene ratio, not p-adjusted value.
+
+```r
+## Dotplot 
+dotplot(ego, showCategory=20)
+```
+
+**To save the figure,** click on the `Export` button in the RStudio `Plots` tab and `Save as PDF...`. In the pop-up window, change:
+- `Orientation:` to `Landscape`
+- `PDF size` to `8 x 14` to give a figure of appropriate size for the text labels
+
+<p align="center"> 
+<img src="../img/mov10oe_dotplot.png" width="800">
+</p> 
+  
+The next plot is the **enrichment GO plot**, which shows the relationship between the top 50 most significantly enriched GO terms (padj.), by grouping similar terms together. Before creating the plot, we will need to obtain the similarity between terms using the `pairwise_termsim()` function ([instructions for emapplot](https://rdrr.io/github/GuangchuangYu/enrichplot/man/emapplot.html)). In the enrichment plot, the color represents the p-values relative to the other displayed terms (brighter red is more significant), and the size of the terms represents the number of genes that are significant from our list.
+
+```r
+## Add similarity matrix to the termsim slot of enrichment result
+ego <- enrichplot::pairwise_termsim(ego)
+
+## Enrichmap clusters the 50 most significant (by padj) GO terms to visualize relationships between terms
+emapplot(ego, showCategory = 50)
+```
+
+**To save the figure,** click on the `Export` button in the RStudio `Plots` tab and `Save as PDF...`. In the pop-up window, change the `PDF size` to `12 x 14` to give a figure of appropriate size for the text labels.
+
+<p align="center"> 
+<img src="../img/emapplot_salmon.png" width="800">
+</p> 
+
+## Gene Set Enrichment Analysis (GSEA)
+
 
 
 
