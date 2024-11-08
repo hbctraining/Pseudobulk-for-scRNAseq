@@ -92,6 +92,16 @@ pheatmap(rld_cor, annotation_col=anno, annotation_row=anno)
 
 Since we detected no outliers by PCA or hierarchical clustering, nor do we have any additional sources of variation to regress, we can proceed with running the differential expression analysis.
 
+***
+
+**Exercise**
+
+1. Use the `dds_APC` object to compute the rlog transformed counts for the Pdgfr α+ APCs.
+2. Create a PCA plot for the Pdgfr α+ APCs, coloring points by condition. Do samples segregate by condition? Is there more or less variability within group than observed with the VSM cells?
+3. Evaluate the sample similarity using a correlation heatmap. How does this compare with the trends observed in the PCA plot?
+
+***
+
 ## Running DESeq2 
 Differential expression analysis with DESeq2 involves multiple steps as displayed in the flowchart below in blue. Briefly, DESeq2 will model the **raw counts**, using normalization factors (size factors) to account for differences in library depth. Then, it will estimate the gene-wise dispersions and shrink these estimates to generate more accurate estimates of dispersion to model the counts. Finally, DESeq2 will fit the negative binomial model and perform hypothesis testing using the Wald test or Likelihood Ratio test. All of these steps are explained in detail in our [additional materials](https://hbctraining.github.io/DGE_workshop_salmon_online/schedule/links-to-lessons.html#part-iii-deseq2).
 
@@ -154,6 +164,19 @@ plotDispEsts(dds)
 
 Based on the trends observed in this curve, we can say that there is a good fit of the model to the data.
 
+***
+
+**Excercise**
+
+1. Using the code below, **run DESeq2** for the **Pdgfr α+ APCs** data. Following that draw the dispersion plot. Based on this plot do you think there is a reasonable fit to the model?
+
+```
+# Run DESeq2 differential expression analysis for APC
+dds <- DESeq(dds_APC)
+```
+
+***
+
 ### Setting up contrasts
 
 Now we need to indicate which two sample classes we are interested in comparing, and we do this by specifying **contrasts**. The contrasts are used as input to the DESeq2 `results()` function to extract the desired results. 
@@ -192,8 +215,6 @@ Now let's take a look at **what information is stored** in the results:
 ```r
 res %>% head()
 ```
-
-**WHERE IS THE WALD TEST STAT? **
 
 ```
 log2 fold change (MLE): condition cold7 vs TN 
@@ -264,6 +285,15 @@ This is a great spot to store the results of the comparison:
 ```r
 write.csv(res, "results/VSM_cold7_vs_TN.csv")
 ```
+
+***
+
+**Exercise**
+
+1. **Generate results** for the **Pdgfr α+ APCs** and save it to a variable called `res_APC`. There is nothing to submit for this exercise, but please run the code as you will need `res_APC` for future exercises.
+
+
+
 
 ***
 
