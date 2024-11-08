@@ -82,9 +82,10 @@ sigUp_genes <- as.character(sigUp$gene)
 
 Finally, we can perform the GO enrichment analysis and save the results:
 
+
 ```r
 ## Run GO enrichment analysis 
-ego <- enrichGO(gene = sigUp_genes, 
+egoUp <- enrichGO(gene = sigUp_genes, 
                 universe = all_genes,
                 keyType = "SYMBOL",
                 OrgDb = org.Mm.eg.db, 
@@ -95,20 +96,43 @@ ego <- enrichGO(gene = sigUp_genes,
 ```
 
 
->**NOTE:** The different organisms with annotation databases available to use with for the `OrgDb` argument can be found [here](../img/orgdb_annotation_databases.png).
+>**Note 1:** The different organisms with annotation databases available to use with for the `OrgDb` argument can be found [here](../img/orgdb_annotation_databases.png).
 >
-> Also, the `keyType` argument may be coded as `keytype` in different versions of clusterProfiler.
+> **Note 2:** The `keyType` argument may be coded as `keytype` in different versions of clusterProfiler.
 >
-> Finally, the `ont` argument can accept either "BP" (Biological Process), "MF" (Molecular Function), and "CC" (Cellular Component) subontologies, or "ALL" for all three.
+> **Note 3:**  The `ont` argument can accept either "BP" (Biological Process), "MF" (Molecular Function), and "CC" (Cellular Component) subontologies, or "ALL" for all three.
 
 ```r
 ## Output results from GO analysis to a table
-cluster_summary <- data.frame(ego)
+cluster_summaryUp <- data.frame(egoUp)
 
-write.csv(cluster_summary, "results/clusterProfiler_VSM_TNv.csv")
+write.csv(cluster_summaryUp, "results/clusterProfiler_VSM_TNvsCold7_upregulated.csv")
 ```          
 
 > **NOTE:** Instead of saving just the results summary from the `ego` object, it might also be beneficial to save the object itself. The `save()` function enables you to save it as a `.rda` file, e.g. `save(ego, file="results/ego.rda")`. The statistsics stored in the object can be used for downstream visualization.
+        
+
+Let's take a look at what terms are identified as over-represented in the genes up-regulated in cold conditions.
+
+```r
+View(cluster_summaryUp)
+```
+
+In the first few columns we see the GO identfier and the term listed. In the 
+
+<p align="center">  
+<img src="../img/ego_up_clusterprofiler.png" width="600">
+</p>
+
+When cold induces a response in vascular smooth muscle cells (VSMCs), the primary transcriptional change observed is an upregulation of genes related to vasoconstriction (Vasoconstriction is what healthcare providers call it when the muscles around your blood vessels tighten to make the space inside smaller.), 
+
+
+in cell proliferation, extracellular matrix organization, and the regulation of vascular tone, with cold temperatures generally leading to a shift towards a more contractile phenotype and increased expression of genes related to maintaining vascular integrity
+
+Increased expression of genes encoding calcium handling proteins, enhancing vascular contractility. 
+Upregulation of genes involved in cell adhesion and tight junction formation, maintaining vascular integrity.
+
+"In VSMs, extracellular matrix organization, angiogenesis, cell division, cell junction assembly, epithelial cell migration, and response to TGFB stimulus were significantly over-represented in the transcripts whose expression was upregulated by cold (Extended Data Figure 3a-b). In the transcripts downregulated in cold, regulation of RNA splicing, ribosome biogenesis, striated muscle development, and G1/S transition of cell cycle were significantly over-represented (Extended Data Figure 3c-d)."
 
 
 "In VSMs, extracellular matrix organization, angiogenesis, cell division, cell junction assembly, epithelial cell migration, and response to TGFB stimulus were significantly over-represented in the transcripts whose expression was upregulated by cold (Extended Data Figure 3a-b). In the transcripts downregulated in cold, regulation of RNA splicing, ribosome biogenesis, striated muscle development, and G1/S transition of cell cycle were significantly over-represented (Extended Data Figure 3c-d)."
