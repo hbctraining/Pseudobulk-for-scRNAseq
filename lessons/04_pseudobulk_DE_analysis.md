@@ -166,7 +166,7 @@ Based on the trends observed in this curve, we can say that there is a good fit 
 
 ***
 
-**Excercise**
+**Exercise**
 
 1. Using the code below, **run DESeq2** for the **Pdgfr α+ APCs** data. Following that draw the dispersion plot. Based on this plot do you think there is a reasonable fit to the model?
 
@@ -271,7 +271,7 @@ DESeq2 uses the distribution of LFC estimates for all genes to generate a prior 
 Here, we use the apeglm method ([Zhu et al., 2018](https://doi.org/10.1093/bioinformatics/bty895)) for shrinkage estimator calculations. Alternative options for shrinkage estimation and the papers to cite if you use them are further described in the [DESeq2 vignette](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#altshrink).
 
 ```r
-# Shrink the log2 fold changes to be more appropriate using the apeglm method - should cite [paper]() when using this method
+# Shrink the log2 fold changes to be more appropriate using the apeglm method - should cite Zhu et al., 2018 (https://doi.org/10.1093/bioinformatics/bty895) when using this method
 res <- lfcShrink(dds, 
                 coef = "condition_cold7_vs_TN",
                 res=res,
