@@ -27,7 +27,7 @@ ggplot(bulk_APC@meta.data, aes(x = sample, y = n_cells, fill = condition)) +
 <img src="../img/answer_key_cell_counts_VSM_vs_APC.png" width="600">
 </p>
 
-> NOTE: The exercise only required you to plot one figure. Both VSM and APC Pdgfr α+ data areplotted here side-by-side for ease of comparison.
+> NOTE: The exercise only required you to plot one figure. Both VSM and APC Pdgfr α+ data are plotted here side-by-side for ease of comparison.
 
 <details>
 	<summary><b><i>Click here for code to plot the two barplots side-by-side</i></b></summary>
