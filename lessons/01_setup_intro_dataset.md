@@ -53,7 +53,9 @@ Once downloaded, you should see a file called `DGE_scRNA.zip` on your computer (
 3. Open up the folder. The contents will look like the screenshot below. 
 4. **Locate the `.Rproj file` and double-click on it.** This will open up RStudio with the "DGE_scRNA" project loaded. 
 
-TODO: image of file explorer or GIF
+<p align="center">
+<img src="../img/Download_R_project.gif" width="1000">
+</p>
 
 ## Project organization
 
