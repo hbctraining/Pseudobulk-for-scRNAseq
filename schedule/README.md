@@ -11,7 +11,7 @@
 
 | Time |  Topic  | Instructor |
 |:-----------:|:----------:|:--------:|
-| 09:30 - 09:45 | [Workshop introduction]() |  Noor |
+| 09:30 - 09:45 | [Workshop introduction](../lectures/workshop_intro_slides.pdf) |  Noor |
 | 09:45 - 10:30| [Project setup and data exploration ](../lessons/01_setup_intro_dataset.md) | Noor |
 | 10:30 - 10:40 | Break |
 | 10:40 - 11:45 | [Differential expression analysis using `FindMarkers()`](../lessons/02_DEanalysis_using_FindMarkers.md) | Meeta |
