@@ -44,7 +44,7 @@ I. Please **study the contents** and **work through all the code** within the fo
 
 II. **Submit your work**:
    * Each lesson above contains exercises; please go through each of them.
-   * **Submit your answers** to the exercises using [this Google form]() on **the day *before* the next class**.
+   * **Submit your answers** to the exercises using [this Google form](https://forms.gle/sZeXdaUwf4uwwMah7) on **the day *before* the next class**.
    
 
 
