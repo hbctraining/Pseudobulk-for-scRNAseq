@@ -1,5 +1,5 @@
 ---
-title: "Single-cell RNA-seq: Marker identification"
+title: "DE analysis using FindMarkers"
 author: "Noor Sohail, Mary Piper, Lorena Pantano, Meeta Mistry, Radhika Khetani, Jihe Liu"
 date: Wednesday, February 5th, 2020
 ---
