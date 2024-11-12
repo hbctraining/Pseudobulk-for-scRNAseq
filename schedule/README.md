@@ -57,23 +57,15 @@ II. **Submit your work**:
 
 | Time |  Topic  | Instructor |
 |:-----------:|:----------:|:--------:|
-| 09:30 - 10:15 | Self-learning lessons discussion | All |
-| 10:15 - 10:20|  Break |  |
-| 10:20 - 12:00 | [Visualization of differentially expressed genes](../lessons/05_pseudobulk_DE_visualizations.md) | Meeta |
+| 09:30 - 10:00 | Self-learning lessons discussion | All |
+| 10:00 - 10:40 | [Visualization of differentially expressed genes](../lessons/05_pseudobulk_DE_visualizations.md) | Meeta |
+| 10:40 - 10:50|  Break |  |
+| 10:50 - 12:00 | [Comparison of results from different DE approaches]() | Noor|
 
 ### Before the next class:
 
 I. Please **study the contents** and **work through all the code** within the following lessons:
-   1. [Comparison of results from different DE approaches](../lessons/06_DE_comparisons.md)
-      <details>
-       <summary><i>Click here for a preview of this lesson</i></summary>
-         <br> In this workshop we have covered different methds for finding differentially expressed genes in scRNA-seq data. A common question is how do these results comapre to one another? <br><br>In this lesson, we will:<br>
-             - Evaluate gene lists from each method <br>
-             - Describe benchmarking studies and how different tools perform <br>
-             - Identify biologically meaningful results<br><br>
-        </details>
-
-   2. [Functional Analysis](../lessons/07_functional_analysis_pseudobulk.md)
+   1. [Functional Analysis](../lessons/07_functional_analysis_pseudobulk.md)
       <details>
        <summary><i>Click here for a preview of this lesson</i></summary>
          <br>Now that we have significant genes, let's gain some biological insight <br><br>In this lesson, we will:<br>
@@ -105,6 +97,7 @@ II. **Submit your work**:
 ***
 
 ## Answer Keys
+* [Day 1 exercises](https://hbctraining.github.io/DGE_analysis_scRNAseq/homework/Day_1_answer_key.html) 
 
 
 
