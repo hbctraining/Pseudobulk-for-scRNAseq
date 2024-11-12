@@ -14,7 +14,7 @@ Approximate time: 75 minutes
 
 
 
-## Differential expression between conditions using `FindMarkers()`
+## Differential expression between conditions using FindMarkers()
 
 In our current UMAP, we have merged samples across the different conditions and used integration to align cells of the same celltype across samples. Now, what of we were interested in a particular celltype and **understanding how gene expression changes across the different conditions?**
 
@@ -58,7 +58,7 @@ library(tidyverse)
 library(EnhancedVolcano)
 ```
 
-## `FindMarkers()`
+## FindMarkers()
 
 To use the function to look for a DE genes betwenn conditions, there are two things we need to do:
 
