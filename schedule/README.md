@@ -49,7 +49,7 @@ II. **Submit your work**:
 
 
 ### Questions?
-* ***If you get stuck due to an error*** while runnning code in the lesson, [email us](mailto:hbctraining@hsph.harvard.edu) 
+* ***If you get stuck due to an error*** while running code in the lesson, [email us](mailto:hbctraining@hsph.harvard.edu) 
 
 ***
 
@@ -86,7 +86,7 @@ II. **Submit your work**:
    * **Submit your answers** to the exercises using [this Google form]() on **the day *before* the next class**.
 
 ### Questions?
-* ***If you get stuck due to an error*** while runnning code in the lesson, [email us](mailto:hbctraining@hsph.harvard.edu) 
+* ***If you get stuck due to an error*** while running code in the lesson, [email us](mailto:hbctraining@hsph.harvard.edu) 
 
 
 ***
