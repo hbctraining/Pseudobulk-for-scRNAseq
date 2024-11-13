@@ -190,7 +190,7 @@ While over-representation analysis is helpful and commonly used, it does require
 A commonly used example of an FCS method is GSEA [(Subramanium A. et al, 2005)](https://www.pnas.org/doi/10.1073/pnas.0506580102). Gene set enrichment analysis utilizes the gene-level statistics or log2 fold changes for all genes to look to see whether gene sets for particular biological pathways (i.e. derived from KEGG pathways, Gene Ontology terms, MSigDB etc) are enriched among the large positive or negative fold changes.
 
 <p align="center"> 
-<img src="../img/gsea_overview.png" width="600">
+<img src="../img/gsea_overview.png" width="500">
 </p>
 
 _Image source: [(Subramanium A. et al, 2005)](https://www.pnas.org/doi/10.1073/pnas.0506580102)_
@@ -208,43 +208,104 @@ This image describes the theory of GSEA, with the 'gene set S' showing the metri
 4. Adjust for **multiple hypothesis testing**
    * Enrichment scores are normalized for the size of each gene set and a false discovery rate is calculated to prevent false positives
 
-### Setting up for GSEA
+### Running GSEA with MSigDB gene sets
 
 The clusterProfiler package offers several functions to perform GSEA using different genes sets, including but not limited to GO, KEGG, and MSigDb. We will use the MSigDb gene sets in our example below. The Molecular Signatures Database (also known as [MSigDB](https://www.gsea-msigdb.org/gsea/msigdb/mouse/collections.jsp)) is a collection of annotated gene sets. It contains 8 major collections for mouse, and for our analysis we will use C5 which contains the Gene Ontology gene sets. We can see how this aligns with our ORA result.
 
-First 
-
-
-
-The KEGG gene sets are defined using the Entrez identifiers, thus to perform the analysis we will need to acquire the corresponding Entrez IDs for our genes. We will also need to remove any genes that do not have an Entrez ID (NA values) and any duplicates (due to gene ID conversion) that may exist:
+To run GSEA with the MSigDb gene sets, we will use the `msigdbr` R package which provides the MSigDB gene sets in tidy data format that can be used directly with clusterProfiler. The msigdbr package **supports several species**:
 
 ```r
-## Remove any NA values (reduces the data by quite a bit)
-res_entrez <- dplyr::filter(res_ids, entrezid != "NA")
-
-## Remove any Entrez duplicates
-res_entrez <- res_entrez[which(duplicated(res_entrez$entrezid) == F), ]
+msigdbr_show_species()
 ```
 
-GSEA will use the log2 fold changes obtained from the differential expression analysis for every gene, to perform the analysis. We will obtain a vector of fold changes for input to clusterProfiler, in addition to the associated Entrez IDs:
+And you can see **what gene sets are available**:
+
+```r
+msigdbr_collections()
+```
+
+For our analysis, we will select the mouse C5 collection which corresponds to GO gene sets. From the table, we only need two columns: Gene set name and the Gene symbol:
+
+```r
+# Use a specific collection; C5 GO signatures
+m_t2g <- msigdbr(species = "Mus musculus", category = "C5") %>%
+  dplyr::select(gs_name, gene_symbol)
+```
+
+Now that we have our gene sets, we need to prepare the fold changes. GSEA will use the log2 fold changes obtained from the differential expression analysis for every gene, to perform the analysis. We need to create an ordered and named vector for input to clusterProfiler:
 
 ```r
 ## Extract the foldchanges
-foldchanges <- res_entrez$log2FoldChange
+foldchanges <- res_tbl_noNAs$log2FoldChange
 
-## Name each fold change with the corresponding Entrez ID
-names(foldchanges) <- res_entrez$entrezid
-```
+## Name each fold change with the corresponding gene symbol
+names(foldchanges) <- res_tbl_noNAs$gene
 
-Next we need to order the fold changes in decreasing order. To do this we'll use the `sort()` function, which takes a vector as input. This is in contrast to Tidyverse's `arrange()`, which requires a data frame.
-
-```r
 ## Sort fold changes in decreasing order
 foldchanges <- sort(foldchanges, decreasing = TRUE)
 
 head(foldchanges)
 ```
 
+Now we are ready to run GSEA!
+
+```r
+# Run GSEA
+msig_GSEA <- GSEA(foldchanges, TERM2GENE = m_t2g, verbose = FALSE)
+
+## Extract the GSEA results
+msigGSEA_results <- msig_GSEA@result
+
+# Write results to file
+write.csv(msigGSEA_results, "results/gsea_msigdb_GO_genesets.csv", quote=F)
+
+```
+
+> **NOTE:** The permutations are performed using random reordering, so every time we run the function we will get slightly different results. If we would like to use the same permutations every time we run a function, then we use the `set.seed()` function prior to running. The input to set.seed() can be any number.
+
+Take a look at the results table and reorder by NES (normalized enrichment score). **What terms do you see positively enriched? Does this overlap with what we observed from ORA analysis?**
+
+```r
+
+## Write GSEA results to file
+View(msigGSEA_results)
+```
+
+<p align="center"> 
+<img src="../img/msigdb_results.png" width="800">
+</p>
+
+
+* The first few columns of the results table identify the gene set information
+* The following columns include the associated statistics
+* The last column will report which genes are part of the 'core enrichment'. These are the genes associated with the pathway which contributed to the observed enrichment score (i.e. in the extremes of the ranking).
+
+### GSEA visualization
+Let's explore the GSEA plot of enrichment of one of the pathways in the ranked list using a built-in function from clusterProfiler. We can pick the top term "GOMF_EXTRACELLULAR_MATRIX_STRUCTURAL_CONSTITUENT":
+
+```r
+## Plot the GSEA plot for a single enriched GO term
+gseaplot(msig_GSEA, geneSetID = 'GOMF_EXTRACELLULAR_MATRIX_STRUCTURAL_CONSTITUENT')
+```
+
+<p align="center"> 
+<img src="../img/gseaplot_msigdb.png" width="500">
+</p>
+
+In this plot, the lines in plot represent the genes in the gene set 'GOMF_EXTRACELLULAR_MATRIX_STRUCTURAL_CONSTITUENT', and where they occur among the log2 fold changes. The largest positive log2 fold changes are on the left-hand side of the plot, while the largest negative log2 fold changes are on the right. The top plot shows the magnitude of the log2 fold changes for each gene, while the bottom plot shows the running sum, with the enrichment score peaking at the red dotted line (which is among the positive log2 fold changes). This suggests the up-regulation of this function.
+
+
+## Resources for functional analysis
+In this lesson we reviewed two different approaches for functional analysis and demonstrated the with the use of the clusterProfiler package. Note, that there are numerous other options out there, including the use of web-based tools. Below we list a few tools that we are familiar with:
+
+* g:Profiler - http://biit.cs.ut.ee/gprofiler/index.cgi 
+* DAVID - https://david.ncifcrf.gov
+* clusterProfiler - http://bioconductor.org/packages/release/bioc/html/clusterProfiler.html
+* ReviGO (visualizing GO analysis, input is GO terms) - http://revigo.irb.hr/ 
+* WGCNA - [https://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/](https://web.archive.org/web/20230323144343/horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/) (no longer maintained)
+* GSEA - http://software.broadinstitute.org/gsea/index.jsp
+* SPIA - https://www.bioconductor.org/packages/release/bioc/html/SPIA.html
+* GAGE/Pathview - http://www.bioconductor.org/packages/release/bioc/html/gage.html
 
 ***
 
