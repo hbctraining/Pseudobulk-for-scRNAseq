@@ -6,7 +6,7 @@ Approximate time: 40 minutes
 
 * Compare and contrast results from `DESeq2` and `FindMarkers`
 * Evaluate what is causing differences in results
-* Understand the effect of expression and percent cells express a gene have on the results
+* Understand the effect of how many cells express a gene has on DGE results
 
 ## Overarching trends in DGE methods
 
@@ -27,11 +27,11 @@ When running your own DGE analysis, there are several important questions to ask
 
 **Exercise**
 
-Based on the data we have looked at so far, what do you think are the answers to the above questions?
+Based on the data we have looked at so far, what do you think are the answers to the above questions for our VSM cells?
 
 ***
 
-Another imporant aspect to consider is the amount of computational resources it takes to calculate the differential genes. The amount of time and cores necessary for an analysis will scale with the size of your dataset (number of cells and samples), but are important to factor when selecting the method you move forward with.
+Another imporant aspect to consider is the amount of computational resources it takes to calculate the differential genes. The amount of time and computer cores necessary for an analysis will scale with the size of your dataset (number of cells and samples), but are important to factor when selecting the method you move forward with.
 
 
 <p align="center">
@@ -40,7 +40,7 @@ Another imporant aspect to consider is the amount of computational resources it 
 
 Image credit: [Nguyen et al, Nat Communnications: Fig 7c](https://www.nature.com/articles/s41467-023-37126-3#Abs1)
 
-Now, let us assess the compare and contrast the results from `DESeq2` and `FindMarkers` to see the practical implications of this information.
+Now, let us compare and contrast the results from `DESeq2` and `FindMarkers` to see the practical implications of the questions we answered above.
 
 
 ## Comparing DGE results
@@ -63,6 +63,7 @@ library(tidyverse)
 # install.packages("ggvenn")
 library("ggvenn")
 library(pheatmap)
+library(cowplot)
 ```
 
 ### Load previous results
@@ -74,7 +75,7 @@ dge_fm <- read.csv("results/findmarkers_vsm.csv")
 dge_deseq2 <- read.csv("results/DESeq2_vsm.csv")
 ```
 
-Next, let's merge together the results into one dataframe to more easily make comparisons. Here, we will also change the column names to clearly define which results come from which method. Lastly, we will create a column called `sig` that identified if a gene was significant (adjusted p-values < 0.05) in FindMarkers, DESeq2, both, or No Significant. 
+Next, we will merge together the results into one dataframe to more easily make comparisons. Here, we will also change the column names to clearly define which results come from which method. Lastly, we will create a column called `sig` that identified if a gene was significant (adjusted p-values < 0.05) to categorize each row as: FindMarkers, DESeq2, both, or Not Significant. 
 
 ```r
 # Merge FindMarkers and DESeq2 results together
@@ -153,14 +154,15 @@ ggplot(dge, aes(x=sig, fill=sig)) +
 
 ### Conservative approach
 
-If we were to go with the most conservative approach for this DGE, we could make use of the significant genes found in common between both methods and continue any follow-up analysis with those results. We are additionally sorting based upon the log2 fold-change to clearly see the most differential genes.
+If we were to go with the most conservative approach for this DGE, we could make use of the significant genes found in common between both methods and continue any follow-up analysis with those results. 
 
 ```r
 # Conservative genes
-dge_both <- dge %>% 
-              subset(sig == "both") %>%
-              mutate(avg_lfc = (log2FC_deseq2 + log2FC_fm) / 2) %>%
-              arrange(avg_lfc)
+# Sort on log2 fold-change to see the most differential genes
+dge_both <- dge %>%
+  subset(sig == "both") %>%
+  arrange(desc(abs(log2FC_deseq2)),
+          desc(abs(log2FC_fm)))
 
 dge_both %>% head()
 ```
@@ -175,10 +177,10 @@ dge_both %>% head()
 6        Igfbp2  4.642158 0.036 0.004 3.346486e-18      5.035339 1.163515e-15 both
 ```
 
-We can clearly see that the highest log2-fold change come from genes that are present in one condition but not the other. 
+We can clearly see that the highest log2-fold change come from genes that are present in one condition but not the other based upon the percentage columns. 
 
 
-We can then visualize the expression values of the top genes at both the pseudobulk normalized and single-cell log-normalized level for our data. As this is something we are going to multiple times, we can create a custom function to quickly plot these expression values.
+To visualize these results, we can pot the normalized expression of the top genes at both the pseudobulk and single-cell level for our data. As this is something we are going to do multiple times, we should create a custom function to quickly generate these plots.
 
 ```r
 # # Create DESeq2 object
@@ -251,14 +253,13 @@ plot_genes(seurat_vsm, dds, genes)
   <img src="../img/DE_conservative_genes.png" width="800">
 </p>
 
-As expected, given that we are looking at the more conservative approach, we see good concordence in expression values across both normalization techniques.
+As expected, given that we are looking at the more conservative approach, we see good concordence in expression values across both DESeq2 and wilcox results.
 
 ## Contrasting results
 
-With all of this information, we can begin comparing the p-values and average log2-fold changes from each method. To start, we will first remove the genes that are not significant in either method to more clearly see the differences.
+While we could have stopped with a more conservative approach, let us try to understand why these differences in results exist at all. 
 
-For a more conservative approach, we could continue our downstream analysis by using just the conserved significant genes for both conditions. For now though, let us try to understand why these differences in results exist at all. 
-
+To start, we can begin comparing the p-values and average log2-fold changes. First, we will remove the genes that are not significant in either method to more clearly see the differences.
 
 ```r
 # Remove non-significant genes
@@ -291,9 +292,7 @@ ggplot(dge_sig, aes(x=log2FC_deseq2, y=log2FC_fm, color=sig)) +
 </p>
 
 
-Next we might ask ourselves, what could be the cause of the differences in the results? If we think back to how we generated the pseudobulk results we can consider how the number of cells could effect the final results. 
-
-Therefore, an important metric to consider is the number or percentage of cells that express the genes we are looking at. We have the columns `pct.1` and `pct.2` which represent the proportion of cells in our dataset that belong to `TN` and `cold7` respectively. So let us consider the data with this additional metric in mind.
+Next we might ask ourselves, what could be the cause of the differences in the results? If we think back to how we generated the pseudobulk results we should consider how the number of cells could effect the final results. The number of cells we aggregate on likely has a strong sway on the overall expression values for the DESeq2 results. Therefore, an important metric to consider is the number/percentage of cells that express the genes we are looking at. We have the columns `pct.1` and `pct.2` which represent the proportion of cells in our dataset that belong to `TN` and `cold7` respectively. So let us consider the data with this additional metric in mind.
 
 
 ```r
@@ -329,10 +328,8 @@ ggplot(dge) +
   theme_bw() + coord_flip()  
 ```
 
-
 Here we can see a pattern where `FindMakers()` finds more differential genes that have a larger difference in the proportion of cells. However, the analagous question can then be asked about what happens at different levels of expression? 
 
-### DESeq2 normalized expression 
 
 Since we can easily make a heatmap of expression values using the pseubulked normalized expressions, let us see if we can find any global patterns among the genes.
 
