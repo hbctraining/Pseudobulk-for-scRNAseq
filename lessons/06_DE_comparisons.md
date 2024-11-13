@@ -6,7 +6,7 @@ Approximate time: 40 minutes
 
 * Compare and contrast results from `DESeq2` and `FindMarkers`
 * Evaluate what is causing differences in results
-* Understand the effect of how many cells express a gene has on DGE results
+* Understand the effect of the number of cells expressing a gene on DGE results
 
 ## Overarching trends in DGE methods
 
@@ -19,7 +19,7 @@ The different DGE methods can broadly be classified into the following categorie
 When running your own DGE analysis, there are several important questions to ask when selecting the appropriate method. Some important considerations:
 
 1. Do you have enough cells to aggregate and do a pseudobulk analysis on?
-2. Are there smaller cell states among the celltype that would be lost after pseudobulking and averaging expression?
+2. Are there smaller cell states within a celltype that would be lost after pseudobulking and averaging expression?
 3. Is there a latent variable that should be included in a design model?
 4. Are there biological replicates that could be used to account for the variability in the data?
 
@@ -61,7 +61,7 @@ Next we will load the necessary libraries as well.
 library(Seurat)
 library(tidyverse)
 # install.packages("ggvenn")
-library("ggvenn")
+library(ggvenn)
 library(pheatmap)
 library(cowplot)
 ```
