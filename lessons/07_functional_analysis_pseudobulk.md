@@ -294,6 +294,22 @@ gseaplot(msig_GSEA, geneSetID = 'GOMF_EXTRACELLULAR_MATRIX_STRUCTURAL_CONSTITUEN
 
 In this plot, the lines in plot represent the genes in the gene set 'GOMF_EXTRACELLULAR_MATRIX_STRUCTURAL_CONSTITUENT', and where they occur among the log2 fold changes. The largest positive log2 fold changes are on the left-hand side of the plot, while the largest negative log2 fold changes are on the right. The top plot shows the magnitude of the log2 fold changes for each gene, while the bottom plot shows the running sum, with the enrichment score peaking at the red dotted line (which is among the positive log2 fold changes). This suggests the up-regulation of this function.
 
+***
+
+**Exercise**
+Now that we have run through functional analysis with the results from Pseudobulk DE, let's see what results we derive from the DGE lits from our [FindMarkers DE analysis](02_DEanalysis_using_FindMarkers.md).
+
+1. Create a signifincat DE genes data frame with an added fold change criteria to reduce the gene list size. You can do this by running the code below:
+
+```r
+sig_fc_dge <- dge_vsm %>% dplyr::filter(p_val_adj < 0.05,  abs(avg_log2FC) > 1)
+```
+
+2. Use this gene list to run over-representation analysis. Be sure to separate genes into up- and down-regulated first. **What are the top terms enriched among up-regulated genes? What are the top terms enriched among up-regulated genes?**
+
+3. **How do these results compare** with what we observed from the Psedubulk DE functional analysis?
+
+***
 
 ## Resources for functional analysis
 In this lesson we reviewed two different approaches for functional analysis and demonstrated the with the use of the clusterProfiler package. Note, that there are numerous other options out there, including the use of web-based tools. Below we list a few tools that we are familiar with:
