@@ -19,7 +19,7 @@ Visualization is a key step for understanding the results of our analysis. In pa
 
 ### Identify significant genes
 
-Now that we have a table of genes with their associated p-values and log-fold-change scores, we need to filter the results. In particular, we are are only interest in significant differential genes that pass a p-adjusted threshold of 0.05.
+Now that we have a table of genes with their associated p-values and log-fold-change scores, we need to filter the results. In particular, we are are only interested in significantly differentially expressed genes that pass an adjusted p-value threshold of 0.05.
 
 ```r
 # Set thresholds
@@ -82,22 +82,21 @@ Using the `pheatmap()` function, we can also cluster samples and genes together 
 
 ```r
 # Extract normalized expression for significant genes from the samples
-normalized_counts <- counts(dds, normalized=T) %>% as.data.frame()
+normalized_counts <- counts(dds, normalized=TRUE) %>% as.data.frame()
 norm_sig <- normalized_counts %>% 
               dplyr::filter(row.names(normalized_counts) %in% sig_res$gene)
 
 # Set a color palette
 heat_colors <- brewer.pal(6, "YlOrRd")
 
+# Run pheatmap using the metadata data frame for the annotation
 anno <- colData(dds) %>% 
             as.data.frame() %>% 
             select(condition, celltype)
-
-# Run pheatmap using the metadata data frame for the annotation
 pheatmap(norm_sig,
     color = heat_colors,
-    cluster_rows = T,
-    show_rownames = F,
+    cluster_rows = TRUE,
+    show_rownames = FALSE,
     annotation = anno,
     border_color = NA,
     fontsize = 10,
