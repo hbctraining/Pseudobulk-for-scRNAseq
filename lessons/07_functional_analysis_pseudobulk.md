@@ -297,6 +297,7 @@ In this plot, the lines in plot represent the genes in the gene set 'GOMF_EXTRAC
 ***
 
 **Exercise**
+
 Now that we have run through functional analysis with the results from Pseudobulk DE, let's see what results we derive from the DGE lits from our [FindMarkers DE analysis](02_DEanalysis_using_FindMarkers.md).
 
 1. Create a signifincat DE genes data frame with an added fold change criteria to reduce the gene list size. You can do this by running the code below:
