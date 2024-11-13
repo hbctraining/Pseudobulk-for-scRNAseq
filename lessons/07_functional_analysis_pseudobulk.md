@@ -1,6 +1,6 @@
 ---
-title: "Single-cell RNA-seq: Pseudobulk visualization"
-author: "Noor Sohail, Mary Piper, Lorena Pantano, Amélie Julé, Meeta Mistry, Radhika Khetani"
+title: "Functional analysis of pseudobulk DE"
+author: "Mary Piper, Meeta Mistry, Radhika Khetani"
 date: Monday, September 12 2024
 ---
 
