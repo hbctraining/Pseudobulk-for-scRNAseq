@@ -274,9 +274,8 @@ write.csv(msigGSEA_results, "results/gsea_msigdb_GO_genesets.csv", quote=F)
 Take a look at the results table and reorder by NES (normalized enrichment score). **What terms do you see positively enriched? Does this overlap with what we observed from ORA analysis?**
 
 ```r
-
-# Write GSEA results to file
-View(msigGSEA_results)
+# Look at results ordered by NES
+msigGSEA_results %>% arrange(-NES) %>% View()
 ```
 
 <p align="center"> 
@@ -312,12 +311,12 @@ Now that we have run through functional analysis with the results from Pseudobul
 1. Create a significant DE genes data frame with an added fold change criteria to reduce the gene list size. You can do this by running the code below:
 
 ```r
-sig_fc_dge <- dge_vsm %>% dplyr::filter(p_val_adj < 0.05,  abs(avg_log2FC) > 1)
+sig_fc_dge <- dge_vsm %>% dplyr::filter(p_val_adj < 0.05, abs(avg_log2FC) > 1)
 ```
 
 2. Use this gene list to run over-representation analysis. Be sure to separate genes into up- and down-regulated first. What are the top terms enriched among up-regulated genes? What are the top terms enriched among down-regulated genes?
 
-3. How do these results compare with what we observed from the Psedubulk DE functional analysis?
+3. How do these results compare with what we observed from the Pseudobulk DE functional analysis?
 
 ***
 
