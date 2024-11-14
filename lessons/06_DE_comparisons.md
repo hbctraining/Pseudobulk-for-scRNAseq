@@ -211,8 +211,7 @@ plot_genes <- function(seurat, dds, genes) {
   for (gene in genes) {
     
     # single-cell violin plot
-    p1 <- VlnPlot(seurat, gene, pt.size = 0)
-    
+    p1 <- VlnPlot(seurat, gene, pt.size = 0, idents = c("TN", "cold7"))
   
     # pseudobulk scatterpot
     # Save plotcounts to a data frame object
