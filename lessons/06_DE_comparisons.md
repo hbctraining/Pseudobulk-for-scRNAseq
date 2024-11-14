@@ -301,13 +301,13 @@ Next we might ask ourselves, what could be the cause of the differences in the r
 pct_1 <- ggplot(dge_sig %>% arrange(pct.1), 
                 aes(x=log2FC_deseq2, y=log2FC_fm, color=pct.1)) +
           geom_point() +
-          labs(x="DESeq2 LFC", y="FindMarkers LFC", title="Average Log2-fold Change") +
+          labs(x="DESeq2 LFC", y="FindMarkers LFC", title="Percentage TN") +
           theme_classic()
 
 pct_2 <- ggplot(dge_sig %>% arrange(pct.2), 
                 aes(x=log2FC_deseq2, y=log2FC_fm, color=pct.2)) +
   geom_point() +
-  labs(x="DESeq2 LFC", y="FindMarkers LFC", title="Average Log2-fold Change") +
+  labs(x="DESeq2 LFC", y="FindMarkers LFC", title="Percentage cold7") +
   theme_classic()
 
 pct_1 + pct_2
