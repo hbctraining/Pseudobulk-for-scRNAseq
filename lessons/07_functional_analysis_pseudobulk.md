@@ -193,9 +193,9 @@ emapplot(ego, showCategory = 50)
 </p> 
 
 ## Gene Set Enrichment Analysis (GSEA)
-While over-representation analysis is helpful and commonly used, it does require you to subset your gene list using an arbitrary threshold. There could very well be many genes that very narrowly miss this threshold and are therefore not considered in the functional analysis. To get around this there are there are **functional class scoring (FCS) methods** which can be helpful. For these methods the hypothesis is that **although large changes in individual genes can have significant effects on pathways (and will be detected via ORA methods), weaker but coordinated changes in sets of functionally related genes (i.e., pathways) can also have significant effects**. Thus, rather than setting a threshold to identify 'significant genes', all genes are considered in the analysis. The gene-level statistics from the dataset are aggregated to generate a single pathway-level statistic and statistical significance of each pathway is reported. This type of analysis can be particularly helpful if the differential expression analysis only outputs a small list of significant DE genes.
+While over-representation analysis is helpful and commonly used, it does require you to subset your gene list using an arbitrary threshold. There could very well be many genes that very narrowly miss this threshold and are therefore not considered in the functional analysis. To get around this there are there are **functional class scoring (FCS) methods** that can be helpful. For these methods the hypothesis is that **although large changes in individual genes can have significant effects on pathways (and will be detected via ORA methods), weaker but coordinated changes in sets of functionally related genes (i.e., pathways) can also have significant effects**. Thus, rather than setting a threshold to identify 'significant genes', all genes are considered in the analysis. The gene-level statistics from the dataset are aggregated to generate a single pathway-level statistic and statistical significance of each pathway is reported. This type of analysis can be particularly helpful if the differential expression analysis only outputs a small list of significant DE genes.
 
-A commonly used example of an FCS method is GSEA [(Subramanium A. et al, 2005)](https://www.pnas.org/doi/10.1073/pnas.0506580102). Gene set enrichment analysis utilizes the gene-level statistics or log2 fold changes for all genes to look to see whether gene sets for particular biological pathways (i.e. derived from KEGG pathways, Gene Ontology terms, MSigDB etc) are enriched among the large positive or negative fold changes.
+A commonly used example of an FCS method is GSEA [(Subramanium A. et al, 2005)](https://www.pnas.org/doi/10.1073/pnas.0506580102). Gene set enrichment analysis utilizes the gene-level statistics or log2 fold changes for all genes to look to see whether gene sets for particular biological pathways (e.g., derived from KEGG pathways, Gene Ontology terms, MSigDB, etc) are enriched among the large positive or negative fold changes.
 
 <p align="center"> 
 <img src="../img/gsea_overview.png" width="500">
@@ -210,15 +210,15 @@ This image describes the theory of GSEA, with the 'gene set S' showing the metri
 2. **Calculate enrichment scores for each gene set**
    * This score reflects how often genes in the set appear at the top or bottom of the ranked list.
    * The score is calculated by walking down the list of log2 fold changes and increasing the running-sum statistic every time a gene in the gene set is encountered and decreasing it when genes are not part of the gene set.
-   * Increase/decrease is determined by magnitude of fold change 
+   * Increase/decrease is determined by magnitude of fold change.
 3. **Estimate statistical significance**
    *  A permutation test is used to calculate a null distribution for the enrichment score. This produces a p-value that represents the probability of observing a given enrichment score. 
 4. Adjust for **multiple hypothesis testing**
-   * Enrichment scores are normalized for the size of each gene set and a false discovery rate is calculated to prevent false positives
+   * Enrichment scores are normalized for the size of each gene set and a false discovery rate is calculated to prevent false positives.
 
 ### Running GSEA with MSigDB gene sets
 
-The clusterProfiler package offers several functions to perform GSEA using different genes sets, including but not limited to GO, KEGG, and MSigDb. We will use the MSigDb gene sets in our example below. The Molecular Signatures Database (also known as [MSigDB](https://www.gsea-msigdb.org/gsea/msigdb/mouse/collections.jsp)) is a collection of annotated gene sets. It contains 8 major collections for mouse, and for our analysis we will use C5 which contains the Gene Ontology gene sets. We can see how this aligns with our ORA result.
+The `clusterProfiler` package offers several functions to perform GSEA using different genes sets, including but not limited to GO, KEGG, and MSigDb. We will use the MSigDb gene sets in our example below. The Molecular Signatures Database (also known as [MSigDB](https://www.gsea-msigdb.org/gsea/msigdb/mouse/collections.jsp)) is a collection of annotated gene sets. It contains 8 major collections for mouse, and for our analysis we will use C5, which contains the Gene Ontology gene sets. We can see how this aligns with our ORA result.
 
 To run GSEA with the MSigDb gene sets, we will use the `msigdbr` R package which provides the MSigDB gene sets in tidy data format that can be used directly with clusterProfiler. The msigdbr package **supports several species**:
 
@@ -232,7 +232,7 @@ And you can see **what gene sets are available**:
 msigdbr_collections()
 ```
 
-For our analysis, we will select the mouse C5 collection which corresponds to GO gene sets. From the table, we only need two columns: Gene set name and the Gene symbol:
+For our analysis, we will select the mouse C5 collection, which corresponds to GO gene sets. From the table, we only need two columns, Gene set name and the Gene symbol:
 
 ```r
 # Use a specific collection; C5 GO signatures
@@ -240,16 +240,16 @@ m_t2g <- msigdbr(species = "Mus musculus", category = "C5") %>%
   dplyr::select(gs_name, gene_symbol)
 ```
 
-Now that we have our gene sets, we need to prepare the fold changes. GSEA will use the log2 fold changes obtained from the differential expression analysis for every gene, to perform the analysis. We need to create an ordered and named vector for input to clusterProfiler:
+Now that we have our gene sets, we need to prepare the fold changes. GSEA will use the log2 fold changes obtained from the differential expression analysis for every gene to perform the analysis. We need to create an ordered and named vector for input to clusterProfiler:
 
 ```r
-## Extract the foldchanges
+# Extract the foldchanges
 foldchanges <- res_tbl_noNAs$log2FoldChange
 
-## Name each fold change with the corresponding gene symbol
+# Name each fold change with the corresponding gene symbol
 names(foldchanges) <- res_tbl_noNAs$gene
 
-## Sort fold changes in decreasing order
+# Sort fold changes in decreasing order
 foldchanges <- sort(foldchanges, decreasing = TRUE)
 
 head(foldchanges)
@@ -261,7 +261,7 @@ Now we are ready to run GSEA!
 # Run GSEA
 msig_GSEA <- GSEA(foldchanges, TERM2GENE = m_t2g, verbose = FALSE)
 
-## Extract the GSEA results
+# Extract the GSEA results
 msigGSEA_results <- msig_GSEA@result
 
 # Write results to file
@@ -275,7 +275,7 @@ Take a look at the results table and reorder by NES (normalized enrichment score
 
 ```r
 
-## Write GSEA results to file
+# Write GSEA results to file
 View(msigGSEA_results)
 ```
 
@@ -284,15 +284,16 @@ View(msigGSEA_results)
 </p>
 
 
-* The first few columns of the results table identify the gene set information
-* The following columns include the associated statistics
-* The last column will report which genes are part of the 'core enrichment'. These are the genes associated with the pathway which contributed to the observed enrichment score (i.e. in the extremes of the ranking).
+* The first few columns of the results table identify the gene set information.
+* The following columns include the associated statistics.
+* The last column will report which genes are part of the 'core enrichment'. These are the genes associated with the pathway which contributed to the observed enrichment score (i.e., in the extremes of the ranking).
 
 ### GSEA visualization
+
 Let's explore the GSEA plot of enrichment of one of the pathways in the ranked list using a built-in function from clusterProfiler. We can pick the top term "GOMF_EXTRACELLULAR_MATRIX_STRUCTURAL_CONSTITUENT":
 
 ```r
-## Plot the GSEA plot for a single enriched GO term
+# Plot the GSEA plot for a single enriched GO term
 gseaplot(msig_GSEA, geneSetID = 'GOMF_EXTRACELLULAR_MATRIX_STRUCTURAL_CONSTITUENT')
 ```
 
