@@ -311,7 +311,7 @@ Now that we have run through functional analysis with the results from Pseudobul
 1. Create a significant DE genes data frame from the FM results with an added fold change criteria to reduce the gene list size. You can do this by running the code below:
 
 ```r
-sig_fc_dge <- dge_fm %>% dplyr::filter(p_val_adj < 0.05, abs(avg_log2FC) > 1)
+sig_fc_dge <- dge_vsm %>% dplyr::filter(p_val_adj < 0.05, abs(avg_log2FC) > 1)
 ```
 
 2. Use this gene list to run over-representation analysis. Be sure to separate genes into up- and down-regulated first. What are the top terms enriched among up-regulated genes? What are the top terms enriched among down-regulated genes?
