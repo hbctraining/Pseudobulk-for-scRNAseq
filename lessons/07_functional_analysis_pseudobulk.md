@@ -180,10 +180,10 @@ The next plot is the **enrichment GO plot**, which shows the relationship betwee
 
 ```r
 # Add similarity matrix to the termsim slot of enrichment result
-ego <- enrichplot::pairwise_termsim(ego)
+egoUp <- enrichplot::pairwise_termsim(egoUp)
 
 # Enrichmap clusters the 50 most significant (by padj) GO terms to visualize relationships between terms
-emapplot(ego, showCategory = 50)
+emapplot(egoUp, showCategory = 50)
 ```
 
 **To save the figure,** click on the `Export` button in the RStudio `Plots` tab and `Save as PDF...`. In the pop-up window, change the `PDF size` to `12 x 14` to give a figure of appropriate size for the text labels.
@@ -307,22 +307,22 @@ In this plot, the lines in plot represent the genes in the gene set 'GOMF_EXTRAC
 
 **Exercise**
 
-Now that we have run through functional analysis with the results from Pseudobulk DE, let's see what results we derive from the DGE lits from our [FindMarkers DE analysis](02_DEanalysis_using_FindMarkers.md).
+Now that we have run through functional analysis with the results from Pseudobulk DE, let's see what results we derive from the DGE lists from our [FindMarkers DE analysis](02_DEanalysis_using_FindMarkers.md).
 
-1. Create a signifincat DE genes data frame with an added fold change criteria to reduce the gene list size. You can do this by running the code below:
+1. Create a significant DE genes data frame with an added fold change criteria to reduce the gene list size. You can do this by running the code below:
 
 ```r
 sig_fc_dge <- dge_vsm %>% dplyr::filter(p_val_adj < 0.05,  abs(avg_log2FC) > 1)
 ```
 
-2. Use this gene list to run over-representation analysis. Be sure to separate genes into up- and down-regulated first. What are the top terms enriched among up-regulated genes? What are the top terms enriched among up-regulated genes?
+2. Use this gene list to run over-representation analysis. Be sure to separate genes into up- and down-regulated first. What are the top terms enriched among up-regulated genes? What are the top terms enriched among down-regulated genes?
 
 3. How do these results compare with what we observed from the Psedubulk DE functional analysis?
 
 ***
 
 ## Resources for functional analysis
-In this lesson we reviewed two different approaches for functional analysis and demonstrated the with the use of the clusterProfiler package. Note, that there are numerous other options out there, including the use of web-based tools. Below we list a few tools that we are familiar with:
+In this lesson we reviewed two different approaches for functional analysis and demonstrated the with the use of the clusterProfiler package. Note that there are numerous other options out there, including the use of web-based tools. Below we list a few tools that we are familiar with:
 
 * g:Profiler - http://biit.cs.ut.ee/gprofiler/index.cgi 
 * DAVID - https://david.ncifcrf.gov
