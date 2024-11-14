@@ -31,7 +31,7 @@ Based on the data we have looked at so far, what do you think are the answers to
 
 ***
 
-Another imporant aspect to consider is the amount of computational resources it takes to calculate differential genes. The number of computer cores and length of time needed can be a limiting factor in which methods are viable options. In terms of resource management the general trends are that pseudobulk methods will use the least computational resources, followed by naive methods, and mixed models requiring the most. That being said, the amount of computational power will scale directly with the number of cells and samples in the dataset. As single-cell datasets begin to reach millions of cells, the usage of High Performance Computing clusters is necessary to run even the simplest of calculations let alone a differential gene analysis.
+Another imporant aspect to consider is the amount of computational resources it takes to calculate differential genes. The number of computer cores and length of time needed can be a limiting factor in which methods are viable options. In terms of resource management, the general trends are that pseudobulk methods will use the least computational resources, followed by naive methods, with mixed models requiring the most. That being said, the amount of computational power will scale directly with the number of cells and samples in the dataset. As single-cell datasets begin to reach millions of cells, the usage of High Performance Computing clusters is necessary to run even the simplest of calculations, let alone a differential gene analysis.
 
 
 <p align="center">
@@ -40,7 +40,7 @@ Another imporant aspect to consider is the amount of computational resources it 
 
 Image credit: [Nguyen et al, Nat Communications](https://www.nature.com/articles/s41467-023-37126-3#Abs1)
 
-Now, let us compare and contrast the results from `DESeq2` and `FindMarkers` to see the practical implications of the questions we answered above. In particular, focusing on how many cells express a gene and the effect of biological replicates.
+Now, let us compare and contrast the results from `DESeq2` and `FindMarkers` to see the practical implications of the questions we answered above. In particular, we will focus on how many cells express a gene and the effect of biological replicates.
 
 
 ## Comparing DGE results
@@ -117,7 +117,7 @@ With this simplified dataframe, we can being our evaluation.
 
 ### Common significant genes
 
-First, let's  visualize how many genes can be found in commmon or are unique to each method by representing the significant genes as a venn diagram.
+First, let's  visualize how many genes can be found in commmon or are unique to each method by representing the significant genes as a Venn diagram.
 
 ```r
 # Subset to significant genes
@@ -130,7 +130,7 @@ sig_genes <- list(
   DESeq2 = sig_deseq2$gene
 )
 
-# Create venn diagram
+# Create Venn diagram
 ggvenn(sig_genes, auto_scale = TRUE)
 ```
 
@@ -139,7 +139,7 @@ ggvenn(sig_genes, auto_scale = TRUE)
 </p>
 
 
-To include the number of genes that were found as Not Significant in any method, we could similarly make a barplot to represent the overlap in results. You may notice that we have a few genes that listed `NA`, which is the result of DESeq2 filtering genes as was [discussed earlier](https://hbctraining.github.io/DGE_analysis_scRNAseq/lessons/04_pseudobulk_DE_analysis.html).
+To include the number of genes that were found as Not Significant in any method, we could similarly make a barplot to represent the overlap in results. You may notice that we have a few genes that are listed as `NA`, which is the result of DESeq2 filtering genes as was [discussed earlier](https://hbctraining.github.io/DGE_analysis_scRNAseq/lessons/04_pseudobulk_DE_analysis.html).
 
 ```r
 ggplot(dge, aes(x=sig, fill=sig)) +
@@ -147,7 +147,7 @@ ggplot(dge, aes(x=sig, fill=sig)) +
   theme_classic() + NoLegend() +
   theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
   labs(x="Significant", y="Number of genes") +
-  geom_label(vjust=-1,stat="count", aes(label=format(after_stat(count))))
+  geom_label(vjust=-1, stat="count", aes(label=format(after_stat(count))))
 ```
 
 <p align="center">
@@ -158,7 +158,7 @@ Ultimately, we find ~1,200 genes significant from both DESeq2 and FindMarkers, i
 
 ### Conservative approach
 
-If we were to go with the most conservative approach for this analysis, we could only use of the common significant genes found from both methods and continue any follow-up analysis with those results. 
+If we were to go with the most conservative approach for this analysis, we could use only the common significant genes found from both methods and continue any follow-up analysis with those results. 
 
 ```r
 # Conservative genes
@@ -256,7 +256,7 @@ plot_genes(seurat_vsm, dds, genes)
   <img src="../img/DE_conservative_genes.png" width="800">
 </p>
 
-As expected, given that we are looking at the more conservative approach, we see good concordence in expression values across both log-normalized single-cell and pseudobulk normalized values.
+As expected, given that we are looking at the more conservative approach, we see good concordance in expression values across both log-normalized single-cell and pseudobulk normalized values.
 
 ## Contrasting results
 
@@ -295,7 +295,7 @@ ggplot(dge_sig, aes(x=log2FC_deseq2, y=log2FC_fm, color=sig)) +
 </p>
 
 
-Next we might ask ourselves, what could be the cause of the differences in the results? If we think back to how we generated the pseudobulk results we should consider how the number of cells could effect the final results. The number of cells we aggregate on likely has a strong sway on the overall expression values for the DESeq2 results. Therefore, an important metric to consider is the number/percentage of cells that express the genes we are looking at. We have the columns `pct.1` and `pct.2` which represent the proportion of cells in our dataset that belong to `TN` and `cold7` respectively. So let us consider the data with this additional metric in mind.
+Next we might ask ourselves, what could be the cause of the differences in the results? If we think back to how we generated the pseudobulk results, we should consider how the number of cells could effect the final results. The number of cells we aggregate on likely has a strong sway on the overall expression values for the DESeq2 results. Therefore, an important metric to consider is the number/percentage of cells that express the genes we are looking at. We have the columns `pct.1` and `pct.2` that represent the proportion of cells in our dataset that belong to `TN` and `cold7` respectively. So let us consider the data with this additional metric in mind.
 
 
 ```r
@@ -319,7 +319,7 @@ pct_1 + pct_2
 </p>
 
 
-Now we can ask ourselves, is there one particular method where we see any trends with these percentage values. To most clearly identify these, let's create a boxplot of the percentage scores grouped by which method they were significant in. The clearest way to see the differences in the proportion of cells that express each gene within condition is to take the difference.
+Now we can ask ourselves, is there one particular method where we see any trends with these percentage values? To most clearly identify these, let's create a boxplot of the percentage scores grouped by which method they were significant in. The clearest way to see the differences in the proportion of cells that express each gene within condition is to take the difference.
 
 ```r
 # Percentage difference
@@ -331,7 +331,7 @@ ggplot(dge) +
   theme_bw() + coord_flip()  
 ```
 
-Here we can see a pattern where `FindMakers()` finds more differential genes that have a larger difference in the proportion of cells. However, the analagous question can then be asked about what happens at different levels of expression? 
+Here we can see a pattern where `FindMarkers()` finds more differential genes that have a larger difference in the proportion of cells. However, the analagous question can then be asked: what happens at different levels of expression? 
 
 
 Since we can easily make a heatmap of expression values using the pseubulked normalized expressions, let us see if we can find any global patterns among the genes.
@@ -378,9 +378,9 @@ ggplot(dge_sig, aes(x=pct.1, y=pct.2, color=sig)) +
 
 ***
 
-There have been [studies]((https://www.nature.com/articles/s41467-023-37126-3#Abs1)) that indicate that accounting for biological variability with replicates strongly affects the accuracy of the final results. These considerations reduce the number of false negatives during a DGE analysis. If we consider just the number of significant genes, we know that in our dataset there are more significant genes when we consider the results from FindMarkers. Despite this, we need to consider the cases where perhaps a Wilcox test may be more sensitive to subtle shifts.
+There have been [studies]((https://www.nature.com/articles/s41467-023-37126-3#Abs1)) indicating that accounting for biological variability with replicates strongly affects the accuracy of the final results. These considerations reduce the number of false negatives during a DGE analysis. If we consider just the number of significant genes, we know that in our dataset there are more significant genes when we consider the results from FindMarkers. Despite this, we need to consider the cases where perhaps a Wilcox test may be more sensitive to subtle shifts.
 
-To test this, let us take a look at the top genes significant in only FindMarkers:
+To test this, let us take a look at the top genes significant only in FindMarkers:
 
 ```r
 dge_fm <- dge_sig %>% 
@@ -410,7 +410,7 @@ plot_genes(seurat_vsm, dds, genes)
 </p>
 
 
-The gene 4933434E20Rik shows us most clearly the importance of biological replicates in experimental design. We can clearly see in the pseudobulked expression, that this one cold7 replicate that has much higher expression for this gene as compared to the other replicates. This could potentially be a result of technical variation rather than biological shifts. In this case, being able to account for the variability among biological replicates would enhance the accuracy of these results.  
+The gene 4933434E20Rik shows us most clearly the importance of biological replicates in experimental design. We can clearly see in the pseudobulked expression that one cold7 replicate has much higher expression for this gene as compared to the other replicates. This could potentially be a result of technical variation rather than biological shifts. In this case, being able to account for the variability among biological replicates would enhance the accuracy of these results.  
 
 To continue assessing the difference, we can look at the top DESeq2 genes:
 
@@ -443,7 +443,7 @@ plot_genes(seurat_vsm, dds, genes)
 </p>
 
 
-Notice for gene Hist1h1d, there appears to be similar expression for almost all cells with the exception of a handful of cells in a single sample which has much higher expression values. This is one pitfall of using pseudobulk methods, where the expression values of few cells can disproportionately affect the final results if the expression values are high enough.
+Notice for gene Hist1h1d, there appears to be similar expression for almost all cells with the exception of a handful of cells in a single sample that have much higher expression values. This is one pitfall of using pseudobulk methods, where the expression values of few cells can disproportionately affect the final results if the expression values are high enough.
 
 
 At this point, you hopefully have become more comfortable visualizing and working with the results for a DGE analysis. There are many important considerations to keep in mind when choosing which algorithms to use - as we have have discussed throughout this lesson. Making informed decisions and filtering genes or your results can greatly enhance your understanding of what is actually differential between conditions.
