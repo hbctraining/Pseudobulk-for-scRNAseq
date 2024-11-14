@@ -62,6 +62,8 @@ BiocManager::install("DESeq2")
 BiocManager::install("EnhancedVolcano")
 BiocManager::install("SingleCellExperiment")
 BiocManager::install("miloR")
+BiocManager::install("clusterProfiler")
+BiocManager::install("org.Mm.eg.db")
 ```
 
 **Please install them one-by-one as follows:**
@@ -82,6 +84,8 @@ install.packages("RColorBrewer")
 install.packages("cowplot")
 install.packages("dplyr")
 install.packages("ggalluvial")
+install.packages("msigdbr")
+install.packages("ggvenn")
 ```
 
 **Please install them one-by-one as follows:**
@@ -107,6 +111,10 @@ library(EnhancedVolcano)
 library(SingleCellExperiment)
 library(miloR)
 library(ggalluvial)
+library(clusterProfiler)
+library(org.Mm.eg.db)
+library(msigdbr)
+library(ggvenn)
 ```
 
 **(4)** Once all packages have been loaded, run sessionInfo().  
