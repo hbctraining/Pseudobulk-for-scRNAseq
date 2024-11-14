@@ -371,7 +371,7 @@ Through this visualization, we can see that there is a clear separation in genes
 
 **Exercise**
 
-Is there a clear seperation in the method a gene is found significant in based upon the percentage of cells from each condition with expression?
+Is there a clear separation in the method a gene is found significant in based upon the percentage of cells from each condition with expression?
 
 ```r
 ggplot(dge_sig, aes(x=pct.1, y=pct.2, color=sig)) +
