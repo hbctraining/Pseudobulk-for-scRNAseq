@@ -9,21 +9,24 @@ Approximate time: 40 minutes
 ## Learning Objectives:
 
 *  Describe the theory of how functional enrichment tools yield statistically enriched functions or interactions
-*  Discuss functional analysis using over-representation analysis, and functional class scoring
+*  Discuss functional analysis using over-representation analysis and functional class scoring
 *  Run clusterProfiler on significant genes from pseudobulk DE analysis
 
 ## Functional analysis of pseudobulk differentially expressed genes
+
 When it comes to functional analysis there are **various analyses** that can be done:
 
 - Determine whether there is enrichment of known biological functions, interactions, or pathways
 - Identify genes' involvement in novel pathways or networks by grouping genes together based on similar trends
 - Use global changes in gene expression by visualizing all genes being significantly up- or down-regulated in the context of external interaction data
 
-Generally for any differential expression analysis, it is useful to interpret the resulting gene lists using freely available web- and R-based tools.  While tools for functional analysis span a wide variety of techniques, they can loosely be categorized into three main types: over-representation analysis, functional class scoring, and pathway topology [[1](https://github.com/hbctraining/In-depth-NGS-Data-Analysis-Course/raw/master/resources/pathway_tools.pdf)]. 
+Generally, for any differential expression analysis, it is useful to interpret the resulting gene lists using freely available web- and R-based tools.  While tools for functional analysis span a wide variety of techniques, they can loosely be categorized into three main types: over-representation analysis, functional class scoring, and pathway topology [[1](https://github.com/hbctraining/In-depth-NGS-Data-Analysis-Course/raw/master/resources/pathway_tools.pdf)]. 
 
 <p align="center">
 <img src="../img/pathway_analysis.png" width="600">
 </p>
+
+Image credit: [Khatri et al, PloS Computational Biology](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1002375)
 
 In this lesson, we will walk you through both an over-representation analysis and gene set enrichment analysis (GSEA) using an R Bioconductor package called [`clusterProfiler`](https://bioconductor.org/packages/release/bioc/vignettes/clusterProfiler/inst/doc/clusterProfiler.html)
 
