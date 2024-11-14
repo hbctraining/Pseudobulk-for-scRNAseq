@@ -223,7 +223,7 @@ The `clusterProfiler` package offers several functions to perform GSEA using dif
 To run GSEA with the MSigDb gene sets, we will use the `msigdbr` R package which provides the MSigDB gene sets in tidy data format that can be used directly with clusterProfiler. The msigdbr package **supports several species**:
 
 ```r
-msigdbr_show_species()
+msigdbr_species()
 ```
 
 And you can see **what gene sets are available**:
