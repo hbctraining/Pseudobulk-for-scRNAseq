@@ -294,7 +294,7 @@ ggplot(dge_sig, aes(x=log2FC_deseq2, y=log2FC_fm, color=sig)) +
 </p>
 
 
-Next we might ask ourselves, what could be the cause of the differences in the results? If we think back to how we generated the pseudobulk results, we should consider how the number of cells could effect the final results. The number of cells we aggregate on likely has a strong sway on the overall expression values for the DESeq2 results. Therefore, an important metric to consider is the number/percentage of cells that express the genes we are looking at. We have the columns `pct.1` and `pct.2` that represent the proportion of cells in our dataset that belong to `TN` and `cold7` respectively. So let us consider the data with this additional metric in mind.
+Next we might ask ourselves, what could be the cause of the differences in the results? If we think back to how we generated the pseudobulk results, we should consider how the number of cells could affect the final results. The number of cells we aggregate on likely has a strong sway on the overall expression values for the DESeq2 results. Therefore, an important metric to consider is the number/percentage of cells that express the genes we are looking at. We have the columns `pct.1` and `pct.2` that represent the proportion of cells in our dataset that belong to `TN` and `cold7` respectively. So let us consider the data with this additional metric in mind.
 
 
 ```r
