@@ -325,10 +325,14 @@ Now we can ask ourselves, is there one particular method where we see any trends
 dge_sig$pct_diff <- abs(dge_sig$pct.1 - dge_sig$pct.2)
 
 # Boxplot of percentage differences
-ggplot(dge) +
+ggplot(dge_sig) +
   geom_boxplot(aes(x=pct_diff, fill=sig)) +
   theme_bw() + coord_flip()  
 ```
+
+<p align="center">
+  <img src="../img/DE_boxplot_pct.png" width="800">
+</p>
 
 Here we can see a pattern where `FindMarkers()` finds more differential genes that have a larger difference in the proportion of cells. However, the analagous question can then be asked: what happens at different levels of expression? 
 
