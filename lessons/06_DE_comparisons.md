@@ -38,7 +38,7 @@ Another imporant aspect to consider is the amount of computational resources it 
   <img src="../img/DE_performance.png" width="600">
 </p>
 
-Image credit: [Nguyen et al, Nat Communnications: Fig 7c](https://www.nature.com/articles/s41467-023-37126-3#Abs1)
+Image credit: [Nguyen et al, Nat Communications](https://www.nature.com/articles/s41467-023-37126-3#Abs1)
 
 Now, let us compare and contrast the results from `DESeq2` and `FindMarkers` to see the practical implications of the questions we answered above. In particular, focusing on how many cells express a gene and the effect of biological replicates.
 
@@ -68,14 +68,14 @@ library(dplyr)
 
 ### Load previous results
 
-To start, let us load the results from the the previous DESeq2 and FindMarkers lessons. We will also rename the column name containing the gene names `X` in the DESeq2 results for clarity.
+To start, let us load the results from the the previous DESeq2 and FindMarkers lessons.
 
 ```r
 dge_fm <- read.csv("results/findmarkers_vsm.csv")
 dge_deseq2 <- read.csv("results/VSM_cold7_vs_TN.csv")
 ```
 
-Next, we will merge together the results into one dataframe to more easily make comparisons. Here, we will also change the column names to clearly define which results come from which method. Lastly, we will create a column called `sig` that identified if a gene was significant (adjusted p-values < 0.05) to categorize each row as: FindMarkers, DESeq2, both, or Not Significant. 
+Next, we will merge together the results into one dataframe to more easily make comparisons. Here, we will also change the column names to clearly define which results come from which method. Lastly, we will create a column called `sig` that identified if a gene was significant (adjusted p-values < 0.05) to categorize each row with: FindMarkers, DESeq2, both, or Not Significant. 
 
 ```r
 # Merge FindMarkers and DESeq2 results together
@@ -83,10 +83,13 @@ dge <- merge(dge_fm, dge_deseq2, by="X")
 
 # Rename columns to easily understand where results came from
 # Remove columns we will not be using
-dge <- dge %>% rename("gene"="X") %>%
-            rename("padj_fm"="p_val_adj", "padj_deseq2"="padj") %>%
-            rename("log2FC_fm"="avg_log2FC", "log2FC_deseq2"="log2FoldChange") %>%
-            select(-c("p_val", "baseMean", "lfcSE", "pvalue"))
+dge <- dge %>% 
+          dplyr::rename("gene"="X") %>%
+          dplyr::rename("padj_fm"="p_val_adj",
+                        "padj_deseq2"="padj") %>%
+          dplyr::rename("log2FC_fm"="avg_log2FC",
+                        "log2FC_deseq2"="log2FoldChange") %>%
+          select(-c("p_val", "baseMean", "lfcSE", "pvalue"))
 
 # Create a column called sig
 # Identifies which methods a gene is significant in
@@ -151,10 +154,11 @@ ggplot(dge, aes(x=sig, fill=sig)) +
   <img src="../img/DE_ncells.png" width="800">
 </p>
 
+Ultimately, we find ~1,200 genes significant from both DESeq2 and FindMarkers, indicating that there is a degree of concordence between both methods. There are noticeably many more genes found significant in only FindMarkers and we will investigate why this is the case later in the lesson.
 
 ### Conservative approach
 
-If we were to go with the most conservative approach for this DGE, we could make use of the significant genes found in common between both methods and continue any follow-up analysis with those results. 
+If we were to go with the most conservative approach for this analysis, we could only use of the common significant genes found from both methods and continue any follow-up analysis with those results. 
 
 ```r
 # Conservative genes
@@ -177,10 +181,9 @@ dge_both %>% head()
 6        Igfbp2  4.642158 0.036 0.004 3.346486e-18      5.035339 1.163515e-15 both
 ```
 
-We can clearly see that the highest log2-fold change come from genes that are present in one condition but not the other based upon the percentage columns. 
+We can clearly see that the highest log2-fold change come from genes that are present in one condition but not the other based upon the percentage columns. Logically, this makes sense since a gene uniquely expressed in a condition would appear as a top marker. 
 
-
-To visualize these results, we can pot the normalized expression of the top genes at both the pseudobulk and single-cell level for our data. As this is something we are going to do multiple times, we should create a custom function to quickly generate these plots.
+To visualize these results, we can plot the normalized expression of the top genes at both the pseudobulk and single-cell level for our data. As this is something we are going to do multiple times, we should create a custom function to quickly generate these plots.
 
 ```r
 # # Create DESeq2 object
@@ -253,7 +256,7 @@ plot_genes(seurat_vsm, dds, genes)
   <img src="../img/DE_conservative_genes.png" width="800">
 </p>
 
-As expected, given that we are looking at the more conservative approach, we see good concordence in expression values across both DESeq2 and wilcox results.
+As expected, given that we are looking at the more conservative approach, we see good concordence in expression values across both log-normalized single-cell and pseudobulk normalized values.
 
 ## Contrasting results
 
