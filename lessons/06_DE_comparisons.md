@@ -186,7 +186,7 @@ We can clearly see that the highest log2-fold change come from genes that are pr
 To visualize these results, we can plot the normalized expression of the top genes at both the pseudobulk and single-cell level for our data. As this is something we are going to do multiple times, we should create a custom function to quickly generate these plots.
 
 ```r
-# # Create DESeq2 object
+# # Create DESeq2 object if it is no longer loaded in your environment
 # # Average pb expression
 # # Aggregate count matrix by sample/celltype
 # bulk_vsm <- AggregateExpression(
