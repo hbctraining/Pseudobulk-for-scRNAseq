@@ -314,7 +314,7 @@ Now that we have run through functional analysis with the results from Pseudobul
 sig_fc_dge <- dge_vsm %>% dplyr::filter(p_val_adj < 0.05, abs(avg_log2FC) > 1)
 ```
 
-2. Use this gene list to run over-representation analysis. Be sure to separate genes into up- and down-regulated first. What are the top terms enriched among up-regulated genes? What are the top terms enriched among down-regulated genes?
+2. Use this gene list to run over-representation analysis. Be sure to separate genes into up- and down-regulated first. Also keep in mind that the background gene dataset is different than for the DESeq2 analysis. What are the top terms enriched among up-regulated genes? What are the top terms enriched among down-regulated genes?
 
 3. How do these results compare with what we observed from the Pseudobulk DE functional analysis?
 
