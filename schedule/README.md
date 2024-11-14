@@ -70,8 +70,9 @@ I. Please **study the contents** and **work through all the code** within the fo
       <details>
        <summary><i>Click here for a preview of this lesson</i></summary>
          <br>Now that we have significant genes, let's gain some biological insight <br><br>In this lesson, we will:<br>
-             - Over-representation analsyis<br>
-             - GSEA and other visualizations<br><br>
+             - Discuss approaches for functional analysis
+             - Use clusterProfiler to run over-representation analsyis and visualize results<br>
+             - Use clusterProfiler to run GSEA <br><br>
         </details>
 
 II. **Submit your work**:
@@ -99,6 +100,7 @@ II. **Submit your work**:
 
 ## Answer Keys
 * [Day 1 exercises](https://hbctraining.github.io/DGE_analysis_scRNAseq/homework/Day_1_answer_key.html) 
+* [Day 2 exercises](https://hbctraining.github.io/DGE_analysis_scRNAseq/homework/Day_2_answer_key.html) 
 
 
 
