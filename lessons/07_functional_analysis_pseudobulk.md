@@ -176,13 +176,13 @@ dotplot(egoUp, showCategory=20)
 <img src="../img/sigUp_dotplot.png" width="600">
 </p> 
   
-The next plot is the **enrichment GO plot**, which shows the relationship between the top 50 most significantly enriched GO terms (padj.), by grouping similar terms together. Before creating the plot, we will need to obtain the similarity between terms using the `pairwise_termsim()` function ([instructions for emapplot](https://rdrr.io/github/GuangchuangYu/enrichplot/man/emapplot.html)). In the enrichment plot, the color represents the p-values relative to the other displayed terms (brighter red is more significant), and the size of the terms represents the number of genes that are significant from our list.
+The next plot is the **enrichment GO plot**, which shows the relationship between the top 50 most significantly enriched GO terms (padj) by grouping similar terms together. Before creating the plot, we will need to obtain the similarity between terms using the `pairwise_termsim()` function ([instructions for emapplot](https://rdrr.io/github/GuangchuangYu/enrichplot/man/emapplot.html)). In the enrichment plot, the color represents the p-values relative to the other displayed terms (brighter red is more significant), and the size of the terms represents the number of genes that are significant from our list.
 
 ```r
-## Add similarity matrix to the termsim slot of enrichment result
+# Add similarity matrix to the termsim slot of enrichment result
 ego <- enrichplot::pairwise_termsim(ego)
 
-## Enrichmap clusters the 50 most significant (by padj) GO terms to visualize relationships between terms
+# Enrichmap clusters the 50 most significant (by padj) GO terms to visualize relationships between terms
 emapplot(ego, showCategory = 50)
 ```
 
