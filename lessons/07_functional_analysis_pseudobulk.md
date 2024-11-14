@@ -152,7 +152,7 @@ When cold induces a response in vascular smooth muscle cells (VSMCs), the primar
 
 **Exercise:**
 
-1. Using the code above as a template, run the over-reresentation analysis on the significantly down-regulated genes from the pseudobulk analysis.
+1. Using the code above as a template, run the over-representation analysis on the significantly down-regulated genes from the pseudobulk analysis.
    * How many significant terms do you find?
    * What are some of the prominent biological processes that are observed?
   
