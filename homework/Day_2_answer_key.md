@@ -97,3 +97,4 @@ We see terms related to muscle and fat cell development.
 
 **How do these results compare with what we observed from the Pseudobulk DE functional analysis?**
 
+In the pseudobulk results, we also saw terms related to the extracellular matrix and cell adhesion upregulated. However, the downregulated results are different: for FindMarkers we see muscle and fat development, whereas for pseudobulk we saw RNA splicing and translation downregulated.
