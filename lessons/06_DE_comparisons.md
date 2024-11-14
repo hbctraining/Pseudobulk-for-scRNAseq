@@ -1,6 +1,6 @@
 ## Comparing results from different DE approaches
 
-Approximate time: 40 minutes
+Approximate time: 70 minutes
 
 ## Learning Objectives:
 
@@ -10,18 +10,18 @@ Approximate time: 40 minutes
 
 ## Overarching trends in DGE methods
 
-The different DGE methods can broadly be classified into the following categories:
+So far, we have made use of the DESeq2 and FindMarkers algorithms in this workshop. There are many other algorirthm that can broadly be classified into the following categories:
 
 1. Pseudobulk (DESeq2, limma, edgeR)
 2. Mixed models (MAST)
 3. Naive methods (Wilcox)
 
-When running your own DGE analysis, there are several important questions to ask when selecting the appropriate method. Some important considerations:
+Choosing the appropriate method for your data requires a basic understanding of the system and structure of the data. Some of the important questions to ask ourselves are:
 
-1. Do you have enough cells to aggregate and do a pseudobulk analysis on?
+1. Do you have enough cells to aggregate and do a pseudobulk analysis or to run statistical tests?
 2. Are there smaller cell states within a celltype that would be lost after pseudobulking and averaging expression?
 3. Is there a latent variable that should be included in a design model?
-4. Are there biological replicates that could be used to account for the variability in the data?
+4. Are there biological replicates that can be used to control for variability in the data?
 
 *** 
 
@@ -31,7 +31,7 @@ Based on the data we have looked at so far, what do you think are the answers to
 
 ***
 
-Another imporant aspect to consider is the amount of computational resources it takes to calculate the differential genes. The amount of time and computer cores necessary for an analysis will scale with the size of your dataset (number of cells and samples), but are important to factor when selecting the method you move forward with.
+Another imporant aspect to consider is the amount of computational resources it takes to calculate differential genes. The number of computer cores and length of time needed can be a limiting factor in which methods are viable options. In terms of resource management the general trends are that pseudobulk methods will use the least computational resources, followed by naive methods, and mixed models requiring the most. That being said, the amount of computational power will scale directly with the number of cells and samples in the dataset. As single-cell datasets begin to reach millions of cells, the usage of High Performance Computing clusters is necessary to run even the simplest of calculations let alone a differential gene analysis.
 
 
 <p align="center">
@@ -40,13 +40,12 @@ Another imporant aspect to consider is the amount of computational resources it 
 
 Image credit: [Nguyen et al, Nat Communnications: Fig 7c](https://www.nature.com/articles/s41467-023-37126-3#Abs1)
 
-Now, let us compare and contrast the results from `DESeq2` and `FindMarkers` to see the practical implications of the questions we answered above.
+Now, let us compare and contrast the results from `DESeq2` and `FindMarkers` to see the practical implications of the questions we answered above. In particular, focusing on how many cells express a gene and the effect of biological replicates.
 
 
 ## Comparing DGE results
 
-
-As usual, let's open a new Rscript file, and start with some comments to indicate what this file is going to contain:
+As usual, let's open a new Rscript file called `DE_comparison.R` and create a header with comments to indicate what this file is going to contain.
 
 ```r
 # September 2024
@@ -55,7 +54,7 @@ As usual, let's open a new Rscript file, and start with some comments to indicat
 # Single-cell RNA-seq analysis - compare DGE results
 ```
 
-Next we will load the necessary libraries as well.
+Next we will load the necessary libraries.
 
 ```r
 library(Seurat)
@@ -64,15 +63,16 @@ library(tidyverse)
 library(ggvenn)
 library(pheatmap)
 library(cowplot)
+library(dplyr)
 ```
 
 ### Load previous results
 
-To start, let us load the results from the the DESeq2 and FindMarkers lessons.
+To start, let us load the results from the the previous DESeq2 and FindMarkers lessons. We will also rename the column name containing the gene names `X` in the DESeq2 results for clarity.
 
 ```r
 dge_fm <- read.csv("results/findmarkers_vsm.csv")
-dge_deseq2 <- read.csv("results/DESeq2_vsm.csv")
+dge_deseq2 <- read.csv("results/VSM_cold7_vs_TN.csv")
 ```
 
 Next, we will merge together the results into one dataframe to more easily make comparisons. Here, we will also change the column names to clearly define which results come from which method. Lastly, we will create a column called `sig` that identified if a gene was significant (adjusted p-values < 0.05) to categorize each row as: FindMarkers, DESeq2, both, or Not Significant. 
