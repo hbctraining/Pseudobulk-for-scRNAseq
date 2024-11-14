@@ -268,7 +268,7 @@ To start, we can begin comparing the p-values and average log2-fold changes. Fir
 dge_sig <- dge %>% subset(sig != "Not Significant")
 
 # Compare p-values
-ggplot(ddge_sigge, aes(x=padj_deseq2, y=padj_fm, color=sig)) +
+ggplot(dge_sig, aes(x=padj_deseq2, y=padj_fm, color=sig)) +
   geom_point() +
   labs(x="DESeq2 Padj", y="FindMarkers Padj", title="Padj values") +
   geom_vline(xintercept = 0.05, color="black", linetype="dashed") +
