@@ -5,7 +5,7 @@
 **1. Another cell type in this dataset that was particularly interesting to the authors were the Pdgfr α+ adipose progentior cells (APCs).**
 **Subset the bulk object to isolate only adipose progenitor cells for the TN and cold7 conditions. Assign it to variable called bulk_APC.** _Hint: You may need to review celltypes to determine what this cell type is called in our data._
 
-```
+```r
 celltypes
 # Compare TN vs cold7 in APC cells
 bulk_APC <- subset(bulk, subset = (celltype == "AP")  & (condition %in% c("TN", "cold7")))
@@ -13,7 +13,7 @@ bulk_APC <- subset(bulk, subset = (celltype == "AP")  & (condition %in% c("TN", 
 
 **2. Plot the cell number distribution across samples. How do the numbers compare to VSM cells?**
 
-```
+```r
 # Visualize number of cells per condition
 ggplot(bulk_APC@meta.data, aes(x = sample, y = n_cells, fill = condition)) +
   geom_bar(stat = "identity", color = "black") +
@@ -60,7 +60,7 @@ There is also a different distribution: the counts for Sample-10 and Sample-9 go
 
 **3. Using the code below, create a DESeq2 object for the Pdgfr α+ APCs data.** There is nothing to submit for this exercise, but please run the code as you will need dds_APC for future exercises.
 
-```
+```r
 # Get count matrix
 APC_counts <- FetchData(bulk_APC, layer = "counts", vars = rownames(bulk_APC))
 
@@ -76,14 +76,14 @@ dds
 
 **4. Use the dds_APC object to compute the rlog transformed counts for the Pdgfr α+ APCs.**
 
-```
+```r
 # Transform counts for data visualization
 rld_APC <- rlog(dds_APC, blind = TRUE)
 ```
 
 **5. Create a PCA plot for the Pdgfr α+ APCs, coloring points by condition. Do samples segregate by condition? Is there more or less variability within group than observed with the VSM cells?**
 
-```
+```r
 # Plot PCA
 plotPCA(rld_APC, intgroup = c("condition")) + theme_classic()
 ```
@@ -96,7 +96,7 @@ Samples still segregate by TN/cold7 but there is greater variability than in VSM
 
 **6. Evaluate the sample similarity using a correlation heatmap. How does this compare with the trends observed in the PCA plot?**
 
-```
+```r
 # Calculate sample correlation
 rld_APC_mat <- assay(rld_APC)
 rld_APC_cor <- cor(rld_APC_mat)
@@ -121,7 +121,7 @@ Unfortunately, the samples do not neatly separate by condition in this celltype.
 
 **7. Using the code below, run DESeq2 for the Pdgfr α+ APCs data. Following that draw the dispersion plot. Based on this plot do you think there is a reasonable fit to the model?**
 
-```
+```r
 # Run DESeq2 differential expression analysis
 dds_APC <- DESeq(dds_APC)
 # Plot gene-wise dispersion estimates to check model fit
@@ -136,7 +136,7 @@ We do see an inverse relationship between mean and dispersion (line slopes downw
 
 **8. Generate results for the Pdgfr α+ APCs and save it to a variable called res_APC.** There is nothing to submit for this exercise, but please run the code as you will need res_APC for future exercises.
 
-```
+```r
 # Results of Wald test
 res_APC <- results(dds_APC, 
                    contrast = contrast,
