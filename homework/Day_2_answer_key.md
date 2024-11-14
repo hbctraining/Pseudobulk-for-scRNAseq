@@ -4,7 +4,7 @@
 
 **1. Using the code above as a template, run the over-reresentation analysis on the significantly down-regulated genes from the pseudobulk analysis.**
 
-```
+```r
 # Extract significant results for down-regulated
 sigDown <- dplyr::filter(res_tbl_noNAs, padj < 0.05, log2FoldChange < 0)
 sigDown_genes <- as.character(sigDown$gene)
@@ -25,7 +25,7 @@ write.csv(cluster_summaryDown, "results/clusterProfiler_VSM_TNvsCold7_downregula
 
 **How many significant terms do you find?**
 
-```
+```r
 nrow(cluster_summaryDown)
 ```
 
@@ -33,7 +33,7 @@ There are 100 GO biological process terms that are downregulated in cold7 vs TN.
 
 **What are some of the prominent biological processes that are observed?**
 
-```
+```r
 head(cluster_summaryDown$Description)
 ```
 
