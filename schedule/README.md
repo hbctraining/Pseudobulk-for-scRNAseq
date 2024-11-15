@@ -61,7 +61,7 @@ II. **Submit your work**:
 | 09:30 - 10:00 | Self-learning lessons discussion | All |
 | 10:00 - 10:40 | [Visualization of differentially expressed genes](../lessons/05_pseudobulk_DE_visualizations.md) | Meeta |
 | 10:40 - 10:50|  Break |  |
-| 10:50 - 12:00 | [Comparison of results from different DE approaches]() | Noor|
+| 10:50 - 12:00 | [Comparison of results from different DE approaches](../lessons/06_DE_comparisons.md) | Noor|
 
 ### Before the next class:
 
