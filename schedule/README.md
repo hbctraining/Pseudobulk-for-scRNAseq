@@ -70,7 +70,7 @@ I. Please **study the contents** and **work through all the code** within the fo
       <details>
        <summary><i>Click here for a preview of this lesson</i></summary>
          <br>Now that we have significant genes, let's gain some biological insight <br><br>In this lesson, we will:<br>
-             - Discuss approaches for functional analysis
+             - Discuss approaches for functional analysis<br>
              - Use clusterProfiler to run over-representation analsyis and visualize results<br>
              - Use clusterProfiler to run GSEA <br><br>
         </details>
