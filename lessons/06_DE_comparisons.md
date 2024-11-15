@@ -113,7 +113,7 @@ dge %>% head()
 
 ```
 
-With this simplified dataframe, we can being our evaluation.
+With this simplified dataframe, we can begin our evaluation.
 
 ### Common significant genes
 
