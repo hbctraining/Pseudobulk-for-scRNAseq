@@ -94,7 +94,7 @@ II. **Submit your work**:
 | 10:15 - 11:15| [Methods for Differental Abundance]()  | Noor  |
 | 11:15 - 11:20 | Break |
 | 11:25 - 12:00| Discussion and Q&A | All |
-| 11:45 - 12:00| [Wrap-up](../lectures/workshop_wrapup_slides.pdf) | Meeta |
+| 11:45 - 12:00| [Wrap-up](../lectures/Workshop_wrapup.pdf) | Meeta |
 
 ***
 
