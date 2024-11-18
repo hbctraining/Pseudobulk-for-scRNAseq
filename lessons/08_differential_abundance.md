@@ -89,7 +89,7 @@ library(EnhancedVolcano)
 
 ### Select cell subsets
 
-For continuity, let us take a look at the vascular smooth muscle (VSM) cells and look at the differences between the `TN` and `cold7` conditions. Here we are also going to set our seed so that we are all introducing the same randomness values in later steps.
+For continuity, let us take a look at the differences between the `TN` and `cold7` conditions. Here we are also going to set our seed so that we are all introducing the same randomness values in later steps.
 
 ```r
 set.seed(1234)
