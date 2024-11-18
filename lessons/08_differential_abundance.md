@@ -119,7 +119,7 @@ DimPlot(seurat_sub, group.by=c("condition", "sub_clusters", "celltype"))
 ```
 
 <p align="center">
-  <img src="../img/milo_all_umap.png" width="800">
+  <img src="../img/milo_all_umap.png" width="800" height="500>
 </p>
 
 We see a distinct separation of cells based upon which sample the cells come from, which will allow us to clearly identify changes in our dataset by condition with MiloR.
@@ -414,9 +414,8 @@ We can also represent the neighborhoods according to the group structure that wa
 traj_milo <- buildNhoodGraph(traj_milo)
 p1 <- plotNhoodGraphDA(traj_milo, da_results, alpha=0.1)
 p2 <- plotNhoodGroups(traj_milo, da_results) 
-p3 <- scater::plotUMAP(traj_milo, colour_by="sub_clusters")
 
-p1 + p2 + p3
+p1 + p2 
 ```
 
 <p align="center">
@@ -512,11 +511,12 @@ EnhancedVolcano(nhood_markers,
                 x = "logFC_6",
                 y = "adj.P.Val_6",
                 FCcutoff = 0.5,
-                pCutoff = 0.01)
+                pCutoff = 0.01,
+                title="Neighborhood group 6 vs 7")
 ```
 
 <p align="center">
-  <img src="../img/milo_volcano.png" height="500">
+  <img src="../img/milo_all_volcano.png" height="500">
 </p>
 
 We can even generate a heatmap of expression per-neighborhood with the `plotNhoodExpressionGroups()` function. First, we can identify the top 10 genes in neighborhood group 1 based upon the log-fold change value. We can then supply those genes into our function and again subset the groups to 1 and 3.
