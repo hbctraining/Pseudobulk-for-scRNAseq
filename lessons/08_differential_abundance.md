@@ -440,7 +440,7 @@ plotDAbeeswarm(da_results, group.by = "anno_condition")
 
 As expected, we see a clear FDR divide based upon condition as that was the `design` variable we computed the different neighborhoods on.
 
-We can additionally take a look at the Seurat clusters that were calculated earlier to see how the neighborhoods distribute across the clusters.
+We can additionally take a look at the annotated celltypes to see how the neighborhoods distribute across the celltypes.
 
 ```r
 plotDAbeeswarm(da_results, group.by = "anno_celltype")
@@ -450,7 +450,7 @@ plotDAbeeswarm(da_results, group.by = "anno_celltype")
   <img src="../img/milo_all_beeswarm_celltype.png" height="500">
 </p>
 
-Note that in cluster 4, there appears to be a mix of both cold7 and TN neighborhoods (as indicated by the fold change values). This is an indication that this cell state is one that is shared across both conditions and is not unique to the experimental design.
+Note that in most celltypes, there appears to be a mix of both cold7 and TN neighborhoods (as indicated by the fold change values). This is an indication that these celltypes are shared across both conditions.
 
 Finally, we can make the same visualization for the neighborhood groups. This will help us identify two different groups we may be interested in running a DGE analysis in the next step.
 
