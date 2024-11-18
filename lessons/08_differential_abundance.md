@@ -549,7 +549,11 @@ plotNhoodExpressionGroups(traj_milo,
 </p>
 
 
-Make sure to output the versions of all tools used in the DE analysis:
+As we would expect, these genes are much more highly expressed in group 1 compared to group 3. This provides us with another, cluster-free alternative to looking at more subtle shifts in gene expression across smaller groups.
+
+---
+
+Now that you have reached the end of you analysis, make sure to output the versions of all tools used in the DE analysis:
 
 ```r
 sessionInfo()
@@ -557,8 +561,6 @@ sessionInfo()
 
 
 For better reproducibility, it can help to create RMarkdown reports, which save all code, results, and visualizations as nicely formatted html reports. We have a very basic example of a [report](https://www.dropbox.com/s/4bq0chxze6dogba/workshop-example.html?dl=0) linked here. To create these reports we have [additional materials](https://hbctraining.github.io/Training-modules/Rmarkdown/) available.
-
-
 
 
 ---
