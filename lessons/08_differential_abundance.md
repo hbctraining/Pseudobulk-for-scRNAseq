@@ -538,7 +538,7 @@ markers <- nhood_markers %>%
 genes <- markers$GeneID[1:10]
 genes <- genes[!is.na(genes)]
 
-# Heatmap of top 10 marker genes for groups 1 and 3
+# Heatmap of top 10 marker genes for groups 6 and 7
 plotNhoodExpressionGroups(traj_milo,
                           da_results,
                           features=genes,
@@ -553,7 +553,7 @@ plotNhoodExpressionGroups(traj_milo,
 </p>
 
 
-As we would expect, these genes are much more highly expressed in group 1 compared to group 3. This provides us with another, cluster-free alternative to looking at more subtle shifts in gene expression across smaller groups.
+As we would expect, these genes are much more highly expressed in group 6 compared to group 7. This provides us with another, cluster-free alternative to looking at more subtle shifts in gene expression across smaller groups.
 
 ---
 
