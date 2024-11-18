@@ -7,6 +7,7 @@ date: November 5th, 2024
 
 ## Learning Objectives
 * Describe current approaches for evaluating differences in cell proportions between groups
+* Distinguish between cluster-based and cluster-free methods for DA analysis
 * Run miloR for differential abundance analysis on VSM cells
 
 ## Differential abundance of celltypes
