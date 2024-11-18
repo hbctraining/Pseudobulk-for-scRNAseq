@@ -10,14 +10,14 @@ date: November 5th, 2024
 * Run miloR for differential abundance analysis on VSM cells
 
 ## Differential abundance of celltypes
-Differential abundance (DA) analysis is a method used to identify celltypes with statistically significant changes in abundance between different biological conditions.  The overall aim is to find sub-populations of cells in which the ratio of cells from the two conditions is significantly different from the ratios observed in the overall data. Methods for differential abundance have been successfully used in practice in both clinical and experimental settings. For example, these approaches highlighted an increased presence of granulocytes, monocytes, and B cells in fatal cases of COVID-19 ([Bodenmiller B. et al, 2012](https://www.nature.com/articles/nbt.2317). The figure below, taken from a [2024 benchmarking study of DA approaches](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-023-03143-0#Fig1), nicely illustrates DA effects.
+Differential abundance (DA) analysis is a method used to identify celltypes with statistically significant changes in abundance between different biological conditions.  The overall aim is to find sub-populations of cells in which the ratio of cells from the two conditions is significantly different from the ratios observed in the overall data. Methods for differential abundance have been successfully used in practice in both clinical and experimental settings. For example, these approaches highlighted an increased presence of granulocytes, monocytes, and B cells in fatal cases of COVID-19 ([1](https://www.nature.com/articles/nbt.2317)). 
+
+The figure below is taken from a [2024 benchmarking study of DA approaches](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-023-03143-0#Fig1), and nicely illustrates DA effects.
 
 
 <p align="center">
 <img src="../img/DA_schematic.png" width="630">
 </p>
-
-The methods for differential abundance can be grouped into those that rely on a priori clustering of cells, and those that are cluster-free.
 
 
 ### Cluster-based approaches for DA
