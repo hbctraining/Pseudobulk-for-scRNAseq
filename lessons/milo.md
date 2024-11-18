@@ -316,13 +316,13 @@ da_results %>% head()
 ```
 
 ```
-      logFC   logCPM         F       PValue         FDR Nhood  SpatialFDR
-1  5.383966 11.80962  3.997345 0.0456731668 0.150747056     1 0.147279465
-2  5.439519 11.84264  4.145856 0.0418350534 0.150747056     2 0.147279465
-3  3.514925 10.98646  1.607903 0.2048973695 0.252574320     3 0.249984729
-4  5.353711 11.79050  3.950876 0.0469489658 0.150747056     4 0.147279465
-5  5.063808 11.63182  3.576596 0.0587072653 0.150747056     5 0.147279465
-6 -7.876050 13.52804 13.522319 0.0002403926 0.006379396     6 0.009554048
+     logFC   logCPM        F     PValue        FDR Nhood SpatialFDR
+1 5.445933 12.18821 5.450655 0.01963098 0.06029826     1 0.05838122
+2 2.702203 11.86498 1.615816 0.20378127 0.23482411     2 0.22899789
+3 3.278148 12.22262 2.626844 0.10518241 0.13154813     3 0.12837834
+4 5.641968 12.30574 5.958004 0.01471187 0.06029826     4 0.05838122
+5 4.978833 11.93259 4.434042 0.03531737 0.06930480     5 0.06660339
+6 5.564923 12.25916 5.783074 0.01624543 0.06029826     6 0.05838122
 ```
 
 Now that we have our neighborhoods, we can add extra metadata to these results. For example, we can annotate these groups by the percentage of cells in the neighborhood belong to each condition using the `annotateNhoods()` function. Bear in mind that the `coldata_col` variable must be a column found in `colData()` of the milo object. This will create two new columns where `condition` represents what condition the majority of cells belong to, while `condition_fraction` represent the percent of cells annotated with that condition.
