@@ -15,11 +15,12 @@ Approximate time: 90 minutes
 
 # Differential abundance analysis with MiloR
 
-Looking at single-cell datasets on a cluster/celltype level is a very common mode of analysis. However, perhaps you have questions on the more subtle shifts within a certain cell population. The tool [miloR](https://www.nature.com/articles/s41587-021-01033-z) allows you to look more deeply into subtle shifts in smaller neighborhoods of cells by utilizng differential abundance testing on the k-nearest neighbor graph.
+Looking at single-cell datasets on a cluster/celltype level is a very common mode of analysis. However, perhaps you have questions on the more subtle shifts within a certain cell population. The tool [miloR](https://www.nature.com/articles/s41587-021-01033-z) allows you to look more deeply into subtle shifts in smaller neighborhoods of cells by utilizing differential abundance testing on the k-nearest neighbor graph.
 
 <p align="center">
 <img src="../img/milo_schematic.png" width="630">
 </p>
+Image credit: [Dann E., et al.](https://www.nature.com/articles/s41587-021-01033-z)
 
 # Creating Milo object
 
@@ -97,7 +98,7 @@ These objects have the following structure:
   <img src="../img/sce_description.png" width="630">
 </p>
 
-Image credit: (Amezquita, R.A., Lun, A.T.L., Becht, E. et al.)[https://doi-org.ezp-prod1.hul.harvard.edu/10.1038/s41592-019-0654-x]
+Image credit: [Amezquita, R.A., Lun, A.T.L., Becht, E. et al.](https://doi-org.ezp-prod1.hul.harvard.edu/10.1038/s41592-019-0654-x)
 
 We can use the functions from the SingleCellExperiment package to extract the different components. Let’s explore the counts and metadata for the experimental data.
 
@@ -329,7 +330,7 @@ da_results %>% head()
 
 Now that we have our neighborhoods, we can add extra metadata to these results. For example, we can annotate these groups by the percentage of cells in the neighborhood belong to each condition using the `annotateNhoods()` function. Bear in mind that the `coldata_col` variable must be a column found in `colData()` of the milo object. This will create two new columns where `condition` represents what condition the majority of cells belong to, while `condition_fraction` represent the percent of cells annotated with that condition.
 
-The developers of MiloR were cognicent of the fact that there may be neighborhoods of cells where there is a mix of two conditions. In their vignette, they recommend categorizing these neighborhoods as "Mixed".
+The developers of MiloR were cognicent of the fact that there may be neighborhoods of cells where there is a mix of two conditions. In [their vignette](https://rawcdn.githack.com/MarioniLab/miloR/7c7f906b94a73e62e36e095ddb3e3567b414144e/vignettes/milo_gastrulation.html#5_Finding_markers_of_DA_populations), they recommend categorizing these neighborhoods as "Mixed".
 
 
 ```r
