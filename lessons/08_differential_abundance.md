@@ -96,7 +96,7 @@ set.seed(1234)
 
 # Subset to condition of interest
 # seurat <- readRDS("data/BAT_GSE160585_final.rds")
-seurat_sub <- subset(seurat_sub, subset = (condition %in% c("TN", "cold7")))
+seurat_sub <- subset(seurat, subset = (condition %in% c("TN", "cold7")))
 ```
 
 MiloR generates the neighborhoods based upon the UMAP coordinates supplied, so we will re-run the necessary steps from our Seurat pipeline on this new subset. Since we have fewer cells than the larger datset, will use 30 PCA dimensions calculated from 2,000 highly variable genes (HVG). Following a typical Seurat workflow, we then calculate UMAP coordinates, neighborhoods, and clusters for later comparisons. We are also supplying specific names for the graphs and cluster names to avoid overwriting the previous metadata.
