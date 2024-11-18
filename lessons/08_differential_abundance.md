@@ -20,6 +20,20 @@ Differential abundance (DA) analysis is a method used to identify celltypes with
 The methods for differential abundance can be grouped into those that rely on a priori clustering of cells, and those that are cluster-free.
 
 
+### Cluster-based approaches for DA
+These methods are dependent on having cells grouped into phenotypically similar cell populations, most classically aligning with specific cell types. Many single cell RNA-seq data analyses workflow produce a result with annotated sub-populations, making these tools very easy to implement as a next step. 
+
+The **propellor method** is a function that is part of the [speckle R package]( https://github.com/phipsonlab/speckle), which uses cell level annotation information to calculate differential abundance estimates. First, cell type proportions are calculates for each sample. This results in matrix of proportions where the rows are the cell types, and the columns are the samples. The matrix is then transformed such that a linear modeling framework can be applied. If there are exactly two groups, moderated t-tests are implemented; if there are more than two groups, the option is a moderated ANOVA test. These tests are moderated using an empirical Bayes framework, borrowing information across all cells and finally false discovery rates are calculated.
+
+Another cluster-based approach is the **[sccomp]().
+
+### Cluster-free approaches
+The clustering step can however be problematic, especially in cases **where the sub-populations most responsive to the biological state do not fall into well-defined separate clusters**. For example, subpopulations that are differentially abundant between conditions may be distributed among several adjacent clusters or, alternatively, encompass only a part of a cluster. A requirement for clustering could also compromise results for continuous processes where no clear cluster structure exists, such as cell cycles or certain developmental programs. For the above scenarios, differential abundance at a cluster level may miss the important molecular mechanisms that differentiate between the states.
+In this lesson, we will explore the use of MiloR for differential abundance analysis. This tool does not rely on clustering of cells into discrete groups and instead makes use of a : k-nearest neighbor (KNN) graphs, a common data structure that is embedded in many single-cell analyses ([Dann E. et al, 2021]( https://www-nature-com.ezp-prod1.hul.harvard.edu/articles/s41587-021-01033-z).) 
+
+>**NOTE**: Although we present the code and workflow for MiloR in this lesson, this does not suggest this to be a conclusive best practice.   
+
+
 ## Differential abundance analysis with MiloR
 
 Looking at single-cell datasets on a cluster/celltype level is a very common mode of analysis. However, perhaps you have questions on the more subtle shifts within a certain cell population. The tool [miloR](https://www.nature.com/articles/s41587-021-01033-z) allows you to look more deeply into subtle shifts in smaller neighborhoods of cells by utilizng differential abundance testing on the k-nearest neighbor graph.
@@ -28,9 +42,8 @@ Looking at single-cell datasets on a cluster/celltype level is a very common mod
 <img src="../img/milo_schematic.png" width="630">
 </p>
 
-# Creating Milo object
 
-## Create new script
+### Create new script
 
 Next, open a new Rscript file, and start with some comments to indicate what this file is going to contain:
 
@@ -41,7 +54,7 @@ Next, open a new Rscript file, and start with some comments to indicate what thi
 Save the Rscript as `miloR_analysis_scrnaseq.R`.
 
 
-## Load libraries
+### Load libraries
 
 As usual, let us load the libraries needed at the beginning of our script.
 
@@ -54,7 +67,7 @@ library(miloR)
 library(EnhancedVolcano)
 ```
 
-## Select cell subsets
+### Select cell subsets
 
 For continuity, let us take a look at the VSM cells and look at the differences between the `TN` and `cold7` conditions.
 
@@ -88,7 +101,7 @@ DimPlot(seurat_vsm, group.by=c("condition", "vsm_clusters"))
 </p>
 
 
-## Creating single cell experiment
+### Creating single cell experiment
 
 Seurat is not the only format with which we can load in single-cell data. There is another data structure known as `SingelCellExperiment` which MiloR makes use of. 
 
@@ -104,7 +117,7 @@ These objects have the following structure:
   <img src="../img/sce_description.png" width="630">
 </p>
 
-Image credit: (Amezquita, R.A., Lun, A.T.L., Becht, E. et al.)[https://doi-org.ezp-prod1.hul.harvard.edu/10.1038/s41592-019-0654-x]
+_Image credit: (Amezquita, R.A., Lun, A.T.L., Becht, E. et al.)[https://doi-org.ezp-prod1.hul.harvard.edu/10.1038/s41592-019-0654-x]_
 
 We can use the functions from the SingleCellExperiment package to extract the different components. Let’s explore the counts and metadata for the experimental data.
 
@@ -162,7 +175,7 @@ AAACGAAGTTGGCTAT_1   -0.02918406       7264         2648                      3 
 AAACGAATCTGATTCT_1   -0.01522739       6873         2543                      1         VSM               1       TN
 ```
 
-## Creating Milo object
+### Creating Milo object
 
 Now that we better understand how to use a SingleCellExperiment, we can convert it to a Milo object. While there are slight differences in this object, the basic idea of how to access metadata and counts information is consistent with a SingleCellExperiment.
 
@@ -200,12 +213,12 @@ nhoodGraph names(0):
 nhoodAdjacency dimension(2): 1 1
 ```
 
-# Milo workflow
+## Milo workflow
 
-Now that we have our dataset in the correct format, we can begin utilize the Milo workflow.
+Now that we have our dataset in the correct format, we can begin utilizing the Milo workflow.
 
 
-## Creating neighborhoods
+### Creating neighborhoods
 
 Step one is to generate the k-nearest neighborhood graph with the `buildGraph()` function. The parameters include selected a `k` neighbors and `d` dimension values:
 
@@ -259,7 +272,7 @@ nhoodCounts(traj_milo) %>% head()
 6        .        .        .         .        7        8        16         4
 ```
 
-## Creating metadata
+### Creating metadata
 
 Next we need to create a metadata dataframe with all of the relevant pieces of information for the comparisons we want to run, including the sample names as well. In the case of this experiment, we need the columns `sample` and `condition`. 
 
@@ -294,7 +307,7 @@ Sample_15     cold7
 Sample_16     cold7
 ```
 
-## Run differential abundance
+### Run differential abundance
 
 Milo uses an adaptation of the Spatial FDR correction introduced by cydar, which accounts for the overlap between neighbourhoods. Specifically, each hypothesis test P-value is weighted by the reciprocal of the kth nearest neighbour distance. To use this statistic we first need to store the distances between nearest neighbors in the Milo object.
 
