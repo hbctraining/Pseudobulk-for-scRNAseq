@@ -52,16 +52,18 @@ In this lesson, **we will explore the use of MiloR for differential abundance an
 
 ## Differential abundance analysis with MiloR
 
-Looking at single-cell datasets on a cluster/celltype level is a very common mode of analysis. However, perhaps you have questions on the more subtle shifts within a certain cell population. The tool [miloR](https://www.nature.com/articles/s41587-021-01033-z) allows you to look more deeply into subtle shifts in smaller neighborhoods of cells by utilizng differential abundance testing on the k-nearest neighbor graph.
+Looking at single-cell datasets on a cluster/celltype level is a very common mode of analysis. However, perhaps you have questions on the more subtle shifts within a certain cell population. The tool [miloR](https://www.nature.com/articles/s41587-021-01033-z) allows you to look more deeply into smaller neighborhoods of cells by utilizng differential abundance testing on the k-nearest neighbor graph.
 
 <p align="center">
 <img src="../img/milo_schematic.png" width="630">
 </p>
 
+The general method of this tool is to assign cells to neighborhhods based upon a latent space (typically PCA) and neighborhood graph. Ultimately, we generate a neighborhood by counts matrix. These counts are modelled with negative bionomical generalized linear model which is then put through hypothesis testing to identify significantally differential abundant neighborhoods with associated fold change values.
+
 
 ### Create new script
 
-Next, open a new Rscript file, and start with some comments to indicate what this file is going to contain:
+To start, open a new Rscript file, and start with some comments to indicate what this file is going to contain:
 
 ```r
 # Single-cell RNA-seq analysis - differential abundance analysis with MiloR
@@ -85,14 +87,17 @@ library(EnhancedVolcano)
 
 ### Select cell subsets
 
-For continuity, let us take a look at the VSM cells and look at the differences between the `TN` and `cold7` conditions.
+For continuity, let us take a look at the VSM cells and look at the differences between the `TN` and `cold7` conditions. Here we are also going to set our seed so that we are all introducin the same randomness values in later steps.
 
 ```r
+set.seed(2024)
+
+# VSM cells
 seurat_vsm <- subset(seurat, subset = (celltype == "VSM"))
 seurat_vsm <- subset(seurat_vsm, subset = (condition %in% c("TN", "cold7")))
 ```
 
-MiloR generates the neighborhoods based upon the UMAP coordinates supplied, so we will re-run the necessary steps from our seurat pipeline on this new subset.
+MiloR generates the neighborhoods based upon the UMAP coordinates supplied, so we will re-run the necessary steps from our seurat pipeline on this new subset. Since we have fewer cells than the larger datset, will use 30 PCA dimensions calculated from 2,000 highly variable genes. Following a typical seurat workflow, we then calculate UMAP coordinates, neighborhoods, and clusters for later comparisons. We are also supplying specific names for the graphs and cluster names to avoid overwriting the previous metadata.
 
 ```r
 # HVG, PCA, UMAP, neighborhoods, calculate clusters
@@ -116,48 +121,39 @@ DimPlot(seurat_vsm, group.by=c("condition", "vsm_clusters"))
   <img src="../img/milo_vsm_umap.png" width="630">
 </p>
 
+We see a distinct separation of cells based upon which sample the cells come from, which will allow us to clearly identify changes in our dataset by condition with MiloR.
 
 ### Creating single cell experiment
 
-Seurat is not the only format with which we can load in single-cell data. There is another data structure known as `SingelCellExperiment` which MiloR makes use of. 
+In order to make use of the MiloR package, we must format our datset in the correct way. There is another data structure known as `SingelCellExperiment` that is commonly used to analyze single-cell experiments. We will first convert our Seurat object and investigate the underlying structure so that we can easily use and modify the object according to our needs.
 
 ```r
-# Create miloR object
+# Create SingleCellExperiment object
 DefaultAssay(seurat_vsm) <- "RNA"
 sce_vsm <- as.SingleCellExperiment(seurat_vsm)
 ```
 
-These objects have the following structure:
+A SingleCellExperiment stores metadata, counts matrix, and reductions in the following way:
 
 <p align="center">
   <img src="../img/sce_description.png" width="630">
 </p>
 
-_Image credit: (Amezquita, R.A., Lun, A.T.L., Becht, E. et al.)[https://doi-org.ezp-prod1.hul.harvard.edu/10.1038/s41592-019-0654-x]_
+_Image credit: [Amezquita, R.A., Lun, A.T.L., Becht, E. et al.](https://doi-org.ezp-prod1.hul.harvard.edu/10.1038/s41592-019-0654-x)_
 
 We can use the functions from the SingleCellExperiment package to extract the different components. Let’s explore the counts and metadata for the experimental data.
 
 ```r
-# Explore the raw counts for the dataset
+## Explore the raw counts for the dataset
 
-## Check the assays present
+# Check the assays present
 assays(sce_vsm)
 
-## Explore the raw counts for the dataset
+# Explore the raw counts for the dataset
 dim(counts(sce_vsm))
 
+# Access the first 6 genes and cells in the counts matrix
 counts(sce_vsm)[1:6, 1:6]
-```
-
-```
-6 x 6 sparse Matrix of class "dgCMatrix"
-       AAACCCACAGCTATTG_1 AAACGAAAGGGCGAAG_1 AAACGAACATTCGATG_1 AAACGAAGTAGCTCGC_1 AAACGAAGTTGGCTAT_1 AAACGAATCTGATTCT_1
-Xkr4                    .                  .                  .                  .                  .                  .
-Gm1992                  .                  .                  .                  .                  .                  .
-Rp1                     .                  .                  .                  .                  .                  .
-Sox17                   .                  .                  .                  .                  .                  .
-Mrpl15                  2                  2                  .                  1                  1                  .
-Lypla1                  .                  .                  .                  .                  .                  .
 ```
 
 We see the raw counts data is a cell by gene sparse matrix with the same genes (rows) and columns (cells) as in our seurat object.
@@ -171,29 +167,9 @@ dim(colData(sce_vsm))
 head(colData(sce_vsm))
 ```
 
-```
-DataFrame with 6 rows and 17 columns
-                    orig.ident nCount_RNA nFeature_RNA      sample log10GenesPerUMI mitoRatio   condition    S.Score   G2M.Score       Phase
-                   <character>  <numeric>    <integer> <character>        <numeric> <numeric> <character>  <numeric>   <numeric> <character>
-AAACCCACAGCTATTG_1   GSE160585      21744         4226    Sample_1         0.835980 0.0775846          TN -0.0357201 -0.04712786          G1
-AAACGAAAGGGCGAAG_1   GSE160585       9727         3016    Sample_1         0.872506 0.0352590          TN -0.0435373 -0.04958206          G1
-AAACGAACATTCGATG_1   GSE160585       7927         2319    Sample_1         0.863095 0.0586603          TN  0.0252971 -0.00971574           S
-AAACGAAGTAGCTCGC_1   GSE160585      10858         2874    Sample_1         0.856963 0.0751520          TN -0.0367748 -0.02159758          G1
-AAACGAAGTTGGCTAT_1   GSE160585       8131         2648    Sample_1         0.875394 0.0558357          TN -0.0354849 -0.00630089          G1
-AAACGAATCTGATTCT_1   GSE160585       6899         2543    Sample_1         0.887089 0.0610233          TN -0.0366306 -0.02140319          G1
-                   CC.Difference nCount_SCT nFeature_SCT integrated_snn_res.1.2    celltype seurat_clusters    ident
-                       <numeric>  <numeric>    <integer>              <integer> <character>     <character> <factor>
-AAACCCACAGCTATTG_1    0.01140775       6658         2106                      2         VSM               2       TN
-AAACGAAAGGGCGAAG_1    0.00604473       7433         3006                      3         VSM               3       TN
-AAACGAACATTCGATG_1    0.03501286       7175         2319                      3         VSM               3       TN
-AAACGAAGTAGCTCGC_1   -0.01517724       7443         2823                      3         VSM               3       TN
-AAACGAAGTTGGCTAT_1   -0.02918406       7264         2648                      3         VSM               3       TN
-AAACGAATCTGATTCT_1   -0.01522739       6873         2543                      1         VSM               1       TN
-```
-
 ### Creating Milo object
 
-Now that we better understand how to use a SingleCellExperiment, we can convert it to a Milo object. While there are slight differences in this object, the basic idea of how to access metadata and counts information is consistent with a SingleCellExperiment.
+Now that we better understand how to use a SingleCellExperiment, we can convert it to a Milo object. While there are slight differences in this object, the basic idea of how to access metadata and counts information is consistent with a SingleCellExperiment. To avoid re-computing PCA and UMAP coordinates, we are going to store the Seurat generated values in the `Embeddings` slot of our Milo variable.
 
 ```r
 # Create miloR object
@@ -236,25 +212,24 @@ Now that we have our dataset in the correct format, we can begin utilizing the M
 
 ### Creating neighborhoods
 
-Step one is to generate the k-nearest neighborhood graph with the `buildGraph()` function. The parameters include selected a `k` neighbors and `d` dimension values:
+Step one is to generate the k-nearest neighborhood graph with the `buildGraph()` function. The parameters include selected a `k` neighbors and `d` dimensions (PCs):
 
 - `k`: An integer scalar that specifies the number of nearest-neighbours to consider for the graph building. Default is 10.
 - `d`: The number of dimensions to use if the input is a matrix of cells. Deafult is 50.
 
-Note that building the k-nearest neighbor graph may take some time.
 
 ```r
 # Build the graph
 traj_milo <- buildGraph(milo_vsm, k = 10, d = 30)
 ```
 
-Afterwards we use the `makeNhoods()` function to define the neighborhoods themselves. To do so, the function randomly samples graph vertices, then refines them to collapse down the number of neighbourhoods to be tested.
+Afterwards we use the `makeNhoods()` function to define the neighborhoods based upon the graph calculated before. These neighborhoods are then refined further by evaluating the median PC values and vetrices to generate a minimal, but informative graph of the data. Relevant parameters for this function are:
 
 - `prop`: A double scalar that defines what proportion of graph vertices to randomly sample. Must be 0 < `prop` < 1. Default is 0.1.
 - `k`: An integer scalar - the same k used to construct the input graph. Default is 21.
 - `d`: The number of dimensions to use if the input is a matrix of cells X reduced dimensions. Default is 30.
 
-We additionally want to visualize how many cells belong to each neighborhood.
+Once we generate these neighborhoods, we can visualize the number of cells that belong to each neighborhood as a histogram. If the number of cells in each neighborhood are too small for our given dataset, this could be an indication that we need to select a different value for `k`. 
 
 ```r
 traj_milo <- makeNhoods(traj_milo, prop = 0.1, k = 10, d=30, refined = TRUE)
@@ -266,7 +241,10 @@ plotNhoodSizeHist(traj_milo)
   <img src="../img/milo_nhood_hist.png" width="400">
 </p>
 
-Now that we have identified which cells belong to which neighborhoods, we can quantify how many cells from each `sample` belong to each neighborhood.
+
+### Creating metadata
+
+Now that we have identified which cells belong to which neighborhoods, we can quantify how many cells from each `sample` belong to each neighborhood. 
 
 ```r
 # Count number of cells per neighborhood
@@ -288,9 +266,7 @@ nhoodCounts(traj_milo) %>% head()
 6        .        .        .         .        7        8        16         4
 ```
 
-### Creating metadata
-
-Next we need to create a metadata dataframe with all of the relevant pieces of information for the comparisons we want to run, including the sample names as well. In the case of this experiment, we need the columns `sample` and `condition`. 
+In this way, we can account for technical variability across replicates. To define which samples belong to which condition, we next create a metdata dataframe. This table will contain all of the relevant pieces of information for the comparisons we want to run, including the sample names as well. In the case of this experiment, we need the columns `sample` and `condition`. 
 
 ```r
 # Create metadata
@@ -323,29 +299,33 @@ Sample_15     cold7
 Sample_16     cold7
 ```
 
+Now we have all the relevant information to begin testing differential abundance!
+
 ### Run differential abundance
 
-Milo uses an adaptation of the Spatial FDR correction introduced by cydar, which accounts for the overlap between neighbourhoods. Specifically, each hypothesis test P-value is weighted by the reciprocal of the kth nearest neighbour distance. To use this statistic we first need to store the distances between nearest neighbors in the Milo object.
+To test the differences in neighborhoods, we first calculate the Euclidean dsitances between nearest neighborhoods using the PCs that the graph was first constructed upon with the `calcNhoods()` function. With the distances computed for each neighborhood in our dataset, we can begin assessing the overlap in neighborhoods. This is accomplished with the Spatial FDR correction where each hypothesis test p-values are adjusted based upon the nearest neighbor distances. 
 
-This calculates a Fold-change and corrected P-value for each neighbourhood, which indicates whether there is significant differential abundance between conditions. These results are stored as a dataframe with the following columns:
-
-logFC:
-Numeric, the log fold change between conditions, or for an ordered/continous variable the per-unit change in (normalized) cell counts per unit-change in experimental variable.
-
-logCPM:
-Numeric, the log counts per million (CPM), which equates to the average log normalized cell counts across all samples.
-
-
-- Numeric, the F-test  statistic from the quali-likelihood F-test implemented in edgeR.
-- PValue: Numeric, the unadjusted p-value from the quasi-likelihood F-test.
-- FDR: Numeric, the Benjamini & Hochberg false discovery weight computed from p.adjust.
-- Nhood: Numeric, a unique identifier corresponding to the specific graph neighbourhood.
-- SpatialFDR: Numeric, the weighted FDR, computed to adjust for spatial graph overlaps between neighbourhoods. For details see graphSpatialFDR.
+This step may take some time to run for a large dataset.
 
 
 ```r
 # Calculate differential abundance
-traj_milo <- calcNhoodDistance(traj_milo, d=30) # May take a few min to run
+# This may take some time to run
+traj_milo <- calcNhoodDistance(traj_milo, d=30) 
+```
+
+Now we can finally calculate the differential abundance across the neighborhoods with `testNhoods()`. We specify the `design`, or the model we want to use in the comparison. The columns used in design must be found within the `design.df` metadata dataframe. This results in a dataframe with the following (columns)[https://rdrr.io/github/MarioniLab/miloR/man/testNhoods.html]:
+
+- `logFC`: Numeric, the log fold change between conditions, or for an ordered/continous variable the per-unit change in (normalized) cell counts per unit-change in experimental variable.
+- `logCPM`: Numeric, the log counts per million (CPM), which equates to the average log normalized cell counts across all samples.
+- `F`: Numeric, the F-test  statistic from the quali-likelihood F-test implemented in edgeR.
+- `PValue`: Numeric, the unadjusted p-value from the quasi-likelihood F-test.
+- `FDR`: Numeric, the Benjamini & Hochberg false discovery weight computed from p.adjust.
+- `Nhood`: Numeric, a unique identifier corresponding to the specific graph neighbourhood.
+- `SpatialFDR`: Numeric, the weighted FDR, computed to adjust for spatial graph overlaps between neighbourhoods. 
+
+
+```r
 da_results <- testNhoods(traj_milo, 
                          design = ~ condition, 
                          design.df = traj_design)
@@ -427,7 +407,7 @@ p1 + p2
 
 ### Bee swarm plots
 
-Another built in visualization can be accessed with the `plotDAbeeswarm()` function. In these visualizations, each point represents a neighborhood which are grouped together according to the `group.by` parameter. Along the x-axis, these neighborhoods are spread out according to their log fold change score.
+Another built in visualization can be accessed with the `plotDAbeeswarm()` function. In these visualizations, each point represents a neighborhood which are grouped together according to the `group.by` parameter. Along the x-axis, these neighborhoods are spread out according to their log fold change score. This clearly shows the distribution of significant fold changes across difference groups.
 
 To begin, let's look at the change in neighborhood expression across our two conditions.
 
@@ -439,7 +419,12 @@ plotDAbeeswarm(da_results, group.by = "condition")
   <img src="../img/milo_beeswarm_condition.png" height="500">
 </p>
 
-TODO 
+
+As expected, we see a clear FDR divide based upon condition as that was the `design` variable we computed the different neighborhoods on.
+
+
+We can additionally take a look at the seurat clusters that were calculated earlier to see how the neighborhoods distribute across the clusters.
+
 
 ```r
 plotDAbeeswarm(da_results, group.by = "vsm_clusters")
@@ -449,7 +434,12 @@ plotDAbeeswarm(da_results, group.by = "vsm_clusters")
   <img src="../img/milo_beeswarm_vsm_clusters.png" height="500">
 </p>
 
-TODO
+
+Note that in cluster 4, there appears to be a mix of both cold7 and TN neighborhoods (as indicated by the fold change values). This is an indication that this cell state is one that is shared across both conditions and is not unique to the experimental design.
+
+
+Finally, we can make the same visualization for the neighborhood groups. This will help us identify two different groups we may be interested in running a DGE analysis in the next step.
+
 
 ```r
 plotDAbeeswarm(da_results, group.by = "NhoodGroup")
@@ -458,7 +448,6 @@ plotDAbeeswarm(da_results, group.by = "NhoodGroup")
 <p align="center">
   <img src="../img/milo_beeswarm_NhoodGroup.png" height="500">
 </p>
-
 
 
 
