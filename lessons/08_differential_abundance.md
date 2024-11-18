@@ -10,14 +10,17 @@ date: November 5th, 2024
 * Run miloR for differential abundance analysis on VSM cells
 
 ## Differential abundance of celltypes
-Differential abundance (or proportion) analysis is a method used to identify cell types with statistically significant changes in abundance between different biological conditions. Some tools and methods for differential proportion analysis include:
+Differential abundance (DA) analysis is a method used to identify celltypes with statistically significant changes in abundance between different biological conditions.  The overall aim is to find sub-populations of cells in which the ratio of cells from the two conditions is significantly different from the ratios observed in the overall data. Methods for differential abundance have been successfully used in practice in both clinical and experimental settings. For example, these approaches highlighted an increased presence of granulocytes, monocytes, and B cells in fatal cases of COVID-19 ([Bodenmiller B. et al, 2012](https://www.nature.com/articles/nbt.2317). The figure below, taken from a [2024 benchmarking study of DA approaches](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-023-03143-0#Fig1), nicely illustrates DA effects.
 
-* ...
-* 
 
-## MiloR
+<p align="center">
+<img src="../img/DA_schematic.png" width="630">
+</p>
 
-# Differential abundance analysis with MiloR
+The methods for differential abundance can be grouped into those that rely on a priori clustering of cells, and those that are cluster-free.
+
+
+## Differential abundance analysis with MiloR
 
 Looking at single-cell datasets on a cluster/celltype level is a very common mode of analysis. However, perhaps you have questions on the more subtle shifts within a certain cell population. The tool [miloR](https://www.nature.com/articles/s41587-021-01033-z) allows you to look more deeply into subtle shifts in smaller neighborhoods of cells by utilizng differential abundance testing on the k-nearest neighbor graph.
 
