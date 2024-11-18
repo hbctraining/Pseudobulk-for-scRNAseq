@@ -92,38 +92,34 @@ library(EnhancedVolcano)
 For continuity, let us take a look at the vascular smooth muscle (VSM) cells and look at the differences between the `TN` and `cold7` conditions. Here we are also going to set our seed so that we are all introducing the same randomness values in later steps.
 
 ```r
-set.seed(2024)
+set.seed(1234)
 
-# Re-load Seurat object if necessary
+# Subset to condition of interest
 # seurat <- readRDS("data/BAT_GSE160585_final.rds")
-
-# VSM cells
-seurat_vsm <- subset(seurat, subset = (celltype == "VSM"))
-seurat_vsm <- subset(seurat_vsm, subset = (condition %in% c("TN", "cold7")))
+seurat_sub <- subset(seurat_sub, subset = (condition %in% c("TN", "cold7")))
 ```
 
 MiloR generates the neighborhoods based upon the UMAP coordinates supplied, so we will re-run the necessary steps from our Seurat pipeline on this new subset. Since we have fewer cells than the larger datset, will use 30 PCA dimensions calculated from 2,000 highly variable genes (HVG). Following a typical Seurat workflow, we then calculate UMAP coordinates, neighborhoods, and clusters for later comparisons. We are also supplying specific names for the graphs and cluster names to avoid overwriting the previous metadata.
 
 ```r
 # HVG, PCA, UMAP, neighborhoods, calculate clusters
-seurat_vsm <- FindVariableFeatures(seurat_vsm, verbose=FALSE, nfeatures=2000)
-seurat_vsm <- ScaleData(seurat_vsm, verbose=FALSE)
-seurat_vsm <- RunPCA(seurat_vsm, verbose = FALSE)
-seurat_vsm <- RunUMAP(seurat_vsm, dims = 1:30, verbose=FALSE)
-seurat_vsm <- FindNeighbors(seurat_vsm, dims = 1:30,
-                           graph.name="vsm_graph", verbose=FALSE)
+seurat_sub <- FindVariableFeatures(seurat_sub, verbose=FALSE, nfeatures=2000)
+seurat_sub <- ScaleData(seurat_sub, verbose=FALSE)
+seurat_sub <- RunPCA(seurat_sub, verbose = FALSE)
+seurat_sub <- RunUMAP(seurat_sub, dims = 1:30, verbose=FALSE)
+seurat_sub <- FindNeighbors(seurat_sub, dims = 1:30,
+                            graph.name="sub_graph", verbose=FALSE)
 
 # Determine the clusters at resolution 0.4
-seurat_vsm <- FindClusters(seurat_vsm, cluster.name="vsm_clusters",
-                          resolution=0.4, graph.name="vsm_graph",
-                          verbose=FALSE)
+seurat_sub <- FindClusters(seurat_sub, cluster.name="sub_clusters",
+                           resolution=0.4, graph.name="sub_graph",
+                           verbose=FALSE)
 
-Idents(seurat_vsm) <- "condition"
-DimPlot(seurat_vsm, group.by=c("condition", "vsm_clusters"))
+DimPlot(seurat_sub, group.by=c("condition", "sub_clusters", "celltype"))
 ```
 
 <p align="center">
-  <img src="../img/milo_vsm_umap.png" width="630">
+  <img src="../img/milo_all_umap.png" width="800">
 </p>
 
 We see a distinct separation of cells based upon which sample the cells come from, which will allow us to clearly identify changes in our dataset by condition with MiloR.
@@ -134,8 +130,8 @@ In order to make use of the MiloR package, we must format our datset in the corr
 
 ```r
 # Create SingleCellExperiment object
-DefaultAssay(seurat_vsm) <- "RNA"
-sce_vsm <- as.SingleCellExperiment(seurat_vsm)
+DefaultAssay(seurat_sub) <- "RNA"
+sce <- as.SingleCellExperiment(seurat_sub)
 ```
 
 A SingleCellExperiment stores metadata, counts matrix, and reductions in the following way:
@@ -149,24 +145,26 @@ _Image credit: [Amezquita, R.A., Lun, A.T.L., Becht, E. et al, 2019](https://doi
 We can use the functions from the SingleCellExperiment package to extract the different components. Let’s explore the counts and metadata for the experimental data.
 
 ```r
+## Explore the raw counts for the dataset
+
 # Check the assays present
-assays(sce_vsm)
+assays(sce)
 
 # Explore the raw counts for the dataset
-dim(counts(sce_vsm))
+dim(counts(sce))
 
 # Access the first 6 genes and cells in the counts matrix
-counts(sce_vsm)[1:6, 1:6]
+counts(sce)[1:6, 1:6]
 ```
 
 ```
 6 x 6 sparse Matrix of class "dgCMatrix"
-       AAACCCACAGCTATTG_1 AAACGAAAGGGCGAAG_1 AAACGAACATTCGATG_1 AAACGAAGTAGCTCGC_1 AAACGAAGTTGGCTAT_1 AAACGAATCTGATTCT_1
+       AAACCCACAGCTATTG_1 AAACCCAGTCGGTAAG_1 AAACCCAGTTCCGGTG_1 AAACGAAAGGGCGAAG_1 AAACGAACATTCGATG_1 AAACGAAGTAGCTCGC_1
 Xkr4                    .                  .                  .                  .                  .                  .
 Gm1992                  .                  .                  .                  .                  .                  .
 Rp1                     .                  .                  .                  .                  .                  .
-Sox17                   .                  .                  .                  .                  .                  .
-Mrpl15                  2                  2                  .                  1                  1                  .
+Sox17                   .                  1                  .                  .                  .                  .
+Mrpl15                  2                  1                  .                  2                  .                  1
 Lypla1                  .                  .                  .                  .                  .                  .
 ```
 
@@ -176,9 +174,9 @@ Next, we can get an idea of how to access the metadata in our SCE object by usin
 
 ```r
 # Explore the cellular metadata for the dataset
-dim(colData(sce_vsm))
+dim(colData(sce))
 
-head(colData(sce_vsm))
+head(colData(sce))
 ```
 
 ### Creating Milo object
@@ -187,24 +185,22 @@ Now that we better understand how to use a SingleCellExperiment, we can convert 
 
 ```r
 # Create miloR object
-milo_vsm <- Milo(sce_vsm)
+milo <- Milo(sce)
 
 # Store previously computed PCA and UMAP values
-reducedDim(milo_vsm, "PCA") <- Embeddings(seurat_vsm, reduction="pca")
-reducedDim(milo_vsm, "UMAP") <- Embeddings(seurat_vsm, reduction="umap")
-milo_vsm
+reducedDim(milo, "PCA") <- Embeddings(seurat_sub, reduction="pca")
+reducedDim(milo, "UMAP") <- Embeddings(seurat_sub, reduction="umap")
 ```
 
 ```
 class: Milo 
-dim: 19771 5847 
+dim: 19771 11148 
 metadata(0):
 assays(2): counts logcounts
 rownames(19771): Xkr4 Gm1992 ... CAAA01118383.1 CAAA01147332.1
 rowData names(0):
-colnames(5847): AAACCCACAGCTATTG_1 AAACGAAAGGGCGAAG_1 ...
-  TTTGACTAGGCTTCCG_16 TTTGTTGAGGGACAGG_16
-colData names(18): orig.ident nCount_RNA ... vsm_clusters ident
+colnames(11148): AAACCCACAGCTATTG_1 AAACCCAGTCGGTAAG_1 ... TTTGACTAGGCTTCCG_16 TTTGTTGAGGGACAGG_16
+colData names(18): orig.ident nCount_RNA ... sub_clusters ident
 reducedDimNames(2): PCA UMAP
 mainExpName: RNA
 altExpNames(0):
@@ -234,7 +230,7 @@ Step one is to generate the k-nearest neighborhood graph with the `buildGraph()`
 
 ```r
 # Build the graph
-traj_milo <- buildGraph(milo_vsm, k = 10, d = 30)
+traj_milo <- buildGraph(milo, k = 10, d = 30)
 ```
 
 Afterwards we use the `makeNhoods()` function to define the neighborhoods based upon the graph calculated before. These neighborhoods are then refined further by evaluating the median PC values and vetrices to generate a minimal but informative graph of the data. Relevant parameters for this function are:
@@ -252,7 +248,7 @@ plotNhoodSizeHist(traj_milo)
 ```
 
 <p align="center">
-  <img src="../img/milo_nhood_hist.png" width="600">
+  <img src="../img/milo_all_nhood_hist.png" width="600">
 </p>
 
 
@@ -272,12 +268,12 @@ nhoodCounts(traj_milo) %>% head()
 ```
 6 x 8 sparse Matrix of class "dgCMatrix"
   Sample_1 Sample_2 Sample_9 Sample_10 Sample_7 Sample_8 Sample_15 Sample_16
-1        .        .       12        18        .        .         .         .
-2       16        2        .         .        1        .         .         .
-3       28        2        .         2        .        .         1         .
-4        3        .       13        19        .        .         .         .
-5       17        3        .         1        .        .         .         .
-6        3        .        9        23        .        .         .         .
+1        8        6        .         4        .        .         .         .
+2        6        .        9        11        .        .         .         .
+3        .        2       17        10        .        .         .         .
+4        .        1        .         .       10       11         .         1
+5        6        2       10        29        1        .         .         .
+6        1        3        2         9        .        1         .         2
 ```
 
 In this way, we can account for technical variability across replicates. To define which samples belong to which condition, we next create a metdata dataframe. This table will contain all of the relevant pieces of information for the comparisons we want to run, including the sample names. In the case of this experiment, we need the columns `sample` and `condition`. 
@@ -348,13 +344,13 @@ da_results %>% head()
 ```
 
 ```
-     logFC   logCPM        F     PValue        FDR Nhood SpatialFDR
-1 5.445933 12.18821 5.450655 0.01963098 0.06029826     1 0.05838122
-2 2.702203 11.86498 1.615816 0.20378127 0.23482411     2 0.22899789
-3 3.278148 12.22262 2.626844 0.10518241 0.13154813     3 0.12837834
-4 5.641968 12.30574 5.958004 0.01471187 0.06029826     4 0.05838122
-5 4.978833 11.93259 4.434042 0.03531737 0.06930480     5 0.06660339
-6 5.564923 12.25916 5.783074 0.01624543 0.06029826     6 0.05838122
+      logFC   logCPM         F      PValue         FDR Nhood  SpatialFDR condition condition_fraction
+1  5.077949 10.92841  8.328449 0.003918351 0.010144926     1 0.008677397        TN          1.0000000
+2  5.595769 11.22084  9.946825 0.001620099 0.006318517     2 0.005170829        TN          1.0000000
+3  6.026816 11.49294 10.713690 0.001070141 0.006318517     3 0.005170829        TN          1.0000000
+4 -3.946278 11.23250  6.741285 0.009446174 0.019465082     4 0.016947029     cold7          0.9565217
+5  4.703667 11.82490  7.968536 0.004777138 0.011760113     5 0.010144964        TN          0.9791667
+6  1.874743 11.02911  1.997329 0.157634216 0.197811182     6 0.181707364        TN          0.8333333
 ```
 
 Now that we have our neighborhoods, we can add extra metadata to these results. For example, we can annotate these groups by the percentage of cells in the neighborhood that belong to each condition using the `annotateNhoods()` function. Bear in mind that the `coldata_col` variable must be a column found in `colData()` of the milo object. This will create two new columns where `condition` represents what condition the majority of cells belong to, while `condition_fraction` represent the percent of cells annotated with that condition.
@@ -365,35 +361,42 @@ The developers of MiloR were cognicent of the fact that there may be neighborhoo
 ```r
 # Annotate neighborhoods by condition
 da_results <- annotateNhoods(traj_milo, da_results, coldata_col = "condition")
-
 # Categorize neighborhoods with < 70% of one condition as mixed
 da_results$anno_condition <- ifelse(da_results$condition_fraction < 0.7,
                                     "Mixed",
                                     da_results$condition)
 
+# Annotate neighborhoods by celltype
+da_results <- annotateNhoods(traj_milo, da_results, coldata_col = "celltype")
+# Categorize neighborhoods with < 70% of one celltype as mixed
+da_results$anno_celltype <- ifelse(da_results$celltype_fraction < 0.7,
+                                    "Mixed",
+                                    da_results$celltype)
+
+
 # Annotate neighborhoods by cluster
-da_results <- annotateNhoods(traj_milo, da_results, coldata_col = "vsm_clusters")
+da_results <- annotateNhoods(traj_milo, da_results, coldata_col = "sub_clusters")
 ```
 
-The final piece of information is added to this dataframe of differential abundance results with the `groupNhoods()` function. This will run the louvain clustering algorithm to identify neighborhoods that are overlapping and similar to one another. This `max.lfc.delta` specifies a cutoff of fold change difference where two neighborhoods would not be considered a part of the same group. 
+The final piece of information is added to this dataframe of differential abundance results with the `groupNhoods()` function. This will run the louvain clustering algorithm to identify neighborhoods that are overlapping and similar to one another. This `max.lfc.delta` specifies a cutoff of fold change difference where two neighborhoods would not be considered a part of the same group. We are setting a value of 5, which is quite high in order to minimize the number of neighborhood groups (similar to the resolution we set for louvain clustering).
 
 > Note that the exact number of groups may vary due to randomness in the model. Even if the results are not identical to what is displayed here, the general trends of the data should be similar. 
 
 ```r
 # Find group structure of neighborhoods
-da_results <- groupNhoods(traj_milo, da_results, max.lfc.delta = 2)
+da_results <- groupNhoods(traj_milo, da_results, max.lfc.delta = 5)
 
 da_results %>% head()
 ```
 
 ```
-     logFC   logCPM        F     PValue        FDR Nhood SpatialFDR condition condition_fraction vsm_clusters vsm_clusters_fraction NhoodGroup
-1 5.445933 12.18821 5.450655 0.01963098 0.06029826     1 0.05838122        TN          1.0000000            0             1.0000000          1
-2 2.702203 11.86498 1.615816 0.20378127 0.23482411     2 0.22899789        TN          0.9473684            1             0.5263158          1
-3 3.278148 12.22262 2.626844 0.10518241 0.13154813     3 0.12837834        TN          0.9696970            0             0.8484848          1
-4 5.641968 12.30574 5.958004 0.01471187 0.06029826     4 0.05838122        TN          1.0000000            2             0.9714286          2
-5 4.978833 11.93259 4.434042 0.03531737 0.06930480     5 0.06660339        TN          1.0000000            1             0.9523810          3
-6 5.564923 12.25916 5.783074 0.01624543 0.06029826     6 0.05838122        TN          1.0000000            2             0.4000000          4
+      logFC   logCPM         F      PValue         FDR Nhood  SpatialFDR condition condition_fraction anno_condition sub_clusters sub_clusters_fraction celltype celltype_fraction anno_celltype NhoodGroup
+1  5.077949 10.92841  8.328449 0.003918351 0.010144926     1 0.008677397        TN          1.0000000             TN            3             1.0000000       EC         1.0000000            EC          1
+2  5.595769 11.22084  9.946825 0.001620099 0.006318517     2 0.005170829        TN          1.0000000             TN            2             0.8076923      VSM         0.9615385           VSM          2
+3  6.026816 11.49294 10.713690 0.001070141 0.006318517     3 0.005170829        TN          1.0000000             TN            5             1.0000000     ECAP         1.0000000          ECAP          3
+4 -3.946278 11.23250  6.741285 0.009446174 0.019465082     4 0.016947029     cold7          0.9565217          cold7            1             1.0000000      VSM         1.0000000           VSM          4
+5  4.703667 11.82490  7.968536 0.004777138 0.011760113     5 0.010144964        TN          0.9791667             TN            1             1.0000000      VSM         0.9791667           VSM          5
+6  1.874743 11.02911  1.997329 0.157634216 0.197811182     6 0.181707364        TN          0.8333333             TN            0             0.8333333      VSM         1.0000000           VSM          6
 ```
 
 ## Visualization
@@ -411,12 +414,13 @@ We can also represent the neighborhoods according to the group structure that wa
 traj_milo <- buildNhoodGraph(traj_milo)
 p1 <- plotNhoodGraphDA(traj_milo, da_results, alpha=0.1)
 p2 <- plotNhoodGroups(traj_milo, da_results) 
+p3 <- scater::plotUMAP(traj_milo, colour_by="sub_clusters")
 
-p1 + p2
+p1 + p2 + p3
 ```
 
 <p align="center">
-  <img src="../img/milo_da_umap.png" height="500">
+  <img src="../img/milo_all_da_umap.png" height="500">
 </p>
 
 
@@ -427,11 +431,11 @@ Another built in visualization can be accessed with the `plotDAbeeswarm()` funct
 To begin, let's look at the change in neighborhood expression across our two conditions.
 
 ```r
-plotDAbeeswarm(da_results, group.by = "condition")
+plotDAbeeswarm(da_results, group.by = "anno_condition")
 ```
 
 <p align="center">
-  <img src="../img/milo_beeswarm_condition.png" height="500">
+  <img src="../img/milo_all_beeswarm_condition.png" height="500">
 </p>
 
 
@@ -440,11 +444,11 @@ As expected, we see a clear FDR divide based upon condition as that was the `des
 We can additionally take a look at the Seurat clusters that were calculated earlier to see how the neighborhoods distribute across the clusters.
 
 ```r
-plotDAbeeswarm(da_results, group.by = "vsm_clusters")
+plotDAbeeswarm(da_results, group.by = "anno_celltype")
 ```
 
 <p align="center">
-  <img src="../img/milo_beeswarm_vsm_clusters.png" height="500">
+  <img src="../img/milo_all_beeswarm_celltype.png" height="500">
 </p>
 
 Note that in cluster 4, there appears to be a mix of both cold7 and TN neighborhoods (as indicated by the fold change values). This is an indication that this cell state is one that is shared across both conditions and is not unique to the experimental design.
@@ -456,7 +460,7 @@ plotDAbeeswarm(da_results, group.by = "NhoodGroup")
 ```
 
 <p align="center">
-  <img src="../img/milo_beeswarm_NhoodGroup.png" height="500">
+  <img src="../img/milo_all_beeswarm_nhoodgroup.png" height="500">
 </p>
 
 
@@ -466,7 +470,7 @@ Within the Milo package, we can even run a DGE analysis between different groups
 
 ```r
 # Use variable genes
-hvgs <- VariableFeatures(seurat_vsm)
+hvgs <- VariableFeatures(seurat_sub)
 nhood_markers <- findNhoodGroupMarkers(traj_milo,
                                        da_results,
                                        subset.row = hvgs, 
@@ -474,28 +478,30 @@ nhood_markers <- findNhoodGroupMarkers(traj_milo,
                                        sample_col = "sample")
 ```
 
-If there are two neighborhoods groups of interest, instead we can run DE on just those two subsets with the `subset.nhoods` argument. As an example, let us look at neighborhood groups 1 and 3.
+If there are two neighborhoods groups of interest, instead we can run DE on just those two subsets with the `subset.nhoods` argument. As an example, let us look at neighborhood groups 6 and 7.
+
+> You may have different groups due to the randomness that is introduced during neighborhood grouping. Pick two groups that appear quite different in your bee swarm plots.
 
 ```r
-# Compare group 1 and 3
+# Compare group 6 and 7
 nhood_markers <- findNhoodGroupMarkers(traj_milo,
                                        da_results,
                                        subset.row = hvgs,
-                                       subset.nhoods = da_results$NhoodGroup %in% c('1', '3'),
+                                       subset.nhoods = da_results$NhoodGroup %in% c('6', '7'),
                                        aggregate.samples = TRUE, sample_col = "sample")
 
 
-nhood_markers %>% arrange(desc(abs(logFC_1))) %>% head()
+nhood_markers %>% arrange(abs(logFC_6)) %>% tail()
 ```
 
 ```
-    GeneID   logFC_1  adj.P.Val_1   logFC_3  adj.P.Val_3
-1      Mt1  1.574481 0.0001022295 -1.574481 0.0001022295
-2  Gm13889  1.122213 0.0026749159 -1.122213 0.0026749159
-3      Fos -1.081121 0.0500258626  1.081121 0.0500258626
-4    Cebpb  1.073674 0.0011078978 -1.073674 0.0011078978
-5    Nr4a2  1.046689 0.0008368211 -1.046689 0.0008368211
-6 Crispld2  1.013613 0.0341118238 -1.013613 0.0341118238
+     GeneID   logFC_6  adj.P.Val_6   logFC_7  adj.P.Val_7
+1995   Art3 -2.607195 2.897275e-12  2.607195 2.897275e-12
+1996    Mgp -2.715875 1.439939e-07  2.715875 1.439939e-07
+1997  Kcnj8 -2.824452 1.312572e-10  2.824452 1.312572e-10
+1998   Meg3 -3.018706 4.580461e-13  3.018706 4.580461e-13
+1999  Myh11  3.414083 2.113784e-13 -3.414083 2.113784e-13
+2000   Rgs5 -4.097856 4.053591e-15  4.097856 4.053591e-15
 ```
 
 Same as we have been doing throughout the workshop, we can then create a volcano plot of the DGE results.
@@ -503,8 +509,8 @@ Same as we have been doing throughout the workshop, we can then create a volcano
 ```r
 EnhancedVolcano(nhood_markers,
                 nhood_markers$GeneID,
-                x = "logFC_1",
-                y = "adj.P.Val_1",
+                x = "logFC_6",
+                y = "adj.P.Val_6",
                 FCcutoff = 0.5,
                 pCutoff = 0.01)
 ```
@@ -518,31 +524,32 @@ We can even generate a heatmap of expression per-neighborhood with the `plotNhoo
 This visualization represents the averaged expression of each gene among the cells in each each neighborhood.
 
 ```r
-# P-value < 0.01
 # Make sure marker gene is in dataset
+# P-value < 0.01
 # Select LFC > 1
 # Sort genes by LFC score
 markers <- nhood_markers %>% 
-              subset(adj.P.Val_1 < 0.01) %>%
-              subset(logFC_1 > 0.5) %>%
-              subset(GeneID %in% rownames(traj_milo)) %>%
-              arrange(logFC_1)
+  subset(GeneID %in% rownames(traj_milo)) %>%
+  subset(adj.P.Val_6 < 0.01) %>%
+  subset(logFC_6 > 0.5) %>%
+  arrange(logFC_6)
 
-# Top 10 markers
+# Top markers
 genes <- markers$GeneID[1:10]
+genes <- genes[!is.na(genes)]
 
 # Heatmap of top 10 marker genes for groups 1 and 3
 plotNhoodExpressionGroups(traj_milo,
                           da_results,
                           features=genes,
-                          subset.nhoods = da_results$NhoodGroup %in% c('1','3'), 
+                          subset.nhoods = da_results$NhoodGroup %in% c('6','7'), 
                           scale=TRUE,
                           grid.space = "fixed",
                           cluster_features = TRUE)
 ```
 
 <p align="center">
-  <img src="../img/milo_heatmap.png" height="500">
+  <img src="../img/milo_all_heatmap.png" height="500">
 </p>
 
 
