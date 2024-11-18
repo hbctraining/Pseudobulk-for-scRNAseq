@@ -519,7 +519,7 @@ EnhancedVolcano(nhood_markers,
   <img src="../img/milo_all_volcano.png" height="500">
 </p>
 
-We can even generate a heatmap of expression per-neighborhood with the `plotNhoodExpressionGroups()` function. First, we can identify the top 10 genes in neighborhood group 1 based upon the log-fold change value. We can then supply those genes into our function and again subset the groups to 6 and 7.
+We can even generate a heatmap of expression per-neighborhood with the `plotNhoodExpressionGroups()` function. First, we can identify the top 10 genes in neighborhood group 6 based upon the log-fold change value. We can then supply those genes into our function and again subset the groups to 6 and 7.
 
 This visualization represents the averaged expression of each gene among the cells in each each neighborhood.
 
