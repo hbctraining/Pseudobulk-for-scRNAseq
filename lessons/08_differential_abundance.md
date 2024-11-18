@@ -60,7 +60,7 @@ Looking at single-cell datasets on a cluster/celltype level is a very common mod
 
 _Image source: [Dann E. et al, 2021](https://www.nature.com/articles/s41587-021-01033-z)_
 
-The general method of this tool is to assign cells to neighborhhods based upon a latent space (typically PCA) and neighborhood graph. Ultimately, we generate a neighborhood by counts matrix. These counts are modelled with a negative bionomical generalized linear model, which is then put through hypothesis testing to identify significantally differentially abundant neighborhoods with associated fold change values.
+The general method of this tool is to assign cells to neighborhoods based upon a latent space (typically PCA) and neighborhood graph. Ultimately, we generate a neighborhood by counts matrix. These counts are modelled with a negative bionomial generalized linear model, which is then put through hypothesis testing to identify significantally differentially abundant neighborhoods with associated fold change values.
 
 
 ### Create new script
@@ -215,6 +215,8 @@ nhoodGraph names(0):
 nhoodAdjacency dimension(2): 1 1
 ```
 
+The major differences between Milo and a SingleCellExperiment comes from the slots where `nhood` values are stored, as this is information that is uniquely stored in our Milo object. These values will be automatically populated as we use the various function built into the package.  
+
 ## Milo workflow
 
 Now that we have our dataset in the correct format, we can begin utilizing the Milo workflow.
@@ -222,7 +224,7 @@ Now that we have our dataset in the correct format, we can begin utilizing the M
 
 ### Creating neighborhoods
 
-Step one is to generate the k-nearest neighborhood graph with the `buildGraph()` function. The parameters include selected `k` neighbors and `d` dimensions (PCs):
+Step one is to generate the k-nearest neighborhood graph with the `buildGraph()` function. The parameters include selecting `k` neighbors and `d` dimensions (PCs):
 
 - `k`: An integer scalar that specifies the number of nearest-neighbours to consider for the graph building. Default is 10.
 - `d`: The number of dimensions to use if the input is a matrix of cells. Deafult is 50.
@@ -233,7 +235,7 @@ Step one is to generate the k-nearest neighborhood graph with the `buildGraph()`
 traj_milo <- buildGraph(milo, k = 10, d = 30)
 ```
 
-Afterwards we use the `makeNhoods()` function to define the neighborhoods based upon the graph calculated before. These neighborhoods are then refined further by evaluating the median PC values and vetrices to generate a minimal but informative graph of the data. Relevant parameters for this function are:
+Afterwards we use the `makeNhoods()` function to define the neighborhoods based upon the graph calculated before. These neighborhoods are then refined further by evaluating the median PC values and vetrices to generate a minimal, but informative graph of the data. The values assigned to the parameters for this function should be consistent with the ones that were chosen when the graph was built in the previous step:
 
 - `prop`: A double scalar that defines what proportion of graph vertices to randomly sample. Must be 0 < `prop` < 1. Default is 0.1.
 - `k`: An integer scalar - the same k used to construct the input graph. Default is 21.
@@ -276,7 +278,7 @@ nhoodCounts(traj_milo) %>% head()
 6        1        3        2         9        .        1         .         2
 ```
 
-In this way, we can account for technical variability across replicates. To define which samples belong to which condition, we next create a metdata dataframe. This table will contain all of the relevant pieces of information for the comparisons we want to run, including the sample names. In the case of this experiment, we need the columns `sample` and `condition`. 
+With this sample-level information, we can account for technical variability across replicates. To define which samples belong to which condition, we next create a metadata dataframe. This table will contain all of the relevant pieces of information for the comparisons we want to run, including the sample names. In the case of this experiment, we need the columns `sample` and `condition`. 
 
 ```r
 # Create metadata
@@ -313,7 +315,7 @@ Now we have all the relevant information to begin testing differential abundance
 
 ### Run differential abundance
 
-To test the differences in neighborhoods, we first calculate the Euclidean dsitances between nearest neighborhoods using the PCs that the graph was first constructed upon with the `calcNhoods()` function. With the distances computed for each neighborhood in our dataset, we can begin assessing the overlap in neighborhoods. This is accomplished with the Spatial FDR correction where each hypothesis test p-values are adjusted based upon the nearest neighbor distances. 
+To test the differences in neighborhoods, we first calculate the Euclidean distances between nearest neighborhoods using the PCs that the graph was first constructed on with the `calcNhoods()` function. With the distances computed for each neighborhood in our dataset, we can begin assessing the overlap in neighborhoods. This is accomplished with the Spatial FDR correction where each hypothesis test p-values are adjusted based upon the nearest neighbor distances. 
 
 This step may take some time to run for a large dataset.
 
@@ -405,7 +407,7 @@ Now, with all the information we have, we can visualize the differential abundan
 
 ### Neighborhoods overlaid UMAP
 
-Each dot represents a different neighborhood, with the size of the dot representing how many cells belong to that neighborhood. The color of the circle represent the log-fold change for that neighborhood, from the `da_results` object.
+Each dot represents a different neighborhood, with the size of the dot representing how many cells belong to that neighborhood. The color of the circle represent the log-fold change for that neighborhood, from the `da_results` object. You may notices that there are many neighborhoods that do not contain any color, which is an indication that the FDR value did not meet that `alpha` value supplied.
 
 We can also represent the neighborhoods according to the group structure that was calculated with the `groupNhoods()` function. The expectation here would be that the group structure bears a resemblance the clusters calculated after subsetting the data. 
 
@@ -425,7 +427,7 @@ p1 + p2
 
 ### Bee swarm plots
 
-Another built in visualization can be accessed with the `plotDAbeeswarm()` function. In these visualizations, each point represents a neighborhood, which are grouped together according to the `group.by` parameter. Along the x-axis, these neighborhoods are spread out according to their log fold change score. This clearly shows the distribution of significant fold changes across difference groups.
+Another built in visualization can be accessed with the `plotDAbeeswarm()` function. In these visualizations, each point represents a neighborhood, which are grouped together according to the `group.by` parameter. Along the x-axis, these neighborhoods are spread out according to their log fold change score. This clearly shows the distribution of significant fold changes across different groups.
 
 To begin, let's look at the change in neighborhood expression across our two conditions.
 
@@ -538,7 +540,7 @@ markers <- nhood_markers %>%
 genes <- markers$GeneID[1:10]
 genes <- genes[!is.na(genes)]
 
-# Heatmap of top 10 marker genes for groups 6 and 7
+# Heatmap of top marker genes for groups 6 and 7
 plotNhoodExpressionGroups(traj_milo,
                           da_results,
                           features=genes,
