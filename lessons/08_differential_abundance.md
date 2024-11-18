@@ -249,7 +249,7 @@ plotNhoodSizeHist(traj_milo)
 ```
 
 <p align="center">
-  <img src="../img/milo_nhood_hist.png" width="400">
+  <img src="../img/milo_nhood_hist.png" width="600">
 </p>
 
 
@@ -374,6 +374,7 @@ da_results <- annotateNhoods(traj_milo, da_results, coldata_col = "vsm_clusters"
 
 The final piece of information is added to this dataframe of differential abundance results with the `groupNhoods()` function. This will run the louvain clustering algorithm to identify neighborhoods that are overlapping and similar to one another. This `max.lfc.delta` specifies a cutoff of fold change difference where two neighborhoods would not be considered a part of the same group. 
 
+> Note that the exact number of groups may vary due to randomness in the model. Even if the results are not identical to what is displayed here, the general trends of the data should be similar. 
 
 ```r
 # Find group structure of neighborhoods
