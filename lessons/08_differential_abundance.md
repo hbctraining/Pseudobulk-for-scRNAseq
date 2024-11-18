@@ -25,13 +25,28 @@ These methods are dependent on having cells grouped into phenotypically similar 
 
 The **propellor method** is a function that is part of the [speckle R package]( https://github.com/phipsonlab/speckle), which uses cell level annotation information to calculate differential abundance estimates. First, cell type proportions are calculates for each sample. This results in matrix of proportions where the rows are the cell types, and the columns are the samples. The matrix is then transformed such that a linear modeling framework can be applied. If there are exactly two groups, moderated t-tests are implemented; if there are more than two groups, the option is a moderated ANOVA test. These tests are moderated using an empirical Bayes framework, borrowing information across all cells and finally false discovery rates are calculated.
 
-Another cluster-based approach is the **[sccomp]().
+<p align="center">
+<img src="../img/propellor.jpeg" width="525">
+</p>
+
+_Image source: [Phipson B. et al, 2022](https://academic.oup.com/bioinformatics/article/38/20/4720/6675456)_
+
+While propellor and other approaches which are based on linear regression (i.e. scDC, diffcyt) transform the data to model data compositionality, they do not model the data count distribution.  Modeling single-cell compositional data as counts is important as small datasets and rare cell types are characterized by a high noise-to-signal ratio, and modeling counts enables the down-weighting of small cell-group proportions compared to larger ones ([Mangiola s. et al, 2023](https://www.pnas.org/doi/10.1073/pnas.2203828120)). The **[sccomp](https://github.com/MangiolaLaboratory/sccomp) package** is a generalized **method for differential composition and variability analyses based on sum-constrained independent Beta-binomial distributions**. The sccomp core algorithm, data integration, and visualization are outlined in the figure below. Two important features of this method includes outlier detection and differential variability analysis.
+
+<p align="center">
+<img src="../img/sccomp.jpg" width="550">
+</p>
+
 
 ### Cluster-free approaches
-The clustering step can however be problematic, especially in cases **where the sub-populations most responsive to the biological state do not fall into well-defined separate clusters**. For example, subpopulations that are differentially abundant between conditions may be distributed among several adjacent clusters or, alternatively, encompass only a part of a cluster. A requirement for clustering could also compromise results for continuous processes where no clear cluster structure exists, such as cell cycles or certain developmental programs. For the above scenarios, differential abundance at a cluster level may miss the important molecular mechanisms that differentiate between the states.
-In this lesson, we will explore the use of MiloR for differential abundance analysis. This tool does not rely on clustering of cells into discrete groups and instead makes use of a : k-nearest neighbor (KNN) graphs, a common data structure that is embedded in many single-cell analyses ([Dann E. et al, 2021]( https://www-nature-com.ezp-prod1.hul.harvard.edu/articles/s41587-021-01033-z).) 
+The clustering step can however be problematic, especially in cases **where the sub-populations most responsive to the biological state do not fall into well-defined separate clusters**. 
 
->**NOTE**: Although we present the code and workflow for MiloR in this lesson, this does not suggest this to be a conclusive best practice.   
+* For example, subpopulations that are differentially abundant between conditions may be distributed among several adjacent clusters or, alternatively, encompass only a part of a cluster.
+* A requirement for clustering could also compromise results for continuous processes where no clear cluster structure exists, such as cell cycles or certain developmental programs. For the above scenarios, differential abundance at a cluster level may miss the important molecular mechanisms that differentiate between the states.
+  
+In this lesson, **we will explore the use of MiloR for differential abundance analysis**. This tool does not rely on clustering of cells into discrete groups and instead makes use of a : k-nearest neighbor (KNN) graphs, a common data structure that is embedded in many single-cell analyses ([Dann E. et al, 2021]( https://www-nature-com.ezp-prod1.hul.harvard.edu/articles/s41587-021-01033-z).) 
+
+>**NOTE**: Although we present the code and workflow for MiloR in this lesson, this does not suggest this to be a conclusive best practice for DA analysis.   
 
 
 ## Differential abundance analysis with MiloR
