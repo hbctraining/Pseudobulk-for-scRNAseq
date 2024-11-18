@@ -119,7 +119,7 @@ DimPlot(seurat_sub, group.by=c("condition", "sub_clusters", "celltype"))
 ```
 
 <p align="center">
-  <img src="../img/milo_all_umap.png" width="800" height="500>
+  <img src="../img/milo_all_umap.png" width="800" height="400">
 </p>
 
 We see a distinct separation of cells based upon which sample the cells come from, which will allow us to clearly identify changes in our dataset by condition with MiloR.
