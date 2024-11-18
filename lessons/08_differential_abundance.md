@@ -22,20 +22,20 @@ The figure below is taken from a [2024 benchmarking study of DA approaches](http
 
 
 ### Cluster-based approaches for DA
-These methods are dependent on having cells grouped into phenotypically similar cell populations, most classically aligning with specific cell types. Many single cell RNA-seq data analyses workflow produce a result with annotated sub-populations, making these tools very easy to implement as a next step. 
+These methods are dependent on having cells grouped into phenotypically similar cell populations, most classically aligning with specific cell types. Many single cell RNA-seq data analysis workflows produce a result with annotated sub-populations, making these tools very easy to implement as a next step. 
 
-The **propellor method** is a function that is part of the [speckle R package]( https://github.com/phipsonlab/speckle), which uses cell level annotation information to calculate differential abundance estimates. First, cell type proportions are calculates for each sample. This results in matrix of proportions where the rows are the cell types, and the columns are the samples. The matrix is then transformed such that a linear modeling framework can be applied. If there are exactly two groups, moderated t-tests are implemented; if there are more than two groups, the option is a moderated ANOVA test. These tests are moderated using an empirical Bayes framework, borrowing information across all cells and finally false discovery rates are calculated.
+The **propellor method** is a function that is part of the [speckle R package](https://github.com/phipsonlab/speckle), which uses cell level annotation information to calculate differential abundance estimates. First, cell type proportions are calculated for each sample. This results in matrix of proportions where the rows are the cell types and the columns are the samples. The matrix is then transformed such that a linear modeling framework can be applied. If there are exactly two groups, moderated t-tests are implemented; if there are more than two groups, the option is a moderated ANOVA test. These tests are moderated using an empirical Bayes framework, borrowing information across all cells, and finally false discovery rates are calculated.
 
 <p align="center">
-<img src="../img/propellor.jpeg" width="525">
+<img src="../img/propellor.jpeg" width="630">
 </p>
 
 _Image source: [Phipson B. et al, 2022](https://academic.oup.com/bioinformatics/article/38/20/4720/6675456)_
 
-While propellor and other approaches which are based on linear regression (i.e. scDC, diffcyt) transform the data to model data compositionality, they do not model the data count distribution.  Modeling single-cell compositional data as counts is important as small datasets and rare cell types are characterized by a high noise-to-signal ratio, and modeling counts enables the down-weighting of small cell-group proportions compared to larger ones ([Mangiola s. et al, 2023](https://www.pnas.org/doi/10.1073/pnas.2203828120)). The **[sccomp](https://github.com/MangiolaLaboratory/sccomp) package** is a generalized **method for differential composition and variability analyses based on sum-constrained independent Beta-binomial distributions**. The sccomp core algorithm, data integration, and visualization are outlined in the figure below. Two important features of this method includes outlier detection and differential variability analysis.
+While propellor and other approaches based on linear regression (i.e., scDC, diffcyt) transform the data to model data compositionality, they do not model the data count distribution.  Modeling single-cell compositional data as counts is important as small datasets and rare cell types are characterized by a high noise-to-signal ratio, and modeling counts enables the down-weighting of small cell-group proportions compared to larger ones ([Mangiola s. et al, 2023](https://www.pnas.org/doi/10.1073/pnas.2203828120)). The **[sccomp](https://github.com/MangiolaLaboratory/sccomp) package** is a generalized **method for differential composition and variability analyses based on sum-constrained independent Beta-binomial distributions**. The sccomp core algorithm, data integration, and visualization are outlined in the figure below. Two important features of this method include outlier detection and differential variability analysis.
 
 <p align="center">
-<img src="../img/sccomp.jpg" width="550">
+<img src="../img/sccomp.jpg" width="630">
 </p>
 
 
@@ -45,20 +45,22 @@ The clustering step can however be problematic, especially in cases **where the 
 * For example, subpopulations that are differentially abundant between conditions may be distributed among several adjacent clusters or, alternatively, encompass only a part of a cluster.
 * A requirement for clustering could also compromise results for continuous processes where no clear cluster structure exists, such as cell cycles or certain developmental programs. For the above scenarios, differential abundance at a cluster level may miss the important molecular mechanisms that differentiate between the states.
   
-In this lesson, **we will explore the use of MiloR for differential abundance analysis**. This tool does not rely on clustering of cells into discrete groups and instead makes use of a : k-nearest neighbor (KNN) graphs, a common data structure that is embedded in many single-cell analyses ([Dann E. et al, 2021]( https://www-nature-com.ezp-prod1.hul.harvard.edu/articles/s41587-021-01033-z).) 
+In this lesson, **we will explore the use of MiloR for differential abundance analysis**. This tool does not rely on clustering of cells into discrete groups and instead makes use of k-nearest neighbor (KNN) graphs, a common data structure that is embedded in many single-cell analyses ([Dann E. et al, 2021](https://www-nature-com.ezp-prod1.hul.harvard.edu/articles/s41587-021-01033-z).) 
 
->**NOTE**: Although we present the code and workflow for MiloR in this lesson, this does not suggest this to be a conclusive best practice for DA analysis.   
+>**NOTE**: Although we present the code and workflow for MiloR in this lesson, this does not suggest this method to be a conclusive best practice for DA analysis.   
 
 
 ## Differential abundance analysis with MiloR
 
-Looking at single-cell datasets on a cluster/celltype level is a very common mode of analysis. However, perhaps you have questions on the more subtle shifts within a certain cell population. The tool [miloR](https://www.nature.com/articles/s41587-021-01033-z) allows you to look more deeply into smaller neighborhoods of cells by utilizng differential abundance testing on the k-nearest neighbor graph.
+Looking at single-cell datasets on a cluster/celltype level is a very common mode of analysis. However, perhaps you have questions on the more subtle shifts within a certain cell population. The tool [miloR](https://www.nature.com/articles/s41587-021-01033-z) allows you to look more deeply into smaller neighborhoods of cells by utilizing differential abundance testing on the k-nearest neighbor graph.
 
 <p align="center">
 <img src="../img/milo_schematic.png" width="630">
 </p>
 
-The general method of this tool is to assign cells to neighborhhods based upon a latent space (typically PCA) and neighborhood graph. Ultimately, we generate a neighborhood by counts matrix. These counts are modelled with negative bionomical generalized linear model which is then put through hypothesis testing to identify significantally differential abundant neighborhoods with associated fold change values.
+_Image source: [Dann E. et al, 2021](https://www.nature.com/articles/s41587-021-01033-z)_
+
+The general method of this tool is to assign cells to neighborhhods based upon a latent space (typically PCA) and neighborhood graph. Ultimately, we generate a neighborhood by counts matrix. These counts are modelled with a negative bionomical generalized linear model, which is then put through hypothesis testing to identify significantally differentially abundant neighborhoods with associated fold change values.
 
 
 ### Create new script
@@ -66,7 +68,7 @@ The general method of this tool is to assign cells to neighborhhods based upon a
 To start, open a new Rscript file, and start with some comments to indicate what this file is going to contain:
 
 ```r
-# Single-cell RNA-seq analysis - differential abundance analysis with MiloR
+# Single-cell RNA-seq analysis - Differential abundance analysis with MiloR
 ```
 
 Save the Rscript as `miloR_analysis_scrnaseq.R`.
@@ -87,17 +89,20 @@ library(EnhancedVolcano)
 
 ### Select cell subsets
 
-For continuity, let us take a look at the VSM cells and look at the differences between the `TN` and `cold7` conditions. Here we are also going to set our seed so that we are all introducin the same randomness values in later steps.
+For continuity, let us take a look at the vascular smooth muscle (VSM) cells and look at the differences between the `TN` and `cold7` conditions. Here we are also going to set our seed so that we are all introducing the same randomness values in later steps.
 
 ```r
 set.seed(2024)
+
+# Re-load Seurat object if necessary
+# seurat <- readRDS("data/BAT_GSE160585_final.rds")
 
 # VSM cells
 seurat_vsm <- subset(seurat, subset = (celltype == "VSM"))
 seurat_vsm <- subset(seurat_vsm, subset = (condition %in% c("TN", "cold7")))
 ```
 
-MiloR generates the neighborhoods based upon the UMAP coordinates supplied, so we will re-run the necessary steps from our seurat pipeline on this new subset. Since we have fewer cells than the larger datset, will use 30 PCA dimensions calculated from 2,000 highly variable genes. Following a typical seurat workflow, we then calculate UMAP coordinates, neighborhoods, and clusters for later comparisons. We are also supplying specific names for the graphs and cluster names to avoid overwriting the previous metadata.
+MiloR generates the neighborhoods based upon the UMAP coordinates supplied, so we will re-run the necessary steps from our Seurat pipeline on this new subset. Since we have fewer cells than the larger datset, will use 30 PCA dimensions calculated from 2,000 highly variable genes (HVG). Following a typical Seurat workflow, we then calculate UMAP coordinates, neighborhoods, and clusters for later comparisons. We are also supplying specific names for the graphs and cluster names to avoid overwriting the previous metadata.
 
 ```r
 # HVG, PCA, UMAP, neighborhoods, calculate clusters
@@ -125,7 +130,7 @@ We see a distinct separation of cells based upon which sample the cells come fro
 
 ### Creating single cell experiment
 
-In order to make use of the MiloR package, we must format our datset in the correct way. There is another data structure known as `SingelCellExperiment` that is commonly used to analyze single-cell experiments. We will first convert our Seurat object and investigate the underlying structure so that we can easily use and modify the object according to our needs.
+In order to make use of the MiloR package, we must format our datset in the correct way. There is another data structure known as `SingleCellExperiment` that is commonly used to analyze single-cell experiments. We will first convert our Seurat object and investigate the underlying structure so that we can easily use and modify the object according to our needs.
 
 ```r
 # Create SingleCellExperiment object
@@ -139,13 +144,11 @@ A SingleCellExperiment stores metadata, counts matrix, and reductions in the fol
   <img src="../img/sce_description.png" width="630">
 </p>
 
-_Image credit: [Amezquita, R.A., Lun, A.T.L., Becht, E. et al.](https://doi-org.ezp-prod1.hul.harvard.edu/10.1038/s41592-019-0654-x)_
+_Image credit: [Amezquita, R.A., Lun, A.T.L., Becht, E. et al, 2019](https://doi-org.ezp-prod1.hul.harvard.edu/10.1038/s41592-019-0654-x)_
 
 We can use the functions from the SingleCellExperiment package to extract the different components. Let’s explore the counts and metadata for the experimental data.
 
 ```r
-## Explore the raw counts for the dataset
-
 # Check the assays present
 assays(sce_vsm)
 
@@ -167,12 +170,12 @@ Mrpl15                  2                  2                  .                 
 Lypla1                  .                  .                  .                  .                  .                  .
 ```
 
-We see the raw counts data is a cell by gene sparse matrix with the same genes (rows) and columns (cells) as in our seurat object.
+We see the raw counts data is a cell by gene sparse matrix with the same genes (rows) and columns (cells) as in our Seurat object.
 
-Next, we can get an idea of how to access the metadata in our object by using the `colData()` function:
+Next, we can get an idea of how to access the metadata in our SCE object by using the `colData()` function:
 
 ```r
-## Explore the cellular metadata for the dataset
+# Explore the cellular metadata for the dataset
 dim(colData(sce_vsm))
 
 head(colData(sce_vsm))
@@ -180,7 +183,7 @@ head(colData(sce_vsm))
 
 ### Creating Milo object
 
-Now that we better understand how to use a SingleCellExperiment, we can convert it to a Milo object. While there are slight differences in this object, the basic idea of how to access metadata and counts information is consistent with a SingleCellExperiment. To avoid re-computing PCA and UMAP coordinates, we are going to store the Seurat generated values in the `Embeddings` slot of our Milo variable.
+Now that we better understand how to use a SingleCellExperiment, we can convert it to a Milo object. While there are slight differences in this object, the basic idea of how to access metadata and counts information is consistent with a SingleCellExperiment. To avoid re-computing PCA and UMAP coordinates, we are going to store the Seurat generated values in the `Embeddings` slot of our Milo object.
 
 ```r
 # Create miloR object
@@ -223,7 +226,7 @@ Now that we have our dataset in the correct format, we can begin utilizing the M
 
 ### Creating neighborhoods
 
-Step one is to generate the k-nearest neighborhood graph with the `buildGraph()` function. The parameters include selected a `k` neighbors and `d` dimensions (PCs):
+Step one is to generate the k-nearest neighborhood graph with the `buildGraph()` function. The parameters include selected `k` neighbors and `d` dimensions (PCs):
 
 - `k`: An integer scalar that specifies the number of nearest-neighbours to consider for the graph building. Default is 10.
 - `d`: The number of dimensions to use if the input is a matrix of cells. Deafult is 50.
@@ -234,7 +237,7 @@ Step one is to generate the k-nearest neighborhood graph with the `buildGraph()`
 traj_milo <- buildGraph(milo_vsm, k = 10, d = 30)
 ```
 
-Afterwards we use the `makeNhoods()` function to define the neighborhoods based upon the graph calculated before. These neighborhoods are then refined further by evaluating the median PC values and vetrices to generate a minimal, but informative graph of the data. Relevant parameters for this function are:
+Afterwards we use the `makeNhoods()` function to define the neighborhoods based upon the graph calculated before. These neighborhoods are then refined further by evaluating the median PC values and vetrices to generate a minimal but informative graph of the data. Relevant parameters for this function are:
 
 - `prop`: A double scalar that defines what proportion of graph vertices to randomly sample. Must be 0 < `prop` < 1. Default is 0.1.
 - `k`: An integer scalar - the same k used to construct the input graph. Default is 21.
@@ -243,7 +246,7 @@ Afterwards we use the `makeNhoods()` function to define the neighborhoods based 
 Once we generate these neighborhoods, we can visualize the number of cells that belong to each neighborhood as a histogram. If the number of cells in each neighborhood are too small for our given dataset, this could be an indication that we need to select a different value for `k`. 
 
 ```r
-traj_milo <- makeNhoods(traj_milo, prop = 0.1, k = 10, d=30, refined = TRUE)
+traj_milo <- makeNhoods(traj_milo, prop = 0.1, k = 10, d = 30, refined = TRUE)
 
 plotNhoodSizeHist(traj_milo)
 ```
@@ -277,7 +280,7 @@ nhoodCounts(traj_milo) %>% head()
 6        3        .        9        23        .        .         .         .
 ```
 
-In this way, we can account for technical variability across replicates. To define which samples belong to which condition, we next create a metdata dataframe. This table will contain all of the relevant pieces of information for the comparisons we want to run, including the sample names as well. In the case of this experiment, we need the columns `sample` and `condition`. 
+In this way, we can account for technical variability across replicates. To define which samples belong to which condition, we next create a metdata dataframe. This table will contain all of the relevant pieces of information for the comparisons we want to run, including the sample names. In the case of this experiment, we need the columns `sample` and `condition`. 
 
 ```r
 # Create metadata
@@ -325,9 +328,9 @@ This step may take some time to run for a large dataset.
 traj_milo <- calcNhoodDistance(traj_milo, d=30) 
 ```
 
-Now we can finally calculate the differential abundance across the neighborhoods with `testNhoods()`. We specify the `design`, or the model we want to use in the comparison. The columns used in design must be found within the `design.df` metadata dataframe. This results in a dataframe with the following [columns](https://rdrr.io/github/MarioniLab/miloR/man/testNhoods.html):
+Now we can finally calculate the differential abundance across the neighborhoods with `testNhoods()`. We specify the `design`, or the model we want to use in the comparison. The columns used in `design` must be found within the `design.df` metadata dataframe. This results in a dataframe with the following [columns](https://rdrr.io/github/MarioniLab/miloR/man/testNhoods.html):
 
-- `logFC`: Numeric, the log fold change between conditions, or for an ordered/continous variable the per-unit change in (normalized) cell counts per unit-change in experimental variable.
+- `logFC`: Numeric, the log fold change between conditions or, for an ordered/continous variable, the per-unit change in (normalized) cell counts per unit-change in experimental variable.
 - `logCPM`: Numeric, the log counts per million (CPM), which equates to the average log normalized cell counts across all samples.
 - `F`: Numeric, the F-test  statistic from the quali-likelihood F-test implemented in edgeR.
 - `PValue`: Numeric, the unadjusted p-value from the quasi-likelihood F-test.
@@ -345,18 +348,18 @@ da_results %>% head()
 ```
 
 ```
-      logFC   logCPM         F       PValue         FDR Nhood  SpatialFDR
-1  5.383966 11.80962  3.997345 0.0456731668 0.150747056     1 0.147279465
-2  5.439519 11.84264  4.145856 0.0418350534 0.150747056     2 0.147279465
-3  3.514925 10.98646  1.607903 0.2048973695 0.252574320     3 0.249984729
-4  5.353711 11.79050  3.950876 0.0469489658 0.150747056     4 0.147279465
-5  5.063808 11.63182  3.576596 0.0587072653 0.150747056     5 0.147279465
-6 -7.876050 13.52804 13.522319 0.0002403926 0.006379396     6 0.009554048
+     logFC   logCPM        F     PValue        FDR Nhood SpatialFDR
+1 5.445933 12.18821 5.450655 0.01963098 0.06029826     1 0.05838122
+2 2.702203 11.86498 1.615816 0.20378127 0.23482411     2 0.22899789
+3 3.278148 12.22262 2.626844 0.10518241 0.13154813     3 0.12837834
+4 5.641968 12.30574 5.958004 0.01471187 0.06029826     4 0.05838122
+5 4.978833 11.93259 4.434042 0.03531737 0.06930480     5 0.06660339
+6 5.564923 12.25916 5.783074 0.01624543 0.06029826     6 0.05838122
 ```
 
-Now that we have our neighborhoods, we can add extra metadata to these results. For example, we can annotate these groups by the percentage of cells in the neighborhood belong to each condition using the `annotateNhoods()` function. Bear in mind that the `coldata_col` variable must be a column found in `colData()` of the milo object. This will create two new columns where `condition` represents what condition the majority of cells belong to, while `condition_fraction` represent the percent of cells annotated with that condition.
+Now that we have our neighborhoods, we can add extra metadata to these results. For example, we can annotate these groups by the percentage of cells in the neighborhood that belong to each condition using the `annotateNhoods()` function. Bear in mind that the `coldata_col` variable must be a column found in `colData()` of the milo object. This will create two new columns where `condition` represents what condition the majority of cells belong to, while `condition_fraction` represent the percent of cells annotated with that condition.
 
-The developers of MiloR were cognicent of the fact that there may be neighborhoods of cells where there is a mix of two conditions. In their vignette, they recommend categorizing these neighborhoods as "Mixed".
+The developers of MiloR were cognicent of the fact that there may be neighborhoods of cells where there is a mix of two conditions. In [their vignette](https://rawcdn.githack.com/MarioniLab/miloR/7c7f906b94a73e62e36e095ddb3e3567b414144e/vignettes/milo_gastrulation.html#5_Finding_markers_of_DA_populations), they recommend categorizing these neighborhoods as "Mixed".
 
 
 ```r
@@ -395,7 +398,7 @@ da_results %>% head()
 
 ## Visualization
 
-Now, with all the information we have we can visualize the differential abundance results using the UMAP coordinates that we initially supplied. 
+Now, with all the information we have, we can visualize the differential abundance results using the UMAP coordinates that we initially supplied. 
 
 ### Neighborhoods overlaid UMAP
 
@@ -419,7 +422,7 @@ p1 + p2
 
 ### Bee swarm plots
 
-Another built in visualization can be accessed with the `plotDAbeeswarm()` function. In these visualizations, each point represents a neighborhood which are grouped together according to the `group.by` parameter. Along the x-axis, these neighborhoods are spread out according to their log fold change score. This clearly shows the distribution of significant fold changes across difference groups.
+Another built in visualization can be accessed with the `plotDAbeeswarm()` function. In these visualizations, each point represents a neighborhood, which are grouped together according to the `group.by` parameter. Along the x-axis, these neighborhoods are spread out according to their log fold change score. This clearly shows the distribution of significant fold changes across difference groups.
 
 To begin, let's look at the change in neighborhood expression across our two conditions.
 
@@ -434,9 +437,7 @@ plotDAbeeswarm(da_results, group.by = "condition")
 
 As expected, we see a clear FDR divide based upon condition as that was the `design` variable we computed the different neighborhoods on.
 
-
-We can additionally take a look at the seurat clusters that were calculated earlier to see how the neighborhoods distribute across the clusters.
-
+We can additionally take a look at the Seurat clusters that were calculated earlier to see how the neighborhoods distribute across the clusters.
 
 ```r
 plotDAbeeswarm(da_results, group.by = "vsm_clusters")
@@ -446,12 +447,9 @@ plotDAbeeswarm(da_results, group.by = "vsm_clusters")
   <img src="../img/milo_beeswarm_vsm_clusters.png" height="500">
 </p>
 
-
 Note that in cluster 4, there appears to be a mix of both cold7 and TN neighborhoods (as indicated by the fold change values). This is an indication that this cell state is one that is shared across both conditions and is not unique to the experimental design.
 
-
 Finally, we can make the same visualization for the neighborhood groups. This will help us identify two different groups we may be interested in running a DGE analysis in the next step.
-
 
 ```r
 plotDAbeeswarm(da_results, group.by = "NhoodGroup")
@@ -460,7 +458,6 @@ plotDAbeeswarm(da_results, group.by = "NhoodGroup")
 <p align="center">
   <img src="../img/milo_beeswarm_NhoodGroup.png" height="500">
 </p>
-
 
 
 ## Neighborhood differential genes 
@@ -553,7 +550,7 @@ As we would expect, these genes are much more highly expressed in group 1 compar
 
 ---
 
-Now that you have reached the end of you analysis, make sure to output the versions of all tools used in the DE analysis:
+Now that you have reached the end of your analysis, make sure to output the versions of all tools used in the DE analysis:
 
 ```r
 sessionInfo()
