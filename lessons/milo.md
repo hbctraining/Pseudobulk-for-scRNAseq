@@ -30,7 +30,7 @@ Image credit: [Dann E., Henderson N.C., Teichmann S., Morgan M.D., Marioni J.C.,
 Next, open a new Rscript file, and start with some comments to indicate what this file is going to contain:
 
 ```r
-# Single-cell RNA-seq analysis - differential abundance analysis with MiloR
+# Single-cell RNA-seq analysis - Differential abundance analysis with MiloR
 ```
 
 Save the Rscript as `miloR_analysis_scrnaseq.R`.
@@ -51,17 +51,20 @@ library(EnhancedVolcano)
 
 ## Select cell subsets
 
-For continuity, let us take a look at the VSM cells and look at the differences between the `TN` and `cold7` conditions.
+For continuity, let us take a look at the vascular smooth muscle (VSM) cells and look at the differences between the `TN` and `cold7` conditions.
 
 ```r
+# Re-load Seurat object if necessary
+# seurat <- readRDS("data/BAT_GSE160585_final.rds")
+
 seurat_vsm <- subset(seurat, subset = (celltype == "VSM"))
 seurat_vsm <- subset(seurat_vsm, subset = (condition %in% c("TN", "cold7")))
 ```
 
-MiloR generates the neighborhoods based upon the UMAP coordinates supplied, so we will re-run the necessary steps from our seurat pipeline on this new subset.
+MiloR generates the neighborhoods based upon the UMAP coordinates supplied, so we will re-run the necessary steps from our Seurat pipeline on this new subset.
 
 ```r
-# HVG, PCA, UMAP, neighborhoods, calculate clusters
+# Highly variable genes (HVG), PCA, UMAP, neighborhoods, calculate clusters
 seurat_vsm <- FindVariableFeatures(seurat_vsm, verbose=FALSE, nfeatures=2000)
 seurat_vsm <- ScaleData(seurat_vsm, verbose=FALSE)
 seurat_vsm <- RunPCA(seurat_vsm, verbose = FALSE)
@@ -85,10 +88,10 @@ DimPlot(seurat_vsm, group.by=c("condition", "vsm_clusters"))
 
 ## Creating single cell experiment
 
-Seurat is not the only format with which we can load in single-cell data. There is another data structure known as `SingelCellExperiment` which MiloR makes use of. 
+Seurat is not the only format with which we can load in single-cell data. There is another data structure known as `SingleCellExperiment`, which MiloR makes use of. 
 
 ```r
-# Create miloR object
+# Create SingleCellExperiment object
 DefaultAssay(seurat_vsm) <- "RNA"
 sce_vsm <- as.SingleCellExperiment(seurat_vsm)
 ```
@@ -104,12 +107,10 @@ Image credit: [Amezquita, R.A., Lun, A.T.L., Becht, E. et al.](https://doi-org.e
 We can use the functions from the SingleCellExperiment package to extract the different components. Let’s explore the counts and metadata for the experimental data.
 
 ```r
-# Explore the raw counts for the dataset
-
-## Check the assays present
+# Check the assays present
 assays(sce_vsm)
 
-## Explore the raw counts for the dataset
+# Explore the raw counts for the dataset
 dim(counts(sce_vsm))
 
 counts(sce_vsm)[1:6, 1:6]
@@ -126,9 +127,9 @@ Mrpl15                  2                  2                  .                 
 Lypla1                  .                  .                  .                  .                  .                  .
 ```
 
-We see the raw counts data is a cell by gene sparse matrix with the same genes (rows) and columns (cells) as in our seurat object.
+We see the raw counts data is a cell by gene sparse matrix with the same genes (rows) and columns (cells) as in our Seurat object.
 
-Next, we can get an idea of how to access the metadata in our object by using the `colData()` function:
+Next, we can get an idea of how to access the metadata in our SCE object by using the `colData()` function:
 
 ```r
 ## Explore the cellular metadata for the dataset
@@ -159,7 +160,7 @@ AAACGAATCTGATTCT_1   -0.01522739       6873         2543                      1 
 
 ## Creating Milo object
 
-Now that we better understand how to use a SingleCellExperiment, we can convert it to a Milo object. While there are slight differences in this object, the basic idea of how to access metadata and counts information is consistent with a SingleCellExperiment.
+Now that we better understand how to use a SingleCellExperiment object, we can convert it to a Milo object. While there are slight differences in this object, the basic idea of how to access metadata and counts information is consistent with a SingleCellExperiment.
 
 ```r
 # Create miloR object
@@ -197,7 +198,7 @@ nhoodAdjacency dimension(2): 1 1
 
 # Milo workflow
 
-Now that we have our dataset in the correct format, we can begin utilize the Milo workflow.
+Now that we have our dataset in the correct format, we can begin to utilize the Milo workflow.
 
 
 ## Creating neighborhoods
@@ -205,7 +206,7 @@ Now that we have our dataset in the correct format, we can begin utilize the Mil
 Step one is to generate the k-nearest neighborhood graph with the `buildGraph()` function. The parameters include selected a `k` neighbors and `d` dimension values:
 
 - `k`: An integer scalar that specifies the number of nearest-neighbours to consider for the graph building. Default is 10.
-- `d`: The number of dimensions to use if the input is a matrix of cells. Deafult is 50.
+- `d`: The number of dimensions to use if the input is a matrix of cells. Default is 50.
 
 Note that building the k-nearest neighbor graph may take some time.
 
@@ -246,12 +247,12 @@ nhoodCounts(traj_milo) %>% head()
 ```
 6 x 8 sparse Matrix of class "dgCMatrix"
   Sample_1 Sample_2 Sample_9 Sample_10 Sample_7 Sample_8 Sample_15 Sample_16
-1       31        1        .         8        .        .         .         .
-2        3        .       14        26        .        .         .         .
-3        .        .        .        12        .        .         .         .
-4       33        2        .         .        .        .         .         .
-5        1        1        5        26        .        .         .         .
-6        .        .        .         .        7        8        16         4
+1        .        .       12        18        .        .         .         .
+2       16        2        .         .        1        .         .         .
+3       28        2        .         2        .        .         1         .
+4        3        .       13        19        .        .         .         .
+5       17        3        .         1        .        .         .         .
+6        3        .        9        23        .        .         .         .
 ```
 
 ## Creating metadata
@@ -291,22 +292,17 @@ Sample_16     cold7
 
 ## Run differential abundance
 
-Milo uses an adaptation of the Spatial FDR correction introduced by cydar, which accounts for the overlap between neighbourhoods. Specifically, each hypothesis test P-value is weighted by the reciprocal of the kth nearest neighbour distance. To use this statistic we first need to store the distances between nearest neighbors in the Milo object.
+Milo uses an adaptation of the Spatial FDR correction introduced by cydar, which accounts for the overlap between neighbourhoods. Specifically, each hypothesis test p-value is weighted by the reciprocal of the kth nearest neighbour distance. To use this statistic we first need to store the distances between nearest neighbors in the Milo object.
 
-This calculates a Fold-change and corrected P-value for each neighbourhood, which indicates whether there is significant differential abundance between conditions. These results are stored as a dataframe with the following columns:
+This calculates a fold change and corrected p-value for each neighbourhood, which indicates whether there is significant differential abundance between conditions. These results are stored as a dataframe with the following columns:
 
-logFC:
-Numeric, the log fold change between conditions, or for an ordered/continous variable the per-unit change in (normalized) cell counts per unit-change in experimental variable.
-
-logCPM:
-Numeric, the log counts per million (CPM), which equates to the average log normalized cell counts across all samples.
-
-
-- Numeric, the F-test  statistic from the quali-likelihood F-test implemented in edgeR.
+- logFC: Numeric, the log fold change between conditions or, for an ordered/continous variable, the per-unit change in (normalized) cell counts per unit-change in experimental variable.
+- logCPM: Numeric, the log counts per million (CPM), which equates to the average log normalized cell counts across all samples.
+- F: Numeric, the F-test  statistic from the quali-likelihood F-test implemented in edgeR.
 - PValue: Numeric, the unadjusted p-value from the quasi-likelihood F-test.
 - FDR: Numeric, the Benjamini & Hochberg false discovery weight computed from p.adjust.
 - Nhood: Numeric, a unique identifier corresponding to the specific graph neighbourhood.
-- SpatialFDR: Numeric, the weighted FDR, computed to adjust for spatial graph overlaps between neighbourhoods. For details see graphSpatialFDR.
+- SpatialFDR: Numeric, the weighted FDR, computed to adjust for spatial graph overlaps between neighbourhoods. For details, see graphSpatialFDR.
 
 
 ```r
