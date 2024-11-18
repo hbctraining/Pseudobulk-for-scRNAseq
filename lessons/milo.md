@@ -371,7 +371,9 @@ Now, with all the information we have we can visualize the differential abundanc
 
 Each dot represents a different neighborhood, with the size of the dot representing how many cells belong to that neighborhood. The color of the circle represent the log-fold change for that neighborhood, from the `da_results` object.
 
-We can also represent the neighborhoods according to the group structure that was calculated with the `groupNhoods()` function. The expectation here would be that the group structure bears a resemblance the clusters calculated after subsetting the data. 
+We can also represent the neighborhoods according to the group structure that was calculated with the `groupNhoods()` function. The expectation here would be that the group structure bears a resemblance the clusters calculated after subsetting the data.
+
+Note that the exact number of groups may vary due to randomness in the model, but the overall groupings should be similar.
 
 
 ```r
