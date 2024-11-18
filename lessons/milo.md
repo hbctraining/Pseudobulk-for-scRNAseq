@@ -20,7 +20,8 @@ Looking at single-cell datasets on a cluster/celltype level is a very common mod
 <p align="center">
 <img src="../img/milo_schematic.png" width="630">
 </p>
-Image credit: [Dann E., et al.](https://www.nature.com/articles/s41587-021-01033-z)
+
+Image credit: [Dann E., Henderson N.C., Teichmann S., Morgan M.D., Marioni J.C., 2021](https://www.nature.com/articles/s41587-021-01033-z)
 
 # Creating Milo object
 
