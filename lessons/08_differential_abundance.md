@@ -156,6 +156,17 @@ dim(counts(sce_vsm))
 counts(sce_vsm)[1:6, 1:6]
 ```
 
+```
+6 x 6 sparse Matrix of class "dgCMatrix"
+       AAACCCACAGCTATTG_1 AAACGAAAGGGCGAAG_1 AAACGAACATTCGATG_1 AAACGAAGTAGCTCGC_1 AAACGAAGTTGGCTAT_1 AAACGAATCTGATTCT_1
+Xkr4                    .                  .                  .                  .                  .                  .
+Gm1992                  .                  .                  .                  .                  .                  .
+Rp1                     .                  .                  .                  .                  .                  .
+Sox17                   .                  .                  .                  .                  .                  .
+Mrpl15                  2                  2                  .                  1                  1                  .
+Lypla1                  .                  .                  .                  .                  .                  .
+```
+
 We see the raw counts data is a cell by gene sparse matrix with the same genes (rows) and columns (cells) as in our seurat object.
 
 Next, we can get an idea of how to access the metadata in our object by using the `colData()` function:
@@ -258,12 +269,12 @@ nhoodCounts(traj_milo) %>% head()
 ```
 6 x 8 sparse Matrix of class "dgCMatrix"
   Sample_1 Sample_2 Sample_9 Sample_10 Sample_7 Sample_8 Sample_15 Sample_16
-1       31        1        .         8        .        .         .         .
-2        3        .       14        26        .        .         .         .
-3        .        .        .        12        .        .         .         .
-4       33        2        .         .        .        .         .         .
-5        1        1        5        26        .        .         .         .
-6        .        .        .         .        7        8        16         4
+1        .        .       12        18        .        .         .         .
+2       16        2        .         .        1        .         .         .
+3       28        2        .         2        .        .         1         .
+4        3        .       13        19        .        .         .         .
+5       17        3        .         1        .        .         .         .
+6        3        .        9        23        .        .         .         .
 ```
 
 In this way, we can account for technical variability across replicates. To define which samples belong to which condition, we next create a metdata dataframe. This table will contain all of the relevant pieces of information for the comparisons we want to run, including the sample names as well. In the case of this experiment, we need the columns `sample` and `condition`. 
@@ -314,7 +325,7 @@ This step may take some time to run for a large dataset.
 traj_milo <- calcNhoodDistance(traj_milo, d=30) 
 ```
 
-Now we can finally calculate the differential abundance across the neighborhoods with `testNhoods()`. We specify the `design`, or the model we want to use in the comparison. The columns used in design must be found within the `design.df` metadata dataframe. This results in a dataframe with the following (columns)[https://rdrr.io/github/MarioniLab/miloR/man/testNhoods.html]:
+Now we can finally calculate the differential abundance across the neighborhoods with `testNhoods()`. We specify the `design`, or the model we want to use in the comparison. The columns used in design must be found within the `design.df` metadata dataframe. This results in a dataframe with the following [columns](https://rdrr.io/github/MarioniLab/miloR/man/testNhoods.html):
 
 - `logFC`: Numeric, the log fold change between conditions, or for an ordered/continous variable the per-unit change in (normalized) cell counts per unit-change in experimental variable.
 - `logCPM`: Numeric, the log counts per million (CPM), which equates to the average log normalized cell counts across all samples.
@@ -453,16 +464,7 @@ plotDAbeeswarm(da_results, group.by = "NhoodGroup")
 
 ## Neighborhood differential genes 
 
-TODO
-
-> This function will perform differential gene expression analysis on groups of neighbourhoods. Adjacent and concordantly DA neighbourhoods can be defined using groupNhoods or by the user. Cells between these aggregated groups are compared. For differential gene experession based on an input design within DA neighbourhoods see testDiffExp.
-
-Runs DE comparing NHoodGroup vs rest of neighborhoods
-
-> aggregate.samples	
-> logical indicating wheather the expression values for cells in the same sample and neighbourhood group should be merged for DGE testing. This allows to perform testing exploiting the replication structure in the experimental design, rather than treating single-cells as independent replicates. The function used for aggregation depends on the selected gene expression assay: if assay="counts" the expression values are summed, otherwise we take the mean.
-
-`LogFC_{group}` and `adj.P.Val_{group}` for every single group found in the data.
+Within the Milo package, we can even run a DGE analysis between different groups in our `DA_results` dataframe. We can test one group vs. rest of cells (similar to the `FindAllMarkers()` function within Seurat) with the `findNhoodGroupMarkers()` function. Ultimately this function makes use of the `limma` package. In doing so, we will have a `LogFC_{group}` and `adj.P.Val_{group}` for every single gene we specifiy. For simplicity, we will use the 2,000 highly variable genes. Additionally, to take into account variability across replicates, we set the `aggregate.samples` parameter to be true and specify which metadata column (in `colData`) indicates which cell comes from which sample.
 
 ```r
 # Use variable genes
@@ -474,7 +476,7 @@ nhood_markers <- findNhoodGroupMarkers(traj_milo,
                                        sample_col = "sample")
 ```
 
-If there are two neighborhoods groups of interest, instead we can run DE on just those two subsets with the `subset.nhoods` argument.
+If there are two neighborhoods groups of interest, instead we can run DE on just those two subsets with the `subset.nhoods` argument. As an example, let us look at neighborhood groups 1 and 3.
 
 ```r
 # Compare group 1 and 3
@@ -484,20 +486,38 @@ nhood_markers <- findNhoodGroupMarkers(traj_milo,
                                        subset.nhoods = da_results$NhoodGroup %in% c('1', '3'),
                                        aggregate.samples = TRUE, sample_col = "sample")
 
-plotNhoodExpressionGroups(traj_milo,
-                          da_results,
-                          features=genes,
-                          subset.nhoods = da_results$NhoodGroup %in% c('1','3'), 
-                          scale=TRUE,
-                          grid.space = "fixed",
-                          cluster_features = TRUE)
+
+nhood_markers %>% arrange(desc(abs(logFC_1))) %>% head()
+```
+
+```
+    GeneID   logFC_1  adj.P.Val_1   logFC_3  adj.P.Val_3
+1      Mt1  1.574481 0.0001022295 -1.574481 0.0001022295
+2  Gm13889  1.122213 0.0026749159 -1.122213 0.0026749159
+3      Fos -1.081121 0.0500258626  1.081121 0.0500258626
+4    Cebpb  1.073674 0.0011078978 -1.073674 0.0011078978
+5    Nr4a2  1.046689 0.0008368211 -1.046689 0.0008368211
+6 Crispld2  1.013613 0.0341118238 -1.013613 0.0341118238
+```
+
+Same as we have been doing throughout the workshop, we can then create a volcano plot of the DGE results.
+
+```r
+EnhancedVolcano(nhood_markers,
+                nhood_markers$GeneID,
+                x = "logFC_1",
+                y = "adj.P.Val_1",
+                FCcutoff = 0.5,
+                pCutoff = 0.01)
 ```
 
 <p align="center">
   <img src="../img/milo_volcano.png" height="500">
 </p>
 
-TODO
+We can even generate a heatmap of expression per-neighborhood with the `plotNhoodExpressionGroups()` function. First, we can identify the top 10 genes in neighborhood group 1 based upon the log-fold change value. We can then supply those genes into our function and again subset the groups to 1 and 3.
+
+This visualization represents the averaged expression of each gene among the cells in each each neighborhood.
 
 ```r
 # P-value < 0.01
@@ -516,7 +536,7 @@ genes <- markers$GeneID[1:10]
 # Heatmap of top 10 marker genes for groups 1 and 3
 plotNhoodExpressionGroups(traj_milo,
                           da_results,
-                          features=markers$GeneID[1:10],
+                          features=genes,
                           subset.nhoods = da_results$NhoodGroup %in% c('1','3'), 
                           scale=TRUE,
                           grid.space = "fixed",
@@ -526,6 +546,18 @@ plotNhoodExpressionGroups(traj_milo,
 <p align="center">
   <img src="../img/milo_heatmap.png" height="500">
 </p>
+
+
+Make sure to output the versions of all tools used in the DE analysis:
+
+```r
+sessionInfo()
+```
+
+
+For better reproducibility, it can help to create RMarkdown reports, which save all code, results, and visualizations as nicely formatted html reports. We have a very basic example of a [report](https://www.dropbox.com/s/4bq0chxze6dogba/workshop-example.html?dl=0) linked here. To create these reports we have [additional materials](https://hbctraining.github.io/Training-modules/Rmarkdown/) available.
+
+
 
 
 ---
