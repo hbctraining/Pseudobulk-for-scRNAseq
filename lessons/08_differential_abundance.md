@@ -190,6 +190,8 @@ milo <- Milo(sce)
 # Store previously computed PCA and UMAP values
 reducedDim(milo, "PCA") <- Embeddings(seurat_sub, reduction="pca")
 reducedDim(milo, "UMAP") <- Embeddings(seurat_sub, reduction="umap")
+
+milo
 ```
 
 ```
