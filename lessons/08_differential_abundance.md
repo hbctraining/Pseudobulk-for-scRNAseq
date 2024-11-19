@@ -229,7 +229,7 @@ Now that we have our dataset in the correct format, we can begin utilizing the M
 Step one is to generate the k-nearest neighborhood graph with the `buildGraph()` function. The parameters include selecting `k` neighbors and `d` dimensions (PCs):
 
 - `k`: An integer scalar that specifies the number of nearest-neighbours to consider for the graph building. Default is 10.
-- `d`: The number of dimensions to use if the input is a matrix of cells. Deafult is 50.
+- `d`: The number of dimensions to use if the input is a matrix of cells. Default is 50.
 
 
 ```r
