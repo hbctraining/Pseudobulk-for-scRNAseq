@@ -5,7 +5,7 @@
 * [Introduction to scRNA-seq](https://hbctraining.github.io/scRNA-seq_online/lessons/01_intro_to_scRNA-seq.html)
 * [scRNA-seq: From sequence reads to count matrix](https://hbctraining.github.io/scRNA-seq_online/lessons/02_SC_generation_of_count_matrix.html)
 * [scRNA-seq: From counts to clusters](../lessons/00_counts_to_clusters_overview.md)
-* [Download this project](https://www.dropbox.com/s/lqku3yguev2un74/DGE_scRNA.zip?st=72qbwrbi&dl=1)
+* [Download this project](https://www.dropbox.com/scl/fi/ucxyecmviu4o882envynh/DGE_scRNA.zip?rlkey=ahb22wapzfkcbyioajlnq4m9k&st=sbfzxj8k&dl=1)
 
 ## Day 1
 
