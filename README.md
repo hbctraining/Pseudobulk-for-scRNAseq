@@ -31,7 +31,7 @@ Working knowledge of R is required or completion of the [Introduction to R works
 
 ### Lessons
 * [Workshop schedule (trainer-led learning)](schedule/)
-* [Self-learning](schedule/links-to-lessons.md)
+* [Self-learning](schedule/self-learning.md)
 
 ### Installation Requirements
 
