@@ -1,4 +1,4 @@
-# Differential expression analysis of scRNAseq
+# Pseudobulk and related approaches for scRNA-seq analysis
 
 | Audience | Computational skills required| Duration |
 :----------|:----------|:----------|
@@ -6,8 +6,8 @@
 
 ### Description
 
-This repository has teaching materials for a hands-on **Differential expression analysis of single-cell RNA-seq analysis** workshop. 
-After clustering cells as part of a single-cell RNA-seq experiment, investigators are often interested in carrying out a differential expression analysis between conditions within certain cell types. When the experimental design includes replicates with multi-conditions there is power in identifying differentially expressed genes using a pseudbulk approach.  This workshop will:
+This repository has teaching materials for a hands-on workshop on **Pseudobulk and related approaches for scRNA-seq analysis**. 
+After clustering cells as part of a single-cell RNA-seq experiment, investigators are often interested in carrying out a differential expression analysis between conditions within certain cell types. When the experimental design includes replicates with multiple conditions there is power in identifying differentially expressed genes using a pseudobulk approach. This workshop will:
 
 - Discuss various approaches for differential expression using single cell RNA-seq data
 - Prepare single-cell RNA-seq raw count data for pseudobulk analysis
