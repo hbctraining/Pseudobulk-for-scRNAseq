@@ -1,4 +1,4 @@
-# Introduction to Peak Analysis
+#  Pseudobulk and related approaches for scRNA-seq analysis
 
 ## Learning Objectives
 
