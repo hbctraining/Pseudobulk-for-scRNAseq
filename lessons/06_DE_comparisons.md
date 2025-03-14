@@ -59,23 +59,51 @@ Next we will load the necessary libraries.
 ```r
 library(Seurat)
 library(tidyverse)
-# install.packages("ggvenn")
 library(ggvenn)
 library(pheatmap)
 library(cowplot)
 library(dplyr)
 ```
 
-### Load previous results
+### Compare significant genes
 
 To start, let us load the results from the the previous DESeq2 and FindMarkers lessons.
 
 ```r
 dge_fm <- read.csv("results/findmarkers_vsm.csv")
-dge_deseq2 <- read.csv("results/VSM_cold7_vs_TN.csv")
+dge_deseq2 <- read.csv("results/DESeq2_vsm.csv")
 ```
 
-Next, we will merge together the results into one dataframe to more easily make comparisons. Here, we will also change the column names to clearly define which results come from which method. Lastly, we will create a column called `sig` that identified if a gene was significant (adjusted p-values < 0.05) to categorize each row with: FindMarkers, DESeq2, both, or Not Significant. 
+Now we can generate volcano plots to see to have a first pass look at the similarities and differences in genes that are significant in both methods using the `EnhancedVolcano` package.
+
+```r
+p_deseq2 <- EnhancedVolcano(dge_deseq2,
+                dge_deseq2$X,
+                x="log2FoldChange",
+                y="padj",
+                title="DESeq2 VSM cells",
+                subtitle="TN vs cold7")
+
+p_fm <- EnhancedVolcano(dge_fm,
+                        dge_fm$X,
+                        x="avg_log2FC",
+                        y="p_val_adj",
+                        title="FindMarkers VSM cells",
+                        subtitle="TN vs cold7")
+
+p_deseq2 + p_fm
+```
+
+<p align="center">
+  <img src="../img/DE_comp_volcano.png" width="1000">
+</p>
+
+Visually, we see that there are more significant genes from the FindMarkers analysis. In order to best quantify the overlap and differences in methods, we can merged the results dataframes together. To do so, we will do some data wrangling to capture the most important information:
+
+  1. Merge dataframes together
+  2. Change column names to denote which method the results were generated from
+  3. Remove unrelated columns
+  4. Create a new column titled `sig` to identify if a gene was significant with an adjusted p-values < 0.05 using these labels: FindMarkers, DESeq2, both, or Not Significant
 
 ```r
 # Merge FindMarkers and DESeq2 results together
@@ -110,21 +138,16 @@ dge %>% head()
 4 0610012D04Rik 1.1632519 0.033 0.010 3.048507e-03   0.610698014   0.1015138     FindMarkers
 5 0610012G03Rik 0.1019817 0.497 0.379 1.000000e+00   0.040974487   0.8935888 Not Significant
 6 0610030E20Rik 0.6008081 0.147 0.077 6.292494e-06   0.058878725   0.8641972     FindMarkers
-
 ```
 
-With this simplified dataframe, we can begin our evaluation.
-
-### Common significant genes
-
-First, let's  visualize how many genes can be found in commmon or are unique to each method by representing the significant genes as a Venn diagram.
+To compare and contrast, we can represent the overlap of significant genes as a Venn diagram using `ggvenn`.
 
 ```r
 # Subset to significant genes
 sig_fm <- dge %>% subset(sig %in% c("FindMarkers", "both"))
 sig_deseq2 <- dge %>% subset(sig %in% c("DESeq2", "both"))
 
-# Create list of just significant gene names
+# Create list of significant gene names
 sig_genes <- list(
   FindMarkers = sig_fm$gene,
   DESeq2 = sig_deseq2$gene
@@ -139,7 +162,7 @@ ggvenn(sig_genes, auto_scale = TRUE)
 </p>
 
 
-To include the number of genes that were found as Not Significant in any method, we could similarly make a barplot to represent the overlap in results. You may notice that we have a few genes that are listed as `NA`, which is the result of DESeq2 filtering genes as was [discussed earlier](https://hbctraining.github.io/DGE_analysis_scRNAseq/lessons/04_pseudobulk_DE_analysis.html).
+However, if you want to include the number of genes that were identified as not significant in both DESeq2 and FindMarkers, , we can similarly make a barplot to count each significance category. You may notice that we have a few genes that are listed as `NA`, which is the result of DESeq2 filtering genes as was [discussed earlier](https://hbctraining.github.io/DGE_analysis_scRNAseq/lessons/04_pseudobulk_DE_analysis.html).
 
 ```r
 ggplot(dge, aes(x=sig, fill=sig)) +
@@ -154,7 +177,212 @@ ggplot(dge, aes(x=sig, fill=sig)) +
   <img src="../img/DE_ncells.png" width="800">
 </p>
 
-Ultimately, we find ~1,200 genes significant from both DESeq2 and FindMarkers, indicating that there is a degree of concordence between both methods. There are noticeably many more genes found significant in only FindMarkers and we will investigate why this is the case later in the lesson.
+Ultimately, we find ~1,200 genes significant from both DESeq2 and FindMarkers, indicating that there is a degree of concordence between both methods. There are noticeably more genes found significant in only FindMarkers. To understand why these differences exist, let us look at specific genes that show each of the following cases:
+
+1. Significant in only FindMarkers (Crebl2)
+2. Significant in only DESeq2 (Hist1h1d)
+3. Significant in both DESeq2 and FindMarkers (Tiparp)
+
+#### Findmarkers Crebl2
+
+First, let us take a look at the expression values for the gene Crebl2 which was significant from the FindMakers analysis, but not DESEq2. We can begin by looking at the statistical results (p-value, LFC) for this gene:
+
+```r
+dge %>% subset(gene == "Crebl2")
+```
+
+```
+          gene  log2FC_fm pct.1 pct.2       padj_fm log2FC_deseq2  padj_deseq2         sig
+ 2046   Crebl2  0.1004054 0.164 0.102  3.277797e-02    0.06293984 8.488375e-01 FindMarkers
+
+```
+
+Immediately we can see that there are a similar, small number of cells that express the gene in both the cold7 and TN conditions. The LFC values are also on the lower end. To better understand what is happening at the expression level, we can visualize this gene at the single-cell level.
+
+```r
+p1 <- VlnPlot(seurat_vsm, "Crebl2") + NoLegend()
+p2 <- RidgePlot(seurat_vsm, "Crebl2") + scale_x_log10()
+p1 + p2
+```
+
+<p align="center">
+  <img src="../img/DE_comp_crebl2_sc.png" width="800">
+</p>
+
+
+With the violin plot we can see that there is slightly higher expression in the TN condition. Similarly, the log10 scaled expression distribution represented as a ridgeplot emphasizes that a small group of cells have similarly higher expression of Crebl2 across both conditions.
+
+
+Now that we understand what is happening at the single-cell level, we can then assess why DESeq2 did evaluate Crebl2 as significantly different. To do so, we want to take the normalized counts from the `dds` DESeq2 object to plot the expression at the pseudo-bulked level. As this is a helpful metric for assessing the pseudobulked results, we will create a function to make repeated use of this type of visualization.
+
+```r
+# pseudobulk scatterpot of normalized expression
+plot_pb_count <- function(dds, gene) {
+  
+  # returnData to get normalized counts for each sample for a gene
+  d <- plotCounts(dds, gene=gene, intgroup="condition", returnData=TRUE)
+  # Keep the order TN then cold7
+  d$condition <- factor(d$condition, levels = c("TN", "cold7"))
+  
+  # Plot the normalized counts for each sample
+  p <- ggplot(d, aes(x = condition, 
+                     y = count, 
+                     color = condition)) + 
+    geom_point(position=position_jitter(w = 0.1, h = 0)) +
+    theme_bw() + NoLegend() +
+    ggtitle(gene)
+  
+  return(p)
+}
+
+plot_pb_count(dds, "Crebl2")
+```
+<p align="center">
+  <img src="../img/DE_comp_crebl2_pb.png" width="400">
+</p>
+
+
+We can see that there is quite a bit of variability among the samples for the TN condition now that we see the pseudobulked results. **This is a case where being unable to account for variability (as in FindMarkers) across replicates can skew the results.**
+
+
+### DESeq2 Hist1h1d
+
+Next, let us repeat these steps to identify what is occuring with Hist1h1d, which is significant from the DESeq2 analysis:
+
+```r
+dge %>% subset(gene == "Hist1h1d")
+```
+```
+          gene  log2FC_fm pct.1 pct.2       padj_fm log2FC_deseq2  padj_deseq2         sig
+ 4099 Hist1h1d  3.0856065 0.013 0.002  8.019887e-02    0.22723448 4.911827e-02      DESeq2
+```
+
+Similar to before, we can see that **very few cells** are expressing this gene. Let's take a look at the pseudobulked expression values to see if we can figure out why the DESeq2 algorithm identified this gene as significant.
+
+<p align="center">
+  <img src="../img/../img/DE_comp_Hist1h1d_pb.png" width="400">
+</p>
+
+Immediately we can see that there is one sample expressing Hist1h1d highly among the cold7 replicates. If we now assess the single-cell expression levels, we can see that there are only a handful of cells that are expressing Hist1h1d.
+
+```r
+p1 <- VlnPlot(seurat_vsm, "Hist1h1d") + NoLegend()
+p2 <- RidgePlot(seurat_vsm, "Hist1h1d") + scale_x_log10()
+p1 + p2
+```
+
+<p align="center">
+  <img src="../img/DE_comp_Hist1h1d_sc.png" width="800">
+</p>
+
+In this case, we can see sometimes in the process of pseudobulking, high expression from a small proportion of cells can drive the results. Whereas at the single-cell level, we are better able to take into account that few cells are expressing Hist1h1d.
+
+### Conservative approach
+
+If we were to go with the most conservative approach for a DGE analysis, we could use only the common significant genes found from both methods and continue any follow-up analysis with those results. As an example, we can take a look at the gene `Tiparp` which was significant in DESEq2 and FindMarkers.
+
+```r
+dge %>% subset(gene == "Tiparp")
+```
+```
+       gene log2FC_fm pct.1 pct.2     padj_fm log2FC_deseq2  padj_deseq2  sig
+8768 Tiparp -2.414068 0.393 0.742 2.1504e-141     -2.378904 3.917121e-34 both
+```
+
+TODO
+
+```r
+plot_pb_count(dds, "Tiparp")
+```
+
+<p align="center">
+  <img src="../img/DE_comp_Tiparp_pb.png" width="400">
+</p>
+
+```r
+p1 <- VlnPlot(seurat_vsm, "Tiparp") + NoLegend()
+p2 <- RidgePlot(seurat_vsm, "Tiparp")
+p1 + p2
+```
+
+<p align="center">
+  <img src="../img/DE_comp_Tiparp_sc.png" width="800">
+</p>
+
+## Percentage of cells effects DGE results
+
+Next we might ask ourselves, what could be the cause of the differences in the results? If we think back to how we generated the pseudobulk results, we should consider how the number of cells could affect the final results. The number of cells we aggregate on likely has a strong sway on the overall expression values for the DESeq2 results as we saw in the case of `Hist1h1d`. Therefore, an important metric to consider is the number/percentage of cells that express the genes we are looking at. We have the columns `pct.1` and `pct.2` that represent the proportion of cells in our dataset that belong to `TN` and `cold7` respectively. So let us consider the data with this additional metric in mind.
+
+
+```r
+pct_1 <- ggplot(dge_sig %>% arrange(pct.1), 
+                aes(x=log2FC_deseq2, y=log2FC_fm, color=pct.1)) +
+          geom_point() +
+          labs(x="DESeq2 LFC", y="FindMarkers LFC", title="Percentage TN") +
+          theme_classic()
+
+pct_2 <- ggplot(dge_sig %>% arrange(pct.2), 
+                aes(x=log2FC_deseq2, y=log2FC_fm, color=pct.2)) +
+  geom_point() +
+  labs(x="DESeq2 LFC", y="FindMarkers LFC", title="Percentage cold7") +
+  theme_classic()
+
+pct_1 + pct_2
+```
+
+<p align="center">
+  <img src="../img/DE_LFC_pct.png" width="800">
+</p>
+
+
+To start, we can begin comparing the p-values and average log2-fold changes. First, we will remove the genes that are not significant in either method to more clearly see the differences.
+
+```r
+# Remove non-significant genes
+dge_sig <- dge %>% subset(sig != "Not Significant")
+```
+
+Through this visualization, we can see that there is a clear separation in genes that are found significant by DESeq2 and FindMarkers based upon the percentage of cells that express a gene. We can a see that the more widely expressed significant genes are grouped together and belong to the DESeq2/both groups.
+
+Since we can easily make a heatmap of expression values using the pseudobulked normalized expressions, let us see if we can find any global patterns among the genes.
+
+```r
+# Extract normalized expression for significant genes from the samples
+normalized_counts <- counts(dds, normalized=T) %>% as.data.frame()
+norm_sig <- normalized_counts %>% 
+  dplyr::filter(row.names(normalized_counts) %in% dge_sig$gene)
+
+# Create dataframe annotating rows (genes) and columns (samples)
+anno_col <- colData(dds) %>% data.frame() %>% select(condition)
+anno_row <- dge_sig %>% 
+              select(gene, sig, pct.1, pct.2) %>% 
+              remove_rownames() %>% 
+              column_to_rownames("gene")
+
+# Create heatmap
+pheatmap(norm_sig, 
+         show_rownames=FALSE,
+         show_colnames=FALSE,
+         annotation_row=anno_row, 
+         annotation_col=anno_col, 
+         scale="row")
+```
+
+<p align="center">
+  <img src="../img/DE_pb_heatmap.png" height="500">
+</p>
+
+Through this visualization, we can see that there is a **clear separation in genes that are found significant by DESeq2 and FindMarkers based upon the percentage of cells that express a gene**. We can a see that the more widely expressed significant genes are grouped together and belong to the DESeq2/both groups.
+
+
+***
+
+*This lesson has been developed by members of the teaching team at the [Harvard Chan Bioinformatics Core (HBC)](http://bioinformatics.sph.harvard.edu/). These are open access materials distributed under the terms of the [Creative Commons Attribution license](https://creativecommons.org/licenses/by/4.0/) (CC BY 4.0), which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.*
+
+***
+
+
+<!-- 
 
 ### Conservative approach
 
@@ -453,4 +681,4 @@ At this point, you hopefully have become more comfortable visualizing and workin
 
 ***
 
-*This lesson has been developed by members of the teaching team at the [Harvard Chan Bioinformatics Core (HBC)](http://bioinformatics.sph.harvard.edu/). These are open access materials distributed under the terms of the [Creative Commons Attribution license](https://creativecommons.org/licenses/by/4.0/) (CC BY 4.0), which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.*
+*This lesson has been developed by members of the teaching team at the [Harvard Chan Bioinformatics Core (HBC)](http://bioinformatics.sph.harvard.edu/). These are open access materials distributed under the terms of the [Creative Commons Attribution license](https://creativecommons.org/licenses/by/4.0/) (CC BY 4.0), which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.* -->
