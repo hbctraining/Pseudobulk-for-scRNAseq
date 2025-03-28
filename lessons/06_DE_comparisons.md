@@ -1,51 +1,49 @@
-## Comparing results from different DE approaches
+---
+title: "Comparing results from different DE approaches"
+author: "Noor Sohail"
+date: "September 13, 2024"
+---
 
-Approximate time: 70 minutes
+Approximate time: 79 minutes
 
 ## Learning Objectives:
 
 * Compare and contrast results from `DESeq2` and `FindMarkers`
-* Evaluate what is causing differences in results
-* Understand the effect of the number of cells expressing a gene on DGE results
+* Evaluate what is contributing to difference in results
+*
 
-## Overarching trends in DGE methods
+## Methods for differential gene expression in single cell RNA-seq
 
-So far, we have made use of the DESeq2 and FindMarkers algorithms in this workshop. There are many other algorirthm that can broadly be classified into the following categories:
+There are many approaches for identifying differentially expressed genes in single cell RNA-seq data. While the literature presents various methods, there still remains a lack of consensus regarding the best way forward. Choosing the appropriate method for your data requires a basic **understanding of the system and structure of the data**. Some of the important questions to ask include:
 
-1. Pseudobulk (DESeq2, limma, edgeR)
-2. Mixed models (MAST)
-3. Naive methods (Wilcox)
-
-Choosing the appropriate method for your data requires a basic understanding of the system and structure of the data. Some of the important questions to ask ourselves are:
-
-1. Do you have enough cells to aggregate and do a pseudobulk analysis or to run statistical tests?
-2. Are there smaller cell states within a celltype that would be lost after pseudobulking and averaging expression?
+1. Do you have enough cells to aggregate and do a pseudobulk analysis? Do you have enough power to run statistical tests?
+2. Are there smaller cell states within a celltype that would be lost after aggregating with a pseudobulk approach?
 3. Is there a latent variable that should be included in a design model?
 4. Are there biological replicates that can be used to control for variability in the data?
 
-*** 
+***
 
 **Exercise**
 
-Based on the data we have looked at so far, what do you think are the answers to the above questions for our VSM cells?
+1. Take a moment and answer the above questions for our VSM cells dataset.
 
-***
+*** 
 
-Another imporant aspect to consider is the amount of computational resources it takes to calculate differential genes. The number of computer cores and length of time needed can be a limiting factor in which methods are viable options. In terms of resource management, the general trends are that pseudobulk methods will use the least computational resources, followed by naive methods, with mixed models requiring the most. That being said, the amount of computational power will scale directly with the number of cells and samples in the dataset. As single-cell datasets begin to reach millions of cells, the usage of High Performance Computing clusters is necessary to run even the simplest of calculations, let alone a differential gene analysis.
-
+Another important aspect to consider is the **amount of computational resources it takes to calculate differentially expressed genes**. The number of computer cores and length of time needed can be a limiting factor in determining which methods are viable options. The general trends are that pseudobulk methods will use the least computational resources, followed by naive methods, with mixed models requiring the most computational resources. That being said, the amount of computational power will scale directly with the number of cells and samples in the dataset. As single-cell datasets begin to reach in the millions of cells, the usage of High Performance Computing clusters is necessary to run even the simplest of calculations, let alone a differential gene expression analysis.
 
 <p align="center">
   <img src="../img/DE_performance.png" width="600">
 </p>
 
-Image credit: [Nguyen et al, Nat Communications](https://www.nature.com/articles/s41467-023-37126-3#Abs1)
-
-Now, let us compare and contrast the results from `DESeq2` and `FindMarkers` to see the practical implications of the questions we answered above. In particular, we will focus on how many cells express a gene and the effect of biological replicates.
+_Image credit: [Nguyen et al, Nat Communications](https://www.nature.com/articles/s41467-023-37126-3#Abs1)_
 
 
-## Comparing DGE results
 
-As usual, let's open a new Rscript file called `DE_comparison.R` and create a header with comments to indicate what this file is going to contain.
+## Comparing results from different DGE approaches
+
+So far in this workshop, we have made use of the DESeq2 and FindMarkers algorithms to find differentially expressed genes between the TN and cold7 sample groups. In this lesson, we compare and contrast results and use visualizations to see the practical implications of the questions outlined in the beginning of the lesson. 
+
+Let's begin by creating a new Rscript called `DE_comparison.R`. At the top add a commented header to indicate what this file is going to contain.
 
 ```r
 # September 2024
@@ -65,45 +63,34 @@ library(cowplot)
 library(dplyr)
 ```
 
-### Compare significant genes
+### Volcano plots
+In the previous lessons we had created a **volcano plot** for the results of DESeq2 analysis and FindMarkers analysis. Let's plot them again but this time side-by-side.
 
-To start, let us load the results from the the previous DESeq2 and FindMarkers lessons.
+```r
+p_deseq2 + p_fm
+```
+
+**CREATE A DROPDOWN for code usedto create each volcano plots. "Can't find these plot objects in your environment? Click here for the code to run."
+
+<p align="center">
+  <img src="../img/DE_comp_volcano.png" width="1000">
+</p>
+
+Visually, we see that there are **more significant genes from the FindMarkers analysis**. In order to best quantify the overlap and differences in methods, we can merge the results dataframes together. To do so, we will do some data wrangling to capture the most important information:
+
+  1. Merge dataframes together
+  2. Change column names to denote which method the results were generated from
+  3. Remove unnecessary columns
+  4. Create a new column titled `sig` to identify if a gene was significant with an adjusted p-values < 0.05 using these labels: FindMarkers, DESeq2, both, or Not Significant
+
+First, let us **load the results** from the the previous DESeq2 and FindMarkers lessons.
 
 ```r
 dge_fm <- read.csv("results/findmarkers_vsm.csv")
 dge_deseq2 <- read.csv("results/DESeq2_vsm.csv")
 ```
 
-Now we can generate volcano plots to see to have a first pass look at the similarities and differences in genes that are significant in both methods using the `EnhancedVolcano` package.
-
-```r
-p_deseq2 <- EnhancedVolcano(dge_deseq2,
-                dge_deseq2$X,
-                x="log2FoldChange",
-                y="padj",
-                title="DESeq2 VSM cells",
-                subtitle="TN vs cold7")
-
-p_fm <- EnhancedVolcano(dge_fm,
-                        dge_fm$X,
-                        x="avg_log2FC",
-                        y="p_val_adj",
-                        title="FindMarkers VSM cells",
-                        subtitle="TN vs cold7")
-
-p_deseq2 + p_fm
-```
-
-<p align="center">
-  <img src="../img/DE_comp_volcano.png" width="1000">
-</p>
-
-Visually, we see that there are more significant genes from the FindMarkers analysis. In order to best quantify the overlap and differences in methods, we can merged the results dataframes together. To do so, we will do some data wrangling to capture the most important information:
-
-  1. Merge dataframes together
-  2. Change column names to denote which method the results were generated from
-  3. Remove unrelated columns
-  4. Create a new column titled `sig` to identify if a gene was significant with an adjusted p-values < 0.05 using these labels: FindMarkers, DESeq2, both, or Not Significant
+Now, to the data wrangling to obtain our merged data frame:
 
 ```r
 # Merge FindMarkers and DESeq2 results together
@@ -140,6 +127,7 @@ dge %>% head()
 6 0610030E20Rik 0.6008081 0.147 0.077 6.292494e-06   0.058878725   0.8641972     FindMarkers
 ```
 
+### Venn diagrams
 To compare and contrast, we can represent the overlap of significant genes as a Venn diagram using `ggvenn`.
 
 ```r
@@ -161,7 +149,7 @@ ggvenn(sig_genes, auto_scale = TRUE)
   <img src="../img/DE_venn.png" width="600">
 </p>
 
-
+### Barplot
 However, if you want to include the number of genes that were identified as not significant in both DESeq2 and FindMarkers, , we can similarly make a barplot to count each significance category. You may notice that we have a few genes that are listed as `NA`, which is the result of DESeq2 filtering genes as was [discussed earlier](https://hbctraining.github.io/DGE_analysis_scRNAseq/lessons/04_pseudobulk_DE_analysis.html).
 
 ```r
