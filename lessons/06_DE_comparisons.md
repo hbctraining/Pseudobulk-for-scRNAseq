@@ -203,9 +203,6 @@ With the violin plot we can see that there is **slightly higher expression in th
 To assess **why DESeq2 did not evaluate Crebl2 as significantly different**, we can take the normalized counts from the `dds` DESeq2 object to plot the expression at the pseudobulk level. As this is a helpful metric for assessing the pseudobulk results, we will create a function to make repeated use of this type of visualization.
 
 
-After plotting expression for Crebl2, we can see that there is quite a bit of variability among the samples for both the TN and cold7 conditions. A qualitative assessment of the plot suggests that the within group varaiability is larger than the between group variability. **This is a case where being unable to account for variability (as in FindMarkers) across replicates can skew the results.**
-
-
 ```r
 # pseudobulk scatterpot of normalized expression
 plot_pb_count <- function(dds, gene) {
@@ -233,25 +230,31 @@ plot_pb_count(dds, "Crebl2")
 </p>
 
 
-### DESeq2 Hist1h1d
+After plotting expression for Crebl2, we can see that there is quite a bit of variability among the samples for both the TN and cold7 conditions. A qualitative assessment of the plot suggests that the within group varaiability is larger than the between group variability. **This is a case where being unable to account for variability (as in FindMarkers) across replicates can skew the results.**
 
-Next, let us repeat these steps to identify what is occuring with Hist1h1d, which is significant from the DESeq2 analysis:
+
+
+
+### Significant only in DESeq2 
+
+Next let's explore Hist1h1d, a gene that was only identified as significant from the DESeq2 results. We can repeat some of the visualizations to look at the underlying expression and see if it is a believable difference. We can start by pulling the result stats from our merged dataframe:
 
 ```r
 dge %>% subset(gene == "Hist1h1d")
 ```
+
 ```
           gene  log2FC_fm pct.1 pct.2       padj_fm log2FC_deseq2  padj_deseq2         sig
  4099 Hist1h1d  3.0856065 0.013 0.002  8.019887e-02    0.22723448 4.911827e-02      DESeq2
 ```
 
-Similar to before, we can see that **very few cells** are expressing this gene. Let's take a look at the pseudobulked expression values to see if we can figure out why the DESeq2 algorithm identified this gene as significant.
+Similar to before, we can see that **very few cells** are expressing this gene (even fewer than observed with Crebl2). The fold change is a bit higher than observed. Let's take a look at the normalized expression values from pseudobulk to see if we can figure out why the DESeq2 algorithm identified this gene as significant.
 
 <p align="center">
   <img src="../img/../img/DE_comp_Hist1h1d_pb.png" width="400">
 </p>
 
-Immediately we can see that there is one sample expressing Hist1h1d highly among the cold7 replicates. If we now assess the single-cell expression levels, we can see that there are only a handful of cells that are expressing Hist1h1d.
+Immediately we can see that among the cold7 replicates there is **one sample expressing considerably higher expression in Hist1h1d**. This sample is driving the observed fold change. Next we can assess the expression of Hist1h1d at the single-cell level. From the Ridgeplot we see that the TN plot is unimodal, but with cold7 it is bimodal with a tiny little hump on the right hand side of the plot. This represents a **handful of cells that are expressing Hist1h1d at higher levels**.
 
 ```r
 p1 <- VlnPlot(seurat_vsm, "Hist1h1d") + NoLegend()
@@ -263,15 +266,15 @@ p1 + p2
   <img src="../img/DE_comp_Hist1h1d_sc.png" width="800">
 </p>
 
-In this case, we can see sometimes in the process of pseudobulking, high expression from a small proportion of cells can drive the results. Whereas at the single-cell level, we are better able to take into account that few cells are expressing Hist1h1d.
+With this example we can see sometimes in the process of pseudobulk aggregation high expression from a small proportion of cells can drive the results. At the single-cell level, we are better able to take into account that few cells are expressing Hist1h1d.
 
-### Conservative approach
-
-If we were to go with the most conservative approach for a DGE analysis, we could use only the common significant genes found from both methods and continue any follow-up analysis with those results. As an example, we can take a look at the gene `Tiparp` which was significant in DESEq2 and FindMarkers.
+### High confidence genes: Significant in DESeq2 and FindMarkers
+A conservative approach for a DGE analysis, would be to use only the significant genes that are identified from both methods. As an example, we can take a look at the gene Tiparp which was significant in DESEq2 and FindMarkers. Again, let's begin with a quick peek at the results file. Unlike the previous genes, **the percentage of cells expressing this gene is on the higher end**.
 
 ```r
 dge %>% subset(gene == "Tiparp")
 ```
+
 ```
        gene log2FC_fm pct.1 pct.2     padj_fm log2FC_deseq2  padj_deseq2  sig
 8768 Tiparp -2.414068 0.393 0.742 2.1504e-141     -2.378904 3.917121e-34 both
