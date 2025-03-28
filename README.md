@@ -55,7 +55,7 @@ https://mac.r-project.org/tools/gfortran-12.2-universal.pkg
 > **Note 5:** If you see a message in your console along the lines of “binary version available but the source version is later”, followed by a question, **“Do you want to install from sources the package which needs compilation? y/n”, type n for no, and hit enter**.
 
 
-**(1)** Install the 4 packages listed below from **Bioconductor** using the the `BiocManager::install()` function.
+**(1)** Install the 8 packages listed below from **Bioconductor** using the the `BiocManager::install()` function.
 
 ```
 BiocManager::install("DESeq2")
@@ -64,6 +64,8 @@ BiocManager::install("SingleCellExperiment")
 BiocManager::install("miloR")
 BiocManager::install("clusterProfiler")
 BiocManager::install("org.Mm.eg.db")
+BiocManager::install("sccomp")
+BiocManager::install("speckle")
 ```
 
 **Please install them one-by-one as follows:**
@@ -74,7 +76,7 @@ BiocManager::install("EnhancedVolcano")
 & so on ...
 ```
 
-**(2)** Install the 7 packages listed below from **CRAN** using the `install.packages()` function. 
+**(2)** Install the 9 packages listed below from **CRAN** using the `install.packages()` function. 
 
 ```
 install.packages("Seurat")
@@ -115,6 +117,8 @@ library(clusterProfiler)
 library(org.Mm.eg.db)
 library(msigdbr)
 library(ggvenn)
+library(sccomp)
+library(speckle)
 ```
 
 **(4)** Once all packages have been loaded, run sessionInfo().  
