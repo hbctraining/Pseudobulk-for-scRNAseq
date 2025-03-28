@@ -165,12 +165,17 @@ Volcano plots show us a great **overview of which genes are up-regulated (positi
 
 ```r
 # Volcano plot
-EnhancedVolcano(dge_vsm_sig,
+p_fm <- EnhancedVolcano(dge_vsm_sig,
         row.names(dge_vsm_sig),
         x="avg_log2FC",
-        y="p_val_adj"
-)
+        y="p_val_adj",
+       title="FindMarkers VSM cells",
+       subtitle="TN vs cold7")
+
+print(p_fm)
 ```
+
+**UPDATE FIGURE**
 
 <p align="center">
     <img src="../img/fm_sig_volcano.png" width="700">
