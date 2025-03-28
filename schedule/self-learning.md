@@ -18,8 +18,8 @@
 
 ## Lessons
 
-1. [Introduction to scRNA-seq](https://hbctraining.github.io/scRNA-seq_online/lessons/01_intro_to_scRNA-seq.html)
-2. [scRNA-seq: From sequence reads to count matrix](https://hbctraining.github.io/scRNA-seq_online/lessons/02_SC_generation_of_count_matrix.html)
+1. [Introduction to scRNA-seq](https://hbctraining.github.io/Intro-to-scRNAseq/lessons/01_intro_to_scRNA-seq.html)
+2. [scRNA-seq: From sequence reads to count matrix](https://hbctraining.github.io/Intro-to-scRNAseq/lessons/02_SC_generation_of_count_matrix.html)
 3. [scRNA-seq: From counts to clusters](../lessons/00_counts_to_clusters_overview.md)
 4. [Project setup and data exploration](../lessons/01_setup_intro_dataset.md)
 5. [Differential expression analysis using `FindMarkers()`](../lessons/02_DEanalysis_using_FindMarkers.md)
