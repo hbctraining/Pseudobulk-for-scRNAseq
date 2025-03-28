@@ -4,7 +4,7 @@ author: "Noor Sohail"
 date: "September 13, 2024"
 ---
 
-Approximate time: 79 minutes
+Approximate time: 70 minutes
 
 ## Learning Objectives:
 
@@ -128,7 +128,7 @@ dge %>% head()
 ```
 
 ### Venn diagrams
-To compare and contrast, we can represent the overlap of significant genes as a Venn diagram using `ggvenn`.
+Let's start with a quic look at overlapping genes between the two different approaches. We can represent the overlap of significant genes as a Venn diagram using `ggvenn`.
 
 ```r
 # Subset to significant genes
@@ -150,7 +150,7 @@ ggvenn(sig_genes, auto_scale = TRUE)
 </p>
 
 ### Barplot
-However, if you want to include the number of genes that were identified as not significant in both DESeq2 and FindMarkers, , we can similarly make a barplot to count each significance category. You may notice that we have a few genes that are listed as `NA`, which is the result of DESeq2 filtering genes as was [discussed earlier](https://hbctraining.github.io/DGE_analysis_scRNAseq/lessons/04_pseudobulk_DE_analysis.html).
+Next, we can break that overlap into a barplot. The benefit of this visualization is that we can include the number of genes that were identified as not significant in both DESeq2 and FindMarkers. Here, we also categorize genes that are listed as `NA`, which is the result of DESeq2 filtering genes as was [discussed earlier](https://hbctraining.github.io/DGE_analysis_scRNAseq/lessons/04_pseudobulk_DE_analysis.html).
 
 ```r
 ggplot(dge, aes(x=sig, fill=sig)) +
@@ -162,16 +162,16 @@ ggplot(dge, aes(x=sig, fill=sig)) +
 ```
 
 <p align="center">
-  <img src="../img/DE_ncells.png" width="800">
+  <img src="../img/DE_ncells.png" width="600">
 </p>
 
-Ultimately, we find ~1,200 genes significant from both DESeq2 and FindMarkers, indicating that there is a degree of concordence between both methods. There are noticeably more genes found significant in only FindMarkers. To understand why these differences exist, let us look at specific genes that show each of the following cases:
+Ultimately, we **find ~1,200 genes significant from both DESeq2 and FindMarkers**. The DESeq2 signicant list is considerably smaller and so the overlapping genes make up a good proportion of the total.  To explore some of the similarities and differences, let us look at specific genes that demonstrate each of the following cases:
 
 1. Significant in only FindMarkers (Crebl2)
 2. Significant in only DESeq2 (Hist1h1d)
 3. Significant in both DESeq2 and FindMarkers (Tiparp)
 
-#### Findmarkers Crebl2
+### Significant only in FindMarkers results
 
 First, let us take a look at the expression values for the gene Crebl2 which was significant from the FindMakers analysis, but not DESEq2. We can begin by looking at the statistical results (p-value, LFC) for this gene:
 
@@ -185,7 +185,7 @@ dge %>% subset(gene == "Crebl2")
 
 ```
 
-Immediately we can see that there are a similar, small number of cells that express the gene in both the cold7 and TN conditions. The LFC values are also on the lower end. To better understand what is happening at the expression level, we can visualize this gene at the single-cell level.
+Immediately we can see that there are **fairly small percentage of cells that express the gene** (pct.1 and pct.2) in both the cold7 and TN conditions. The LFC values are also on the lower end. To better understand what is happening at the expression level, we can visualize this gene at the single-cell level. We will use a violin plot and a rdiget plot to evaluate the expression distribution for this gene in each condition.
 
 ```r
 p1 <- VlnPlot(seurat_vsm, "Crebl2") + NoLegend()
@@ -198,10 +198,13 @@ p1 + p2
 </p>
 
 
-With the violin plot we can see that there is slightly higher expression in the TN condition. Similarly, the log10 scaled expression distribution represented as a ridgeplot emphasizes that a small group of cells have similarly higher expression of Crebl2 across both conditions.
+With the violin plot we can see that there is **slightly higher expression in the TN condition**. Similarly, the log10 scaled expression distribution represented as a ridgeplot emphasizes that a small group of cells have similarly higher expression of Crebl2 across both conditions. By observing the expression at the single-cell level, we can possibly justify the significance call by FindMarkers. 
+
+To assess **why DESeq2 did not evaluate Crebl2 as significantly different**, we can take the normalized counts from the `dds` DESeq2 object to plot the expression at the pseudobulk level. As this is a helpful metric for assessing the pseudobulk results, we will create a function to make repeated use of this type of visualization.
 
 
-Now that we understand what is happening at the single-cell level, we can then assess why DESeq2 did evaluate Crebl2 as significantly different. To do so, we want to take the normalized counts from the `dds` DESeq2 object to plot the expression at the pseudo-bulked level. As this is a helpful metric for assessing the pseudobulked results, we will create a function to make repeated use of this type of visualization.
+After plotting expression for Crebl2, we can see that there is quite a bit of variability among the samples for both the TN and cold7 conditions. A qualitative assessment of the plot suggests that the within group varaiability is larger than the between group variability. **This is a case where being unable to account for variability (as in FindMarkers) across replicates can skew the results.**
+
 
 ```r
 # pseudobulk scatterpot of normalized expression
@@ -228,9 +231,6 @@ plot_pb_count(dds, "Crebl2")
 <p align="center">
   <img src="../img/DE_comp_crebl2_pb.png" width="400">
 </p>
-
-
-We can see that there is quite a bit of variability among the samples for the TN condition now that we see the pseudobulked results. **This is a case where being unable to account for variability (as in FindMarkers) across replicates can skew the results.**
 
 
 ### DESeq2 Hist1h1d
