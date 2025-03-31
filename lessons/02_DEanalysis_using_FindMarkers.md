@@ -133,7 +133,7 @@ When looking at the output, **we suggest looking for markers with large differen
 This is a great spot to pause and save your results!
 
 ```r
-write.csv(dge_vsm, "results/findmarkers_vsm.csv")
+write.csv(dge_vsm, "results/findmarkers_vsm_cold7_vs_TN.csv")
 ```
 
 
