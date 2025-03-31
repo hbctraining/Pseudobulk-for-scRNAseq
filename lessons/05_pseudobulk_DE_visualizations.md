@@ -67,10 +67,8 @@ p_deseq2 <- EnhancedVolcano(sig_res,
 print(p_deseq2)
 ```
 
-**UPDATE THIS IMAGE**
-
 <p align="center">
-<img src="../img/pb_volcano.png" width="700">
+<img src="../img/deseq2_volcano.png" width="700">
 </p>
 
 
