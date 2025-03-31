@@ -106,28 +106,31 @@ Visually, we see that there are **more significant genes from the FindMarkers an
   3. Remove unnecessary columns
   4. Create a new column titled `sig` to identify if a gene was significant with an adjusted p-values < 0.05 using these labels: FindMarkers, DESeq2, both, or Not Significant
 
-First, let us **load the results** from the the previous DESeq2 and FindMarkers lessons.
+First, let us navigate to your environment and **find the results** objects from the the previous DESeq2 and FindMarkers lessons. You will need to find the following:
 
-```r
-dge_fm <- read.csv("results/findmarkers_vsm.csv")
-dge_deseq2 <- read.csv("results/DESeq2_vsm.csv")
-```
+* `dge_vsm` - which contains the full result from the FindMarkers analysis
+* `dge_deseq2` - which contains the full result from the Pseudobulk analysis
 
-Now, to the data wrangling to obtain our merged data frame:
+> **NOTE:** If you are having trouble locating these objects, you can also read the files in from your working directory:
+> ```
+> dge_vsm <- read.csv("results/findmarkers_vsm_cold7_vs_TN.csv")
+> dge_deseq2 <- read.csv("results/deseq2_VSM_cold7_vs_TN.csv")
+> ```
+
+Now, to the data wrangling to obtain our **merged data frame**:
 
 ```r
 # Merge FindMarkers and DESeq2 results together
-dge <- merge(dge_fm, dge_deseq2, by="X")
+dge <- merge(dge_vsm %>% rownames_to_column(var="gene"), dge_deseq2, by="gene")
 
 # Rename columns to easily understand where results came from
 # Remove columns we will not be using
 dge <- dge %>% 
-          dplyr::rename("gene"="X") %>%
-          dplyr::rename("padj_fm"="p_val_adj",
-                        "padj_deseq2"="padj") %>%
-          dplyr::rename("log2FC_fm"="avg_log2FC",
-                        "log2FC_deseq2"="log2FoldChange") %>%
-          select(-c("p_val", "baseMean", "lfcSE", "pvalue"))
+  dplyr::rename("padj_fm"="p_val_adj",
+                "padj_deseq2"="padj") %>%
+  dplyr::rename("log2FC_fm"="avg_log2FC",
+                "log2FC_deseq2"="log2FoldChange") %>%
+  select(-c("p_val", "baseMean", "lfcSE", "pvalue"))
 
 # Create a column called sig
 # Identifies which methods a gene is significant in
@@ -151,7 +154,7 @@ dge %>% head()
 ```
 
 ### Venn diagrams
-Let's start with a quic look at overlapping genes between the two different approaches. We can represent the overlap of significant genes as a Venn diagram using `ggvenn`.
+Let's start with a quick look at overlapping genes between the two different approaches. We can represent the overlap of significant genes as a Venn diagram using `ggvenn`.
 
 ```r
 # Subset to significant genes
