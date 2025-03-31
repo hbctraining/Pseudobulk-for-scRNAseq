@@ -328,9 +328,16 @@ p1 + p2
 
 ## Effect of Percentage of cells on DGE
 
-From the three examples provided above we observe a difference in the percentage of cells in which the gene is expressed. However, we handpicked the examples so it is not reasonable to jump to any conclusions about correlations between signifncance and percentage of cells. Since we have the data, we can plot it and assess if there is any observable trends.
+From the three examples provided above we observe a difference in the percentage of cells in which the gene is expressed. However, we handpicked the examples so it is not reasonable to jump to any conclusions about correlations between signifncance and percentage of cells. Since we have the data, we can plot it and **assess if there is any observable trends**.
 
-Let's start with a scatter plot of the fold changes from FindMarkers on the y-axis and DESeq2 foldchanges on the x-axis. Each data point represents a gene, and it is colored based on the percentage on cells expressed in TN (`pct.1`) or cold 7 (`pct.2`) 
+Let's start by filtering our data to keep only the genes that are significant in one or both of the methods:
+
+```r
+# Remove non-significant genes
+dge_sig <- dge %>% subset(sig != "Not Significant")
+```
+
+Now, we'll use that data to generate a scatter plot of the fold changes from FindMarkers on the y-axis and DESeq2 foldchanges on the x-axis. Each data point represents a gene, and it is colored based on the percentage on cells expressed in TN (`pct.1`, right plot) or cold 7 (`pct.2` left plot). **We see a smear of light blue on the diagonal, which are the cells with the highest percentage of cells.**
 
 ```r
 pct_1 <- ggplot(dge_sig %>% arrange(pct.1), 
@@ -353,21 +360,25 @@ pct_1 + pct_2
 </p>
 
 
+Now to really see if the percentage of cells is contributing to likelihood of being significant in both methods we need to color the data points. Let's place these plots side-by-side:
 
-Next we might ask ourselves, what could be the cause of the differences in the results? If we think back to how we generated the pseudobulk results, we should consider how the number of cells could affect the final results. The number of cells we aggregate on likely has a strong sway on the overall expression values for the DESeq2 results as we saw in the case of `Hist1h1d`. Therefore, an important metric to consider is the number/percentage of cells that express the genes we are looking at. We have the columns `pct.1` and `pct.2` that represent the proportion of cells in our dataset that belong to `TN` and `cold7` respectively. So let us consider the data with this additional metric in mind.
-
-
-
-To start, we can begin comparing the p-values and average log2-fold changes. First, we will remove the genes that are not significant in either method to more clearly see the differences.
 
 ```r
-# Remove non-significant genes
-dge_sig <- dge %>% subset(sig != "Not Significant")
+# Color points by significance method
+pct_3 <- ggplot(dge_sig %>% arrange(pct.1), 
+                aes(x=log2FC_deseq2, y=log2FC_fm, color=sig)) +
+  geom_point() +
+  labs(x="DESeq2 LFC", y="FindMarkers LFC", title="Percentage TN") +
+  theme_classic()
+
+pct_1 + pct_3
+
 ```
 
-Through this visualization, we can see that there is a clear separation in genes that are found significant by DESeq2 and FindMarkers based upon the percentage of cells that express a gene. We can a see that the more widely expressed significant genes are grouped together and belong to the DESeq2/both groups.
+There is a smear of pink dots in the plot which line up pretty well with the smear of light blue, showing that a large proportion of the genes identified as significant by both methods are those which are expressed in a large percentage of cells. However, this is not the the rule as you can see a number of pink points that deviate from the diagonal - these are genes that exhibit fairly large changes and are significant in both methods yet are expressed in a small percentage of cells.
 
-Since we can easily make a heatmap of expression values using the pseudobulked normalized expressions, let us see if we can find any global patterns among the genes.
+
+Finally, let's make a heatmap of expression values using the normalized expression values from Pseudobulk and see if we can find any global patterns among the genes.
 
 ```r
 # Extract normalized expression for significant genes from the samples
@@ -395,7 +406,7 @@ pheatmap(norm_sig,
   <img src="../img/DE_pb_heatmap.png" height="500">
 </p>
 
-Through this visualization, we can see that there is a **clear separation in genes that are found significant by DESeq2 and FindMarkers based upon the percentage of cells that express a gene**. We can a see that the more widely expressed significant genes are grouped together and belong to the DESeq2/both groups.
+Through this visualization, we can see that there is a **a clustering of genes that are found significant by DESeq2 and FindMarkers**, with some of the 'both 'genes scattered. Most of the DESeq2 genes have a high percentage of cells expressing them, suggesting this drives the results observed with Psedubulk. 
 
 
 ***
