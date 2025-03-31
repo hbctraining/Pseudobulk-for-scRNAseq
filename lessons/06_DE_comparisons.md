@@ -9,8 +9,8 @@ Approximate time: 70 minutes
 ## Learning Objectives:
 
 * Compare and contrast results from `DESeq2` and `FindMarkers`
-* Evaluate what is contributing to difference in results
-*
+* Evaluate possible contributing factors for differing results
+* Assess the relationship between percentage of cells and DE significance
 
 ## Methods for differential gene expression in single cell RNA-seq
 
@@ -70,7 +70,29 @@ In the previous lessons we had created a **volcano plot** for the results of DES
 p_deseq2 + p_fm
 ```
 
-**CREATE A DROPDOWN for code usedto create each volcano plots. "Can't find these plot objects in your environment? Click here for the code to run."
+<details>
+<summary><b><i>Can't find these plot objects in your environment? Click here!.</i></b></summary>
+<br></details><i>Note that this R code below uses existing objects in your environment created in earlier lessons.</i>
+<pre>
+# Volcano plot for Findmarkers results
+p_fm <- EnhancedVolcano(dge_vsm_sig,
+                        row.names(dge_vsm_sig),
+                        x="avg_log2FC",
+                        y="p_val_adj",
+                        title="FindMarkers VSM cells",
+                        subtitle="TN vs cold7")
+
+# Volcano plot for Pseudobulk results
+p_deseq2 <- EnhancedVolcano(sig_res,
+        sig_res$gene,
+        x="log2FoldChange",
+        y="padj",
+        title="DESeq2 VSM cells",
+                subtitle="TN vs cold7")
+
+</pre>
+</details>
+
 
 <p align="center">
   <img src="../img/DE_comp_volcano.png" width="1000">
@@ -231,8 +253,6 @@ plot_pb_count(dds, "Crebl2")
 
 
 After plotting expression for Crebl2, we can see that there is quite a bit of variability among the samples for both the TN and cold7 conditions. A qualitative assessment of the plot suggests that the within group varaiability is larger than the between group variability. **This is a case where being unable to account for variability (as in FindMarkers) across replicates can skew the results.**
-
-
 
 
 ### Significant only in DESeq2 
