@@ -175,10 +175,8 @@ p_fm <- EnhancedVolcano(dge_vsm_sig,
 print(p_fm)
 ```
 
-**UPDATE FIGURE**
-
 <p align="center">
-    <img src="../img/fm_sig_volcano.png" width="700">
+    <img src="../img/findmarkers_volcano.png" width="700">
 </p>
 
 ### Violin plots
