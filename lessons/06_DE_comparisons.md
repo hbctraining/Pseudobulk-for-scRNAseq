@@ -71,8 +71,8 @@ p_deseq2 + p_fm
 ```
 
 <details>
-<summary><b><i>Can't find these plot objects in your environment? Click here!.</i></b></summary>
-<br></details><i>Note that this R code below uses existing objects in your environment created in earlier lessons.</i>
+<summary><b><i>Can't find these plot objects in your environment? Click here!</i></b></summary>
+<br><i>Note that this R code below uses existing objects in your environment created in earlier lessons.</i>
 <pre>
 # Volcano plot for Findmarkers results
 p_fm <- EnhancedVolcano(dge_vsm_sig,
@@ -82,7 +82,8 @@ p_fm <- EnhancedVolcano(dge_vsm_sig,
                         title="FindMarkers VSM cells",
                         subtitle="TN vs cold7")
 
-# Volcano plot for Pseudobulk results
+
+&#35; Volcano plot for Pseudobulk results
 p_deseq2 <- EnhancedVolcano(sig_res,
         sig_res$gene,
         x="log2FoldChange",
