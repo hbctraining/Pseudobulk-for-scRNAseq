@@ -326,10 +326,11 @@ p1 + p2
   <img src="../img/DE_comp_Tiparp_sc.png" width="800">
 </p>
 
-## Percentage of cells effects DGE results
+## Effect of Percentage of cells on DGE
 
-Next we might ask ourselves, what could be the cause of the differences in the results? If we think back to how we generated the pseudobulk results, we should consider how the number of cells could affect the final results. The number of cells we aggregate on likely has a strong sway on the overall expression values for the DESeq2 results as we saw in the case of `Hist1h1d`. Therefore, an important metric to consider is the number/percentage of cells that express the genes we are looking at. We have the columns `pct.1` and `pct.2` that represent the proportion of cells in our dataset that belong to `TN` and `cold7` respectively. So let us consider the data with this additional metric in mind.
+From the three examples provided above we observe a difference in the percentage of cells in which the gene is expressed. However, we handpicked the examples so it is not reasonable to jump to any conclusions about correlations between signifncance and percentage of cells. Since we have the data, we can plot it and assess if there is any observable trends.
 
+Let's start with a scatter plot of the fold changes from FindMarkers on the y-axis and DESeq2 foldchanges on the x-axis. Each data point represents a gene, and it is colored based on the percentage on cells expressed in TN (`pct.1`) or cold 7 (`pct.2`) 
 
 ```r
 pct_1 <- ggplot(dge_sig %>% arrange(pct.1), 
@@ -350,6 +351,11 @@ pct_1 + pct_2
 <p align="center">
   <img src="../img/DE_LFC_pct.png" width="800">
 </p>
+
+
+
+Next we might ask ourselves, what could be the cause of the differences in the results? If we think back to how we generated the pseudobulk results, we should consider how the number of cells could affect the final results. The number of cells we aggregate on likely has a strong sway on the overall expression values for the DESeq2 results as we saw in the case of `Hist1h1d`. Therefore, an important metric to consider is the number/percentage of cells that express the genes we are looking at. We have the columns `pct.1` and `pct.2` that represent the proportion of cells in our dataset that belong to `TN` and `cold7` respectively. So let us consider the data with this additional metric in mind.
+
 
 
 To start, we can begin comparing the p-values and average log2-fold changes. First, we will remove the genes that are not significant in either method to more clearly see the differences.
