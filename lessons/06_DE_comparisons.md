@@ -84,12 +84,12 @@ p_fm <- EnhancedVolcano(dge_vsm_sig,
 
 
 &#35; Volcano plot for Pseudobulk results
-p_deseq2 <- EnhancedVolcano(sig_res,
-        sig_res$gene,
-        x="log2FoldChange",
-        y="padj",
-        title="DESeq2 VSM cells",
-                subtitle="TN vs cold7")
+p_fm <- EnhancedVolcano(sig_res,
+                        sig_res$gene,
+                        x="log2FoldChange",
+                        y="padj",
+                        title="DESeq2 VSM cells",
+                        subtitle="TN vs cold7")
 
 </pre>
 </details>
