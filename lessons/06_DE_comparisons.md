@@ -237,7 +237,7 @@ After plotting expression for Crebl2, we can see that there is quite a bit of va
 
 ### Significant only in DESeq2 
 
-Next let's explore Hist1h1d, a gene that was only identified as significant from the DESeq2 results. We can repeat some of the visualizations to look at the underlying expression and see if it is a believable difference. We can start by pulling the result stats from our merged dataframe:
+Next let's explore Hist1h1d, a gene that was only identified as significant from the DESeq2 results. We can repeat some of the visualizations to look at the underlying expression and see if it is a believable difference. We can start by pulling the **result stats for Hist1h1d** from our merged dataframe:
 
 ```r
 dge %>% subset(gene == "Hist1h1d")
@@ -266,10 +266,10 @@ p1 + p2
   <img src="../img/DE_comp_Hist1h1d_sc.png" width="800">
 </p>
 
-With this example we can see sometimes in the process of pseudobulk aggregation high expression from a small proportion of cells can drive the results. At the single-cell level, we are better able to take into account that few cells are expressing Hist1h1d.
+With this example we can see sometimes in the process of pseudobulk aggregation high expression from a small proportion of cells can drive the results. At the single-cell level, we are better able to observe the true distribution of expression across all cells and rule out cases where only a few cells are expressing Hist1h1d.
 
 ### High confidence genes: Significant in DESeq2 and FindMarkers
-A conservative approach for a DGE analysis, would be to use only the significant genes that are identified from both methods. As an example, we can take a look at the gene Tiparp which was significant in DESEq2 and FindMarkers. Again, let's begin with a quick peek at the results file. Unlike the previous genes, **the percentage of cells expressing this gene is on the higher end**.
+A conservative approach for a DGE analysis, would be to use only the significant genes that are identified from both methods. As an example, we can take a look at the **gene Tiparp which was significant in DESEq2 and FindMarkers**. Again, let's begin with a quick peek at the results file. Unlike the previous genes, **the percentage of cells expressing this gene is on the higher end**.
 
 ```r
 dge %>% subset(gene == "Tiparp")
@@ -280,7 +280,7 @@ dge %>% subset(gene == "Tiparp")
 8768 Tiparp -2.414068 0.393 0.742 2.1504e-141     -2.378904 3.917121e-34 both
 ```
 
-TODO
+Next, we plot the normalized counts from pseudobulk aggregation. Here, we observe a clear difference in expression between groups. While there is some observed variability within the TN group, it is small compared to the varibility between groups. For this gene it is clear why it was identified as significant. 
 
 ```r
 plot_pb_count(dds, "Tiparp")
@@ -289,6 +289,8 @@ plot_pb_count(dds, "Tiparp")
 <p align="center">
   <img src="../img/DE_comp_Tiparp_pb.png" width="400">
 </p>
+
+Now, let's take a look at the expression values at the single cell level. With the Violin plot we see there is a large distribution of cells in the TN group that show increased expression. The Ridgeplot displays a lower amplitude peak at the low end of expression and broad range across the higher end of expression. This suggests that while a small subset of cells exhibit low expression, a large majority express Tiparp at higher levels.
 
 ```r
 p1 <- VlnPlot(seurat_vsm, "Tiparp") + NoLegend()
