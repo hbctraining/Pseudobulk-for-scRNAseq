@@ -14,7 +14,7 @@ After clustering cells as part of a single-cell RNA-seq experiment, investigator
 - Perform differential expression analysis on pseudobulk counts using DESeq2
 - Present approaches for evaluating differential proportions of cells between conditions
 
-Working knowledge of R is required or completion of the [Introduction to R workshop](https://hbctraining.github.io/Intro-to-R/). 
+Working knowledge of R is required or completion of the [Introduction to R workshop](https://hbctraining.github.io/Intro-to-R-flipped/). 
 
 **Note for Trainers:** Please note that the schedule linked below assumes that learners will spend between 3-4 hours on reading through, and completing exercises from selected lessons between classes. The online component of the workshop focuses on more exercises and discussion/Q & A.
 
