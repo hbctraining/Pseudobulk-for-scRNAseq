@@ -99,8 +99,8 @@ II. **Submit your work**:
 ***
 
 ## Answer Keys
-* [Day 1 exercises](https://hbctraining.github.io/DGE_analysis_scRNAseq/homework/Day_1_answer_key.html) 
-* [Day 2 exercises](https://hbctraining.github.io/DGE_analysis_scRNAseq/homework/Day_2_answer_key.html) 
+* [Day 1 exercises](../homework/Day_1_answer_key.md) 
+* [Day 2 exercises](../homework/Day_2_answer_key.md) 
 
 
 
