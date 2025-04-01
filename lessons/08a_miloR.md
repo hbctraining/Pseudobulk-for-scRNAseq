@@ -206,6 +206,8 @@ Now we use the `makeNhoods()` function to define the neighborhoods based upon th
 
 Once we generate these neighborhoods, we can visualize the number of cells that belong to each neighborhood as a histogram. **If the number of cells in each neighborhood are too small for our given dataset, this could be an indication that we need to select a different value for `k`.** 
 
+**GIVE INTERPREATION OF OUR HISTOGRAM**
+
 ```r
 traj_milo <- makeNhoods(traj_milo, prop = 0.1, k = 10, d = 30, refined = TRUE)
 
@@ -213,7 +215,7 @@ plotNhoodSizeHist(traj_milo)
 ```
 
 <p align="center">
-  <img src="../img/milo_all_nhood_hist.png" width="600">
+  <img src="../img/milo_all_nhood_hist.png" width="400">
 </p>
 
 
@@ -309,23 +311,10 @@ This **results in a dataframe** with the following [columns](https://rdrr.io/git
 - `Nhood`: Numeric, a unique identifier corresponding to the specific graph neighbourhood.
 - `SpatialFDR`: Numeric, the weighted FDR, computed to adjust for spatial graph overlaps between neighbourhoods. 
 
-```r
-da_results %>% head()
-```
-
-```
-      logFC   logCPM         F      PValue         FDR Nhood  SpatialFDR condition condition_fraction
-1  5.077949 10.92841  8.328449 0.003918351 0.010144926     1 0.008677397        TN          1.0000000
-2  5.595769 11.22084  9.946825 0.001620099 0.006318517     2 0.005170829        TN          1.0000000
-3  6.026816 11.49294 10.713690 0.001070141 0.006318517     3 0.005170829        TN          1.0000000
-4 -3.946278 11.23250  6.741285 0.009446174 0.019465082     4 0.016947029     cold7          0.9565217
-5  4.703667 11.82490  7.968536 0.004777138 0.011760113     5 0.010144964        TN          0.9791667
-6  1.874743 11.02911  1.997329 0.157634216 0.197811182     6 0.181707364        TN          0.8333333
-```
 
 Now that we have our neighborhoods, we can add extra metadata to these results. For example, we can **annotate these groups by the percentage of cells in the neighborhood that belong to each condition** using the `annotateNhoods()` function. Bear in mind that the `coldata_col` variable must be a column found in `colData()` of the milo object. This will create two new columns where `condition` represents what condition the majority of cells belong to, while `condition_fraction` represent the percent of cells annotated with that condition.
 
-The developers of MiloR were cognizant of the fact that there may be neighborhoods of cells where there is a mix of two conditions. In [their vignette](https://rawcdn.githack.com/MarioniLab/miloR/7c7f906b94a73e62e36e095ddb3e3567b414144e/vignettes/milo_gastrulation.html#5_Finding_markers_of_DA_populations), they recommend categorizing these neighborhoods as "Mixed".
+> Note: The label "Mixed" is used for neighborhoods of cells where there is a mix of two conditions as recommended in [the vignette](https://rawcdn.githack.com/MarioniLab/miloR/7c7f906b94a73e62e36e095ddb3e3567b414144e/vignettes/milo_gastrulation.html#5_Finding_markers_of_DA_populations).
 
 
 ```r
@@ -348,7 +337,21 @@ da_results$anno_celltype <- ifelse(da_results$celltype_fraction < 0.7,
 da_results <- annotateNhoods(traj_milo, da_results, coldata_col = "sub_clusters")
 ```
 
-The final piece of information is added to this dataframe of differential abundance results with the `groupNhoods()` function. This will run the louvain clustering algorithm to **identify neighborhoods that are overlapping and similar to one another**. This `max.lfc.delta` specifies a cutoff of fold change difference where two neighborhoods would not be considered a part of the same group. We are setting a value of 5, which is quite high in order to minimize the number of neighborhood groups (similar to the resolution we set for louvain clustering).
+```r
+da_results %>% head()
+```
+
+```
+      logFC   logCPM         F      PValue         FDR Nhood  SpatialFDR condition condition_fraction
+1  5.077949 10.92841  8.328449 0.003918351 0.010144926     1 0.008677397        TN          1.0000000
+2  5.595769 11.22084  9.946825 0.001620099 0.006318517     2 0.005170829        TN          1.0000000
+3  6.026816 11.49294 10.713690 0.001070141 0.006318517     3 0.005170829        TN          1.0000000
+4 -3.946278 11.23250  6.741285 0.009446174 0.019465082     4 0.016947029     cold7          0.9565217
+5  4.703667 11.82490  7.968536 0.004777138 0.011760113     5 0.010144964        TN          0.9791667
+6  1.874743 11.02911  1.997329 0.157634216 0.197811182     6 0.181707364        TN          0.8333333
+```
+
+The final piece of information to add to the results, is group structure of the neighborhoods. The `groupNhoods()` function will run the louvain clustering algorithm to **identify neighborhoods that are overlapping and similar to one another**. The `max.lfc.delta` argument specifies a cutoff of fold change difference whereby two neighborhoods would not be considered a part of the same group. We are setting a value of 5, which is quite high in order to minimize the number of neighborhood groups (similar to the resolution we set for louvain clustering).
 
 > Note that the exact number of groups may vary due to randomness in the model. Even if the results are not identical to what is displayed here, the general trends of the data should be similar. 
 
@@ -371,14 +374,8 @@ da_results %>% head()
 
 ## Visualization
 
-Now, with all the information we have, we can visualize the differential abundance results using the UMAP coordinates that we initially supplied. 
-
-### Neighborhoods overlaid UMAP
-
-Each dot represents a different neighborhood, with the size of the dot representing how many cells belong to that neighborhood. The color of the circle represent the log-fold change for that neighborhood, from the `da_results` object. You may notices that there are many neighborhoods that do not contain any color, which is an indication that the FDR value did not meet that `alpha` value supplied.
-
-We can also represent the neighborhoods according to the group structure that was calculated with the `groupNhoods()` function. The expectation here would be that the group structure bears a resemblance the clusters calculated after subsetting the data. 
-
+### Neighborhood-level UMAP
+Here, we will use the UMAP coordinates stored earlier (associated with each cell) and use that to visualize the differntial abundance results at the neighborhood level.
 
 ```r
 traj_milo <- buildNhoodGraph(traj_milo)
@@ -388,6 +385,16 @@ p2 <- plotNhoodGroups(traj_milo, da_results)
 p1 + p2 
 ```
 
+For the **plot on the left**:
+* Each circle in UMAP the represents a different neighborhood
+* The size of the circle represents how many cells belong to that neighborhood
+* The color of the circle represents the log-fold change for that neighborhood, from the `da_results` object
+* Circles that do not contain any color indicates that the FDR value did not meet that `alpha` value supplied (non-significant result)
+
+**NOT CLEAR WHAT THE FOLD CHANGE MEANS - THAT NEIGHBORHOOD OF CELLS IS HAS DIFFERENT PROPORTIONS IN TN AND COLD7?**
+
+For the **plot on the right** colors neighborhood by group structure. Here, we see that the groups tend to exibit a trending fold change across many but not all neighborhoods in the group. - ** Is ths right????? EXPLAIN WHY WE HAVE THIS HERE AND HOW THIS HELPS WITH INTERPRETATION.**
+
 <p align="center">
   <img src="../img/milo_all_da_umap.png" height="500">
 </p>
@@ -395,9 +402,10 @@ p1 + p2
 
 ### Bee swarm plots
 
-Another built in visualization can be accessed with the `plotDAbeeswarm()` function. In these visualizations, each point represents a neighborhood, which are grouped together according to the `group.by` parameter. Along the x-axis, these neighborhoods are spread out according to their log fold change score. This clearly shows the distribution of significant fold changes across different groups.
+Another built in visualization can be accessed with the `plotDAbeeswarm()` function. In these visualizations, neighborhoods are separated out on the y-axis by their annotation, using the `group.by` parameter. Along the x-axis, each neighborhood is placed according to its log fold change score. This clearly shows the distribution of significant fold changes across different groups. The color scale issimialr to that used on the previous plot. 
 
-To begin, let's look at the change in neighborhood expression across our two conditions.
+To begin, let's look at the change in neighborhood expression across our two conditions. **What can we infer from this? Can we color points by celltype instead?** As expected, we see a clear FDR divide based upon condition as that was the `design` variable we computed the different neighborhoods on.??
+
 
 ```r
 plotDAbeeswarm(da_results, group.by = "anno_condition")
@@ -408,9 +416,8 @@ plotDAbeeswarm(da_results, group.by = "anno_condition")
 </p>
 
 
-As expected, we see a clear FDR divide based upon condition as that was the `design` variable we computed the different neighborhoods on.
 
-We can additionally take a look at the annotated celltypes to see how the neighborhoods distribute across the celltypes.
+**Where do htese annotations come from? Neighborhoods are made up of more than once cell - what of they are differing celltypes?** We can additionally take a look at the annotated celltypes to see how the neighborhoods distribute across the celltypes.
 
 ```r
 plotDAbeeswarm(da_results, group.by = "anno_celltype")
