@@ -8,22 +8,17 @@ date: November 5th, 2024
 ## Learning Objectives
 * Describe current approaches for evaluating differences in cell proportions between groups
 * Distinguish between cluster-based and cluster-free methods for DA analysis
-* Run miloR for differential abundance analysis on VSM cells
+* Run cluster-based differential abundance analysis on VSM cells
 
 ## Differential abundance of celltypes
 Differential abundance (DA) analysis is a method used to identify celltypes with statistically significant changes in abundance between different biological conditions.  The overall aim is to find sub-populations of cells in which the ratio of cells from the two conditions is significantly different from the ratios observed in the overall data. Methods for differential abundance have been successfully used in practice in both clinical and experimental settings. For example, these approaches highlighted an increased presence of granulocytes, monocytes, and B cells in fatal cases of COVID-19 ([1](https://www.nature.com/articles/nbt.2317)). 
 
-The figure below is taken from a [2024 benchmarking study of DA approaches](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-023-03143-0#Fig1), and nicely illustrates DA effects.
+The figure below ....and nicely illustrates DA effects. 
 
-
-<p align="center">
-<img src="../img/DA_schematic.png" width="630">
-</p>
-
-
-### Cluster-based approaches for DA
+## Cluster-based approaches for DA
 These methods are dependent on having cells grouped into phenotypically similar cell populations, most classically aligning with specific cell types. Many single cell RNA-seq data analysis workflows produce a result with annotated sub-populations, making these tools very easy to implement as a next step. 
 
+### Propellor method
 The **propellor method** is a function that is part of the [speckle R package](https://github.com/phipsonlab/speckle), which uses cell level annotation information to calculate differential abundance estimates. First, cell type proportions are calculated for each sample. This results in matrix of proportions where the rows are the cell types and the columns are the samples. The matrix is then transformed such that a linear modeling framework can be applied. If there are exactly two groups, moderated t-tests are implemented; if there are more than two groups, the option is a moderated ANOVA test. These tests are moderated using an empirical Bayes framework, borrowing information across all cells, and finally false discovery rates are calculated.
 
 <p align="center">
@@ -31,6 +26,9 @@ The **propellor method** is a function that is part of the [speckle R package](h
 </p>
 
 _Image source: [Phipson B. et al, 2022](https://academic.oup.com/bioinformatics/article/38/20/4720/6675456)_
+
+
+### Differential compostion analysis using `sccomp`
 
 While propellor and other approaches based on linear regression (i.e., scDC, diffcyt) transform the data to model data compositionality, they do not model the data count distribution.  Modeling single-cell compositional data as counts is important as small datasets and rare cell types are characterized by a high noise-to-signal ratio, and modeling counts enables the down-weighting of small cell-group proportions compared to larger ones ([Mangiola s. et al, 2023](https://www.pnas.org/doi/10.1073/pnas.2203828120)). The **[sccomp](https://github.com/MangiolaLaboratory/sccomp) package** is a generalized **method for differential composition and variability analyses based on sum-constrained independent Beta-binomial distributions**. The sccomp core algorithm, data integration, and visualization are outlined in the figure below. Two important features of this method include outlier detection and differential variability analysis.
 
