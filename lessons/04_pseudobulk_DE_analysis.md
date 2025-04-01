@@ -283,7 +283,10 @@ If you take a look at the results table now, you will find fold change values ma
 This is a great spot to store the results of the comparison:
 
 ```r
-write.csv(res, "results/VSM_cold7_vs_TN.csv")
+
+res %>%
+data.frame() %>%  rownames_to_column(var="gene") %>%
+write.csv("results/deseq2_VSM_cold7_vs_TN.csv", row.names=F, quote=F)
 ```
 
 ***
