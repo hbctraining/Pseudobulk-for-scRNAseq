@@ -12,10 +12,11 @@ Approximate time: 90 minutes
 
 
 ## Differential abundance analysis with MiloR
+This approach is a cluster-free method and therefore does not require cells to be separated by celltype. Rather, **we will use the full dataset and subset by the two conditions of interest**.
 
 ### Create new script
 
-To start, open a new Rscript file, and start with some comments to indicate what this file is going to contain:
+To start, open a new Rscript file, and start with some a header line in comment format:
 
 ```r
 # Single-cell RNA-seq analysis - Differential abundance analysis with MiloR
@@ -37,25 +38,31 @@ library(miloR)
 library(EnhancedVolcano)
 ```
 
-### Select cell subsets
+### Loading the data 
 
-For continuity, let us take a look at the differences between the `TN` and `cold7` conditions. Here we are also going to set our seed so that we are all introducing the same randomness values in later steps.
+Here, we take the full dataset Seurat object and subset to keep only cells from the `TN` and `cold7` conditions. Here we are also going to set our seed so that we are all introducing the same randomness values in later steps.
 
 ```r
 set.seed(1234)
 
 # Subset to condition of interest
-# seurat <- readRDS("data/BAT_GSE160585_final.rds")
+# seurat <- readRDS("data/BAT_GSE160585_final.rds") # This dataset was loaded in at the beginning of the workshop
 seurat_sub <- subset(seurat, subset = (condition %in% c("TN", "cold7")))
 ```
 
-MiloR generates the neighborhoods based upon the UMAP coordinates supplied, so we will re-run the necessary steps from our Seurat pipeline on this new subset. Since we have fewer cells than the larger datset, will use 30 PCA dimensions calculated from 2,000 highly variable genes (HVG). Following a typical Seurat workflow, we then calculate UMAP coordinates, neighborhoods, and clusters for later comparisons. We are also supplying specific names for the graphs and cluster names to avoid overwriting the previous metadata.
+MiloR generates the neighborhoods based upon the UMAP coordinates supplied, so we will **re-run** the steps from our **Seurat pipeline on this new subset**. Since we have fewer cells than the larger datset, will use 30 PCA dimensions calculated from 2,000 highly variable genes (HVG).
 
 ```r
-# HVG, PCA, UMAP, neighborhoods, calculate clusters
+# Re-running the Seurat workflow on subset
 seurat_sub <- FindVariableFeatures(seurat_sub, verbose=FALSE, nfeatures=2000)
 seurat_sub <- ScaleData(seurat_sub, verbose=FALSE)
 seurat_sub <- RunPCA(seurat_sub, verbose = FALSE)
+```
+
+We then calculate UMAP coordinates, and cluster the data (at a resolution of 0.4) for later comparisons. We are supplying specific names as arguments for the graphs ('FindNeighbors`) and cluster names (`FindClusters`) to avoid overwriting the previous metadata.
+
+```r
+# Run UMAP, neighborhoods, calculate clusters
 seurat_sub <- RunUMAP(seurat_sub, dims = 1:30, verbose=FALSE)
 seurat_sub <- FindNeighbors(seurat_sub, dims = 1:30,
                             graph.name="sub_graph", verbose=FALSE)
@@ -64,7 +71,11 @@ seurat_sub <- FindNeighbors(seurat_sub, dims = 1:30,
 seurat_sub <- FindClusters(seurat_sub, cluster.name="sub_clusters",
                            resolution=0.4, graph.name="sub_graph",
                            verbose=FALSE)
+```
 
+Let's take a quick **look at the UMAP**, with data points colored by condition, clusters, and celltype annotations:
+
+```r
 DimPlot(seurat_sub, group.by=c("condition", "sub_clusters", "celltype"))
 ```
 
@@ -72,11 +83,11 @@ DimPlot(seurat_sub, group.by=c("condition", "sub_clusters", "celltype"))
   <img src="../img/milo_all_umap.png" width="1000">
 </p>
 
-We see a distinct separation of cells based upon which sample the cells come from, which will allow us to clearly identify changes in our dataset by condition with MiloR.
+We see that cells primarily cluster by celltype, but within each cluster there is a distinct separation of cells based upon the condition. This will allow us to clearly identify changes in our dataset by condition with the use of MiloR.
 
 ### Creating single cell experiment
 
-In order to make use of the MiloR package, we must format our datset in the correct way. There is another data structure known as `SingleCellExperiment` that is commonly used to analyze single-cell experiments. We will first convert our Seurat object and investigate the underlying structure so that we can easily use and modify the object according to our needs.
+In order to make use of the MiloR package, we must **format our datset in the correct way**. There is another data structure known as `SingleCellExperiment` that is commonly used to analyze single-cell experiments. We will first convert our Seurat object and investigate the underlying structure so that we can easily use and modify the object according to our needs.
 
 ```r
 # Create SingleCellExperiment object
@@ -92,7 +103,7 @@ A SingleCellExperiment stores metadata, counts matrix, and reductions in the fol
 
 _Image credit: [Amezquita, R.A., Lun, A.T.L., Becht, E. et al, 2019](https://doi-org.ezp-prod1.hul.harvard.edu/10.1038/s41592-019-0654-x)_
 
-We can use the functions from the SingleCellExperiment package to extract the different components. Let’s explore the counts and metadata for the experimental data.
+We can use the functions from the SingleCellExperiment package to extract the different components. Let’s **explore the counts and metadata** for the experimental data.
 
 ```r
 ## Explore the raw counts for the dataset
@@ -129,7 +140,7 @@ dim(colData(sce))
 head(colData(sce))
 ```
 
-### Creating Milo object
+### Creating a Milo object
 
 Now that we better understand how to use a SingleCellExperiment, we can convert it to a Milo object. While there are slight differences in this object, the basic idea of how to access metadata and counts information is consistent with a SingleCellExperiment. To avoid re-computing PCA and UMAP coordinates, we are going to store the Seurat generated values in the `Embeddings` slot of our Milo object.
 
@@ -167,11 +178,11 @@ nhoodGraph names(0):
 nhoodAdjacency dimension(2): 1 1
 ```
 
-The major differences between Milo and a SingleCellExperiment comes from the slots where `nhood` values are stored, as this is information that is uniquely stored in our Milo object. These values will be automatically populated as we use the various function built into the package.  
+The major differences between Milo and a SingleCellExperiment comes from the slots where the `nhood` values are stored, as this is information that is uniquely stored in our Milo object. These values will be automatically populated as we use the various function built into the package.  
 
 ## Milo workflow
 
-Now that we have our dataset in the correct format, we can begin utilizing the Milo workflow.
+Now that we have our dataset in the correct format, we can begin the Milo workflow.
 
 
 ### Creating neighborhoods
@@ -187,13 +198,13 @@ Step one is to generate the k-nearest neighborhood graph with the `buildGraph()`
 traj_milo <- buildGraph(milo, k = 10, d = 30)
 ```
 
-Afterwards we use the `makeNhoods()` function to define the neighborhoods based upon the graph calculated before. These neighborhoods are then refined further by evaluating the median PC values and vetrices to generate a minimal, but informative graph of the data. The values assigned to the parameters for this function should be consistent with the ones that were chosen when the graph was built in the previous step:
+Now we use the `makeNhoods()` function to define the neighborhoods based upon the graph calculated before. These neighborhoods are then refined further by evaluating the median PC values and vetrices to generate a minimal, but informative graph of the data. The **values assigned to the parameters for this function should be consistent with the ones that were chosen when the graph was built in the previous step**:
 
 - `prop`: A double scalar that defines what proportion of graph vertices to randomly sample. Must be 0 < `prop` < 1. Default is 0.1.
 - `k`: An integer scalar - the same k used to construct the input graph. Default is 21.
 - `d`: The number of dimensions to use if the input is a matrix of cells X reduced dimensions. Default is 30.
 
-Once we generate these neighborhoods, we can visualize the number of cells that belong to each neighborhood as a histogram. If the number of cells in each neighborhood are too small for our given dataset, this could be an indication that we need to select a different value for `k`. 
+Once we generate these neighborhoods, we can visualize the number of cells that belong to each neighborhood as a histogram. **If the number of cells in each neighborhood are too small for our given dataset, this could be an indication that we need to select a different value for `k`.** 
 
 ```r
 traj_milo <- makeNhoods(traj_milo, prop = 0.1, k = 10, d = 30, refined = TRUE)
@@ -267,18 +278,28 @@ Now we have all the relevant information to begin testing differential abundance
 
 ### Run differential abundance
 
-To test the differences in neighborhoods, we first calculate the Euclidean distances between nearest neighborhoods using the PCs that the graph was first constructed on with the `calcNhoods()` function. With the distances computed for each neighborhood in our dataset, we can begin assessing the overlap in neighborhoods. This is accomplished with the Spatial FDR correction where each hypothesis test p-values are adjusted based upon the nearest neighbor distances. 
+To test the differences in neighborhoods, we **first calculate the Euclidean distances between nearest neighborhoods using the PCs** that the graph was first constructed on with the `calcNhoods()` function.
 
-This step may take some time to run for a large dataset.
+> Note: This step may take some time to run for a large dataset.
 
 
 ```r
 # Calculate differential abundance
-# This may take some time to run
+# This may take some time to run!!
 traj_milo <- calcNhoodDistance(traj_milo, d=30) 
 ```
 
-Now we can finally calculate the differential abundance across the neighborhoods with `testNhoods()`. We specify the `design`, or the model we want to use in the comparison. The columns used in `design` must be found within the `design.df` metadata dataframe. This results in a dataframe with the following [columns](https://rdrr.io/github/MarioniLab/miloR/man/testNhoods.html):
+With the distances computed for each neighborhood in our dataset, we can begin **assessing the overlap in neighborhoods**. This is accomplished with the Spatial FDR correction where each hypothesis test p-values are adjusted based upon the nearest neighbor distances. We use the `testNhoods()` function and specify the `design`, or the model we want to use in the comparison. The columns used in `design` must be found within the `design.df` metadata dataframe. 
+
+```r
+da_results <- testNhoods(traj_milo, 
+                         design = ~ condition, 
+                         design.df = traj_design)
+
+
+```
+
+This **results in a dataframe** with the following [columns](https://rdrr.io/github/MarioniLab/miloR/man/testNhoods.html):
 
 - `logFC`: Numeric, the log fold change between conditions or, for an ordered/continous variable, the per-unit change in (normalized) cell counts per unit-change in experimental variable.
 - `logCPM`: Numeric, the log counts per million (CPM), which equates to the average log normalized cell counts across all samples.
@@ -288,12 +309,7 @@ Now we can finally calculate the differential abundance across the neighborhoods
 - `Nhood`: Numeric, a unique identifier corresponding to the specific graph neighbourhood.
 - `SpatialFDR`: Numeric, the weighted FDR, computed to adjust for spatial graph overlaps between neighbourhoods. 
 
-
 ```r
-da_results <- testNhoods(traj_milo, 
-                         design = ~ condition, 
-                         design.df = traj_design)
-
 da_results %>% head()
 ```
 
@@ -307,9 +323,9 @@ da_results %>% head()
 6  1.874743 11.02911  1.997329 0.157634216 0.197811182     6 0.181707364        TN          0.8333333
 ```
 
-Now that we have our neighborhoods, we can add extra metadata to these results. For example, we can annotate these groups by the percentage of cells in the neighborhood that belong to each condition using the `annotateNhoods()` function. Bear in mind that the `coldata_col` variable must be a column found in `colData()` of the milo object. This will create two new columns where `condition` represents what condition the majority of cells belong to, while `condition_fraction` represent the percent of cells annotated with that condition.
+Now that we have our neighborhoods, we can add extra metadata to these results. For example, we can **annotate these groups by the percentage of cells in the neighborhood that belong to each condition** using the `annotateNhoods()` function. Bear in mind that the `coldata_col` variable must be a column found in `colData()` of the milo object. This will create two new columns where `condition` represents what condition the majority of cells belong to, while `condition_fraction` represent the percent of cells annotated with that condition.
 
-The developers of MiloR were cognicent of the fact that there may be neighborhoods of cells where there is a mix of two conditions. In [their vignette](https://rawcdn.githack.com/MarioniLab/miloR/7c7f906b94a73e62e36e095ddb3e3567b414144e/vignettes/milo_gastrulation.html#5_Finding_markers_of_DA_populations), they recommend categorizing these neighborhoods as "Mixed".
+The developers of MiloR were cognizant of the fact that there may be neighborhoods of cells where there is a mix of two conditions. In [their vignette](https://rawcdn.githack.com/MarioniLab/miloR/7c7f906b94a73e62e36e095ddb3e3567b414144e/vignettes/milo_gastrulation.html#5_Finding_markers_of_DA_populations), they recommend categorizing these neighborhoods as "Mixed".
 
 
 ```r
@@ -332,7 +348,7 @@ da_results$anno_celltype <- ifelse(da_results$celltype_fraction < 0.7,
 da_results <- annotateNhoods(traj_milo, da_results, coldata_col = "sub_clusters")
 ```
 
-The final piece of information is added to this dataframe of differential abundance results with the `groupNhoods()` function. This will run the louvain clustering algorithm to identify neighborhoods that are overlapping and similar to one another. This `max.lfc.delta` specifies a cutoff of fold change difference where two neighborhoods would not be considered a part of the same group. We are setting a value of 5, which is quite high in order to minimize the number of neighborhood groups (similar to the resolution we set for louvain clustering).
+The final piece of information is added to this dataframe of differential abundance results with the `groupNhoods()` function. This will run the louvain clustering algorithm to **identify neighborhoods that are overlapping and similar to one another**. This `max.lfc.delta` specifies a cutoff of fold change difference where two neighborhoods would not be considered a part of the same group. We are setting a value of 5, which is quite high in order to minimize the number of neighborhood groups (similar to the resolution we set for louvain clustering).
 
 > Note that the exact number of groups may vary due to randomness in the model. Even if the results are not identical to what is displayed here, the general trends of the data should be similar. 
 
