@@ -13,17 +13,6 @@ Approximate time: 90 minutes
 
 ## Differential abundance analysis with MiloR
 
-Looking at single-cell datasets on a cluster/celltype level is a very common mode of analysis. However, perhaps you have questions on the more subtle shifts within a certain cell population. The tool [miloR](https://www.nature.com/articles/s41587-021-01033-z) allows you to look more deeply into smaller neighborhoods of cells by utilizing differential abundance testing on the k-nearest neighbor graph.
-
-<p align="center">
-<img src="../img/milo_schematic.png" width="630">
-</p>
-
-_Image source: [Dann E. et al, 2021](https://www.nature.com/articles/s41587-021-01033-z)_
-
-The general method of this tool is to assign cells to neighborhoods based upon a latent space (typically PCA) and neighborhood graph. Ultimately, we generate a neighborhood by counts matrix. These counts are modelled with a negative bionomial generalized linear model, which is then put through hypothesis testing to identify significantally differentially abundant neighborhoods with associated fold change values.
-
-
 ### Create new script
 
 To start, open a new Rscript file, and start with some comments to indicate what this file is going to contain:
