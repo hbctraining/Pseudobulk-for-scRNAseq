@@ -375,6 +375,11 @@ pct_1 + pct_3
 
 ```
 
+<p align="center">
+  <img src="../img/percentage_by cluster.png" width="850">
+</p>
+
+
 There is a smear of pink dots in the plot which line up pretty well with the smear of light blue, showing that a large proportion of the genes identified as significant by both methods are those which are expressed in a large percentage of cells. However, this is not the the rule as you can see a number of pink points that deviate from the diagonal - these are genes that exhibit fairly large changes and are significant in both methods yet are expressed in a small percentage of cells.
 
 
