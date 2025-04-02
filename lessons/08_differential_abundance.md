@@ -16,16 +16,82 @@ Differential abundance (DA) analysis is a method used to identify celltypes with
 The figure below ....and nicely illustrates DA effects. 
 
 ## Cluster-based approaches for DA
-These methods are dependent on having cells grouped into phenotypically similar cell populations, most classically aligning with specific cell types. Many single cell RNA-seq data analysis workflows produce a result with annotated sub-populations, making these tools very easy to implement as a next step. 
+Methods which are dependent on having cells grouped into phenotypically similar cell populations, most classically aligning with specific cell types, are what we call cluster-based approaches. Many single cell RNA-seq data analysis workflows produce a result with annotated sub-populations, making these tools very easy to implement as a next step. 
 
 ### Propellor method
-The **propellor method** is a function that is part of the [speckle R package](https://github.com/phipsonlab/speckle), which uses cell level annotation information to calculate differential abundance estimates. First, cell type proportions are calculated for each sample. This results in matrix of proportions where the rows are the cell types and the columns are the samples. The matrix is then transformed such that a linear modeling framework can be applied. If there are exactly two groups, moderated t-tests are implemented; if there are more than two groups, the option is a moderated ANOVA test. These tests are moderated using an empirical Bayes framework, borrowing information across all cells, and finally false discovery rates are calculated.
+The **propellor method** is a function that is part of the [speckle R package](https://github.com/phipsonlab/speckle), which uses cell level annotation information to calculate differential abundance estimates. 
+
+**How does it work?**
+* First, cell type proportions are calculated for each sample. This results in matrix of proportions where the rows are the cell types and the columns are the samples. An example of this heterogeneity across samples can be observed in the plot below (left).
+* The matrix is then transformed such that a linear modeling framework can be applied.
+   * As can be seen in the plot below (right), the cell type proportions are over-dispersed compared to the variance estimated under a Binomial distribution.
+   * To overcome this, two transformations are available: arcsin square root and logit
+* Linear modeling is applied using an empirical Bayes framework, allowing information to be borrowed across cell types to stabilize the cell type-specific variance estimates
+   * Two groups, moderated t-tests are implemented;
+   * More than two groups, the option is a moderated ANOVA test. 
+* Finally, false discovery rates are calculated.
 
 <p align="center">
-<img src="../img/propellor.jpeg" width="630">
+<img src="../img/propellor.jpeg" width="700">
 </p>
 
 _Image source: [Phipson B. et al, 2022](https://academic.oup.com/bioinformatics/article/38/20/4720/6675456)_
+
+### Running propellor
+
+First we will need to load the required library:
+
+```r
+# Load libraries
+library(speckle)
+```
+
+Next we will create a subset of the Seurat data object in which we keep only **TN and cold7 samples**. We will also create an associated metadata dataframe.
+
+```r
+
+# Subset to keep only cells from TN and cold7
+# seurat <- readRDS("data/BAT_GSE160585_final.rds") # This dataset was loaded in at the beginning of the workshop
+seurat_sub <- subset(seurat, subset = (condition %in% c("TN", "cold7")))
+
+# Create metadata df and factor celltype
+meta_sub <- seurat_sub@meta.data
+meta_sub$celltype <- factor(meta_sub$celltype)
+```
+
+Let's take a quick look at what the raw counts of celltypes look like within our dataset. Just by eye it looks like there are differences between groups!
+
+```r
+## Check count numbers of cells
+meta_sub$condition_sample <- paste0(meta_sub$condition, "_", meta_sub$sample)
+table(meta_sub$condition_sample, meta_sub$celltype)
+```
+
+```
+                  Adipo   AP   EC ECAP Lymph Pericyte Schwann  VSM VSM-AP
+  cold7_Sample_15    15   78   90   17    32       19      83  249     28
+  cold7_Sample_16    15   88   55   78     8        9      56  132     29
+  cold7_Sample_7     11   99  158   31    31      145      84  200     25
+  cold7_Sample_8      8  217  141   28    33      179     137  296     29
+  TN_Sample_1         5  548  472  258    28      128     161 2006    133
+  TN_Sample_10        0   59  174  276    20        9      27 1789    202
+  TN_Sample_2         1   33   72  150     3       12       8  221     34
+  TN_Sample_9         0   55   95  191    14       15      16  954     46
+
+```
+
+To run the differential proportion analysis, we use the `propeller()` function, which takes as input the Seurat object and the columns for celltype and condition:
+
+```r
+# Run differential proportion analysis
+propres <- propeller(seurat_sub, sample=seurat_sub$sample,
+                     clusters = seurat_sub$celltype,
+                     group = seurat_sub$condition)
+
+
+# Look at the results table
+propres %>%  View()
+```
 
 
 ### Differential compostion analysis using `sccomp`
