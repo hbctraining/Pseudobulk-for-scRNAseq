@@ -54,7 +54,7 @@ Once downloaded, you should see a file called `DGE_scRNA.zip` on your computer (
 4. **Locate the `.Rproj file` and double-click on it.** This will open up RStudio with the "DGE_scRNA" project loaded. 
 
 <p align="center">
-<img src="../img/Directory_content_with_label.png" width="600">
+<img src="../img/Directory_content_with_label.png" width="400">
 </p>
 
 A GIF of the above steps is shown below:
