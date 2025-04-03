@@ -249,11 +249,15 @@ ggplot(bulk_vsm@meta.data, aes(x=sample, y=n_cells, fill=condition)) +
 
 Another cell type in this dataset that was particularly interesting to the authors were the **Pdgfr α+ adipose progentior cells (APCs)**.
 
-1. Subset the `bulk` object to isolate only adipose progenitor cells for the TN and cold7 conditions. Assign it to variable called `bulk_APC`. _**Hint**: You may need to review `celltypes` to determine what this cell type is called in our data._ You can find unique celltypes with the code:
+1. Subset the `bulk` object to isolate only adipose progenitor cells for the TN and cold7 conditions. Assign it to variable called `bulk_APC`.
+
+ _**Hint**: You may need to review `celltypes` to determine what this cell type is called in our data._ You can find unique celltypes with the code:
    
 ```
 celltypes <- sort(unique(seurat@meta.data[["celltype"]]))
 ```
+
+> Reminder: The abreviationf for the cell types can be found in the [project set-up lesson](01_setup_intro_dataset.md#celltype-annotation).
 
 2. Plot the cell number distribution across samples. How do the numbers compare to VSM cells?
 
@@ -306,7 +310,7 @@ dds_APC <- DESeqDataSetFromMatrix(t(APC_counts),
                                 colData = bulk_APC@meta.data,
                                 design = ~ condition)
 
-dds
+dds_APC
 ```
 
 
