@@ -8,7 +8,7 @@ Approximate time: 40 minutes
 
 ## Learning Objectives:
 
-* Understand how to prepare single-cell RNA-seq raw count data for pseudobulk differential expression analysis
+* Prepare single-cell RNA-seq raw count data for pseudobulk differential expression analysis
 * Create a DESeq2 object for differential expression analysis on a specific cell type cluster
 
 ## Pseudobulk differential expression analysis
@@ -100,7 +100,7 @@ To aggregate the counts, we will **use the `AggregateExpression()` function from
 ```r
 bulk <- AggregateExpression(
             seurat,
-            return.seurat = T,
+            return.seurat = TRUE,
             assays = "RNA",
             group.by = c("celltype", "sample", "condition")
 )
@@ -210,7 +210,7 @@ for (ct in celltypes) {
  
 ## Differential gene expression with DESeq2
 
-**We will be using [DESeq2](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8) for the pseudobulk DE analysis, and the analysis steps with DESeq2 are shown in the flowchart below in green and blue**. DESeq2 first normalizes the count data to account for differences in library sizes and RNA composition between samples. Then, we will use the normalized counts to make some plots for QC at the gene and sample level. The final step is to use the appropriate functions from the DESeq2 package to perform the differential expression analysis. We will go into each of these steps briefly, but additional details and helpful suggestions regarding DESeq2 can be found in [our materials](https://hbctraining.github.io/DGE_workshop_salmon_online/schedule/links-to-lessons.html) detailing the workflow for bulk RNA-seq analysis, as well as in the [DESeq2 vignette](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html).
+**We will be using [DESeq2](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8) for the pseudobulk DE analysis, and the analysis steps with DESeq2 are shown in the flowchart below in green and blue**. DESeq2 first normalizes the count data to account for differences in library sizes and RNA composition between samples. Then, we will use the normalized counts to make some plots for QC at the gene and sample level. The final step is to use the appropriate functions from the DESeq2 package to perform the differential expression analysis. We will go into each of these steps briefly, but additional details and helpful suggestions regarding DESeq2 can be found in [our materials](https://hbctraining.github.io/Intro-to-DGE/schedule/links-to-lessons.html) detailing the workflow for bulk RNA-seq analysis, as well as in the [DESeq2 vignette](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html).
 
 <p align="center">
   <img src="../img/pseudobulk_de_workflow.png" width="400">
@@ -218,7 +218,7 @@ for (ct in celltypes) {
 
 ## Creating a DESeq2 object
 
-From the pseudobulk Seurat object, we can easily extract the information required for input to DESeq2. First, we need to do is decide which cell type we wish to focus on, and then retrieve the corresponding data from the object. We are going to look for differntially expressed genes between the `TN` and `cold7` condition for the **vascular smooth muscle (`VSM`) cells**. 
+From the pseudobulk Seurat object, we can extract the information required as the input to DESeq2. First, we need to decide which cell type we wish to focus on, and then retrieve the corresponding data from the object. We are going to look for differntially expressed genes between the `TN` and `cold7` condition for the **vascular smooth muscle (`VSM`) cells**. 
 
 We use the `subset()` function to get the data we need:
 
@@ -254,13 +254,14 @@ Another cell type in this dataset that was particularly interesting to the autho
 ```
 celltypes <- sort(unique(seurat@meta.data[["celltype"]]))
 ```
+
 2. Plot the cell number distribution across samples. How do the numbers compare to VSM cells?
 
 ***
 
 Now we can create our DESeq2 object to prepare to run the DE analysis. We need to **include the counts, metadata, and design formula for our comparison of interest**. In the design formula we should also include any other columns in the metadata for which we want to regress out the variation (batch, sex, age, etc.). For this dataset, we only have our comparison of interest, which is stored as the `condition` in our metadata data frame.
 
-More information about the DESeq2 workflow and design formulas can be found in our [DESeq2 materials](https://hbctraining.github.io/DGE_workshop_salmon_online/lessons/04a_design_formulas.html).
+More information about the DESeq2 workflow and design formulas can be found in our [DESeq2 materials](https://hbctraining.github.io/Intro-to-DGE/lessons/04a_design_formulas.html).
 
 ```r
 # Get count matrix
