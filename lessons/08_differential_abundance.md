@@ -15,6 +15,8 @@ Differential abundance (DA) analysis is a method used to identify celltypes with
 
 The figure below ....and nicely illustrates DA effects. 
 
+Make a figure that looks like this? https://www.sc-best-practices.org/conditions/compositional.html
+
 ## Cluster-based approaches for DA
 Methods which are dependent on having cells grouped into phenotypically similar cell populations, most classically aligning with specific cell types, are what we call cluster-based approaches. Many single cell RNA-seq data analysis workflows produce a result with annotated sub-populations, making these tools very easy to implement as a next step. 
 
@@ -93,10 +95,28 @@ propres <- propeller(seurat_sub, sample=seurat_sub$sample,
 propres %>%  View()
 ```
 
+***
+
+**Exercise**
+1. Take a look at the results table `propres`. Which celltypes show a significant change in composition between TN and cold7?
+2. Does this line up with what we observed in the counts table?
+
+***
+
+As a final step, we will **create a dataframe of celltype proportions in each sample**. We can use this later to explore the variability within group and how results compare to a different approach. 
+
+```r
+props <- getTransformedProps(meta_sub$celltype, 
+                                 meta_sub$condition_sample, 
+                                 transform="logit")
+
+props$Proportions %>%  View()
+```
+
 
 ### Differential compostion analysis using `sccomp`
 
-While propellor and other approaches based on linear regression (i.e., scDC, diffcyt) transform the data to model data compositionality, they do not model the data count distribution.  Modeling single-cell compositional data as counts is important as small datasets and rare cell types are characterized by a high noise-to-signal ratio, and modeling counts enables the down-weighting of small cell-group proportions compared to larger ones ([Mangiola s. et al, 2023](https://www.pnas.org/doi/10.1073/pnas.2203828120)). The **[sccomp](https://github.com/MangiolaLaboratory/sccomp) package** is a generalized **method for differential composition and variability analyses based on sum-constrained independent Beta-binomial distributions**. The sccomp core algorithm, data integration, and visualization are outlined in the figure below. Two important features of this method include outlier detection and differential variability analysis.
+While propellor and other approaches based on linear regression (i.e., scDC, diffcyt) transform the data to model data compositionality, they do not model the data count distribution.  Modeling single-cell compositional data as counts is important as small datasets and rare cell types are characterized by a high noise-to-signal ratio, and **modeling counts enables the down-weighting of small cell-group proportions compared to larger ones** ([Mangiola s. et al, 2023](https://www.pnas.org/doi/10.1073/pnas.2203828120)). The **[sccomp](https://github.com/MangiolaLaboratory/sccomp) package** is a generalized method for differential composition and variability analyses based on sum-constrained independent Beta-binomial distributions. The sccomp core algorithm, data integration, and visualization are outlined in the figure below. Two important features of this method include outlier detection and differential variability analysis.
 
 <p align="center">
 <img src="../img/sccomp.jpg" width="630">
