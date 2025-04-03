@@ -57,11 +57,7 @@ Once downloaded, you should see a file called `DGE_scRNA.zip` on your computer (
 <img src="../img/Directory_content_with_label.png" width="400">
 </p>
 
-A GIF of the above steps is shown below:
 
-<p align="center">
-<img src="../img/Download_R_project.gif" width="1000">
-</p>
 
 ## Project organization
 
