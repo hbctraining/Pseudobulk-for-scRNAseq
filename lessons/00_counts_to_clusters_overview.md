@@ -62,7 +62,7 @@ _Image credit: Hafemeister C and Satija R. Normalization and variance stabilizat
 Often with single cell RNA-seq we are working with multiple samples which correspond to different sample groups, multiple experiments or different modalities. If we want to ultimately compare celltype expression between groups it is recommended to integrate the data. Integration is a powerful method that uses these shared sources of greatest variation to identify shared sub-populations across conditions or datasets ([Stuart and Butler et al. (2018)](https://www.biorxiv.org/content/10.1101/460147v1)). There are several steps involved in performing intergration in Seurat. Once complete, we use visualization methods to ensure a good integration before we proceed to cluster cells.
 
 <p align="center">
-<img src="../img/unintegrated_umap.png" width="450">
+<img src="../img/Integration_effect.png" width="450">
 </p>
 
 > **NOTE:** Integration is optional. We recommend going through the workflow without integration to decide whether or not it is necessary for your data. 
