@@ -120,11 +120,11 @@ Rpl9    1.249444e-187 -0.6824496 0.954 0.999 2.470276e-183
 **The output from the `FindMarkers()` function** is a matrix containing a ranked list of differentially expressed genes listed by gene ID and associated statistics. We describe some of these columns below:
 
 - **gene:** The gene symbol
-- **p_val:** The p-value not adjusted for multiple test corrections for condition
-- **avg_logFC:** The average log-fold change for condition. Positive values indicate that the gene is more highly expressed in the group.	
-- **pct.1:** The percentage of cells where the gene is detected in the group for condition		
-- **pct.2:** The percentage of cells where the gene is detected on average in the other groups for condition
-- **p_val_adj:** The adjusted p-value for condition, based on Bonferroni correction using all genes in the dataset, used to determine significance
+- **p_val:** The p-value not adjusted for multiple test corrections
+- **avg_logFC:** The average log-fold change between sample groups. Positive values indicate that the gene is more highly expressed `ident.1`.	
+- **pct.1:** The percentage of cells where the gene is detected in `ident.1` (cold7)	
+- **pct.2:** The percentage of cells where the gene is detected on average in `ident.2` (TN)
+- **p_val_adj:** The adjusted p-value, based on Bonferroni correction using all genes in the dataset, used to determine significance
 
 >**NOTE:** These tests treat each cell as an independent replicate and ignore inherent correlations between cells originating from the same sample. This results in highly **inflated p-values** for each gene. Studies have been shown to find a large number of false positive associations with these results.
 
