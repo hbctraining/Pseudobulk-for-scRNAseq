@@ -36,16 +36,29 @@ When using these unsupervised clustering methods, normalization and log2-transfo
 
 Principal Component Analysis (PCA) is a dimensionality reduction technique used to emphasize variation and bring out strong patterns in a dataset. Details regarding PCA are given in our [prepared lesson linked here](https://hbctraining.github.io/Intro-to-DGE/lessons/principal_component_analysis.html).
 
-We can run the `rlog()` function from DESeq2 to normalize and rlog transform the raw counts. Then, we can use the `plotPCA()` function to plot the first two principal components. By default, the `plotPCA()` function uses the top 500 most variable genes to compute principal components, but this parameter can be adjusted.
+We can run the `rlog()` function from DESeq2 to normalize and rlog transform the raw counts. Then, we could use the `plotPCA()` function to plot the first two principal components. By default, the `plotPCA()` function uses the top 500 most variable genes to compute principal components, but this parameter can be adjusted. Unfortunately, the `plotPCA()` function doesn't label the point, so we will use the `returnData = TRUE` option to create a dataframe that we can use to plot the PCA ourselves.
 
 ```r
 # Transform counts for data visualization
 rld <- rlog(dds, blind=TRUE)
-plotPCA(rld, intgroup=c("condition")) + theme_classic()
+
+# Return PCA data as a dataframe
+pca_data_condition <- plotPCA(rld, intgroup=c("condition"), returnData = TRUE) 
+# Create a new column with the names cleaned up called names_parsed
+pca_data_condition <- pca_data_condition %>% 
+  mutate(name_parsed = gsub("VSM_|_TN|_cold7", "", name))
+
+# Plot the PCA results
+ggplot(pca_data_condition, aes(x = PC1, y = PC2, color = condition, label = name_parsed)) +
+  geom_point() + 
+  geom_text_repel(vjust = 1.5, hjust = 0.5, show.legend = FALSE) +
+  theme_classic() +
+  xlab(paste0("PC1: ", round(attr(pca_data, "percentVar")[1] * 100), "% variance")) +
+  ylab(paste0("PC2: ", round(attr(pca_data, "percentVar")[2] * 100), "% variance")) 
 ```
 
 <p align="center">
-  <img src="../img/pb_pca_condition.png" width="600">
+  <img src="../img/PCA_condition_labelled.png" width="600">
 </p>
 
 In this example, we see a nice separation between our samples on PC1 by our condition of interest. This suggests that our condition of interest is the largest source of variation in our dataset. There is also a reasonable amount of within group variation for both TN and cold7 samples, with one of the cold7 samples off on its own in the top right quadrant of the plot.
@@ -53,11 +66,23 @@ In this example, we see a nice separation between our samples on PC1 by our cond
 We can check **whether the number of cells** from which the aggregated counts were derived **influences the separation of the samples** in the PCA plot. This is particularly useful if you notice an outlier sample, which may be explained by its very low (or very large) cell count compared to others. Here, the number of cells does not appear to explain the outlier cold7 sample.
 
 ```r
-plotPCA(rld, intgroup=c("n_cells")) + theme_classic()
+# Return PCA data as a dataframe
+pca_data_n_cells <- plotPCA(rld, intgroup=c("n_cells"), returnData = TRUE) 
+# Create a new column with the names cleaned up called names_parsed
+pca_data_n_cells <- pca_data_n_cells %>% 
+  mutate(name_parsed = gsub("VSM_|_TN|_cold7", "", name))
+
+# Plot the PCA results
+ggplot(pca_data_n_cells, aes(x = PC1, y = PC2, color = n_cells, label = name_parsed)) +
+  geom_point() + 
+  geom_text_repel(vjust = 1.5, hjust = 0.5, show.legend = FALSE) +
+  theme_classic() +
+  xlab(paste0("PC1: ", round(attr(pca_data, "percentVar")[1] * 100), "% variance")) +
+  ylab(paste0("PC2: ", round(attr(pca_data, "percentVar")[2] * 100), "% variance")) 
 ```
 
 <p align="center">
-  <img src="../img/pb_pca_ncells.png" width="600">
+  <img src="../img/PCA_n_cells_labelled.png" width="600">
 </p>
 
 
