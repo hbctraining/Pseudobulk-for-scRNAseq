@@ -1,6 +1,6 @@
 ---
 title: "DE analysis using FindMarkers"
-author: "Noor Sohail, Mary Piper, Lorena Pantano, Meeta Mistry, Radhika Khetani, Jihe Liu"
+author: "Noor Sohail, Mary Piper, Lorena Pantano, Meeta Mistry, Radhika Khetani, Jihe Liu, Will Gammerdinger"
 date: Wednesday, February 5th, 2020
 ---
 
@@ -16,7 +16,7 @@ Approximate time: 75 minutes
 
 ## Differential expression between conditions using FindMarkers()
 
-In our current UMAP, we have merged samples across the different conditions and used integration to align cells of the same celltype across samples. Now, what of we were interested in a particular celltype and **understanding how gene expression changes across the different conditions?**
+In our current UMAP, we have merged samples across the different conditions and used integration to align cells of the same celltype across samples. Now, what if we were interested in a particular celltype and **understanding how gene expression changes across the different conditions?**
 
 The `FindMarkers()` function in the Seurat package is used to perform differential expression analysis between groups of cells. We provide arguments to specify `ident.1` and `ident.2` the two groups of cells we are interested in comparing. Typically, this function is used to compare two different clusters of cells and resulting gene lists are used to help determine the celltype annotation. 
 
@@ -25,7 +25,7 @@ The `FindMarkers()` function in the Seurat package is used to perform differenti
 </p>
 
 
-We can use this same function to compare two groups of cells which represent differnt conditions by modifying the `ident` values provided. The `FindMarkers()` function has **several important arguments** we can modify when running it. To view what these parameters are, we can access the help page on this function:
+We can use this same function to compare two groups of cells which represent different conditions by modifying the `ident` values provided. The `FindMarkers()` function has **several important arguments** we can modify when running it. To view what these parameters are, we can access the help page on this function:
 
 ```r
 ?FindMarkers
@@ -33,11 +33,11 @@ We can use this same function to compare two groups of cells which represent dif
 
 Below we have described in more detail what each of these arguments mean :
 
-- `logfc.threshold`: minimum log2 fold change for average expression of gene in group relative to the average expression in all other groups combined. Default is 0.25.
-- `min.diff.pct`: minimum percent difference between the percent of cells expressing the gene in the group and the percent of cells expressing gene in all other groups combined.
-- `min.pct`: only test genes that are detected in a minimum fraction of cells in either of the two populations. Meant to speed up the function by not testing genes that are very infrequently expressed. Default is 0.1.
-- `ident.1`: this function only evaluates one group at a time; here you would specify the group of interest. These values must be set in the `Idents()`.
-- `ident.2`: here you would specify the group you want to compare `ident.1` against.
+- `logfc.threshold`: The minimum log2 fold change for average expression of gene in group relative to the average expression in all other groups combined. Default is 0.25.
+- `min.diff.pct`: The minimum percent difference between the percent of cells expressing the gene in the group and the percent of cells expressing gene in all other groups combined.
+- `min.pct`: Only test genes that are detected in a minimum fraction of cells in either of the two populations. Meant to speed up the function by not testing genes that are very infrequently expressed. Default is 0.1.
+- `ident.1`: This function only evaluates one group at a time; here you would specify the group of interest. These values must be set in the `Idents()`.
+- `ident.2`: Here you would specify the group you want to compare `ident.1` against.
 
 
 ## Setting up 
@@ -60,7 +60,7 @@ library(EnhancedVolcano)
 
 ## FindMarkers()
 
-To use the function to look for a DE genes betwenn conditions, there are two things we need to do:
+To use the function to look for DE genes between conditions, there are two things we need to do:
 
 1. Subset the Seurat object to our celltype of interest
 2. Set our active Idents to be the metadata column which specifies what condition each cell is
@@ -117,18 +117,18 @@ Rpl21   2.319987e-190 -0.6377144 0.967 0.998 4.586847e-186
 Rpl9    1.249444e-187 -0.6824496 0.954 0.999 2.470276e-183
 ```
 
-**The output from the `FindMarkers()` function** is a matrix containing a ranked list of differentialy expressed genes listed by gene ID and associated statistics. We describe some of these columns below:
+**The output from the `FindMarkers()` function** is a matrix containing a ranked list of differentially expressed genes listed by gene ID and associated statistics. We describe some of these columns below:
 
-- **gene:** gene symbol
-- **p_val:** p-value not adjusted for multiple test correction for condition
-- **avg_logFC:** average log fold change for condition. Positive values indicate that the gene is more highly expressed in the group.	
-- **pct.1:** percentage of cells where the gene is detected in the group for condition		
-- **pct.2:** percentage of cells where the gene is detected on average in the other groups for condition
-- **p_val_adj:** adjusted p-value for condition, based on bonferroni correction using all genes in the dataset, used to determine significance
+- **gene:** The gene symbol
+- **p_val:** The p-value not adjusted for multiple test corrections for condition
+- **avg_logFC:** The average log-fold change for condition. Positive values indicate that the gene is more highly expressed in the group.	
+- **pct.1:** The percentage of cells where the gene is detected in the group for condition		
+- **pct.2:** The percentage of cells where the gene is detected on average in the other groups for condition
+- **p_val_adj:** The adjusted p-value for condition, based on Bonferroni correction using all genes in the dataset, used to determine significance
 
 >**NOTE:** These tests treat each cell as an independent replicate and ignore inherent correlations between cells originating from the same sample. This results in highly **inflated p-values** for each gene. Studies have been shown to find a large number of false positive associations with these results.
 
-When looking at the output, **we suggest looking for markers with large differences in expression between `pct.1` and `pct.2` and larger fold changes**. For instance if `pct.1` = 0.90 and `pct.2` = 0.80, it may not be as exciting of a marker. However, if `pct.2` = 0.1 instead, the bigger difference would be more convincing. Also of interest is whether the majority of cells expressing the marker are in your group of interest. If `pct.1` is low, such as 0.3, it may not be as interesting. Both of these are also possible parameters to include when running the function, as described above.
+When looking at the output, **we suggest looking for markers with large differences in expression between `pct.1` and `pct.2` and larger fold changes**. For instance if `pct.1` = 0.90 and `pct.2` = 0.80, it may not be as exciting of a marker. However, if `pct.2` = 0.1 instead, the bigger difference would be more convincing. Also of interest is whether the majority of cells expressing the marker are in the group of interest. If `pct.1` is low, such as 0.3, it may not be as interesting. Both of these are also possible parameters to include when running the function, as described above.
 
 This is a great spot to pause and save your results!
 
@@ -139,7 +139,7 @@ write.csv(dge_vsm, "results/findmarkers_vsm_cold7_vs_TN.csv")
 
 ## Significant genes
 
-We want to subset our results to show just our significant genes so we can begin visualizaing and analysing the results. To do this, we filter out rows based upon the `p_val_adj` column and subsetting any genes that do not meet our multiple testing-corrected significance threshold of 0.05.
+We want to subset our results to show just our significant genes so we can begin visualizing and analyzing the results. To do this, we filter out rows based upon the `p_val_adj` column and subsetting only genes that meet our multiple testing-corrected significance threshold of 0.05.
 
 ```r
 # Subset significant genes
@@ -159,9 +159,9 @@ Rpl9    1.249444e-187 -0.6824496 0.954 0.999 2.470276e-183
 
 ### Volcano plot
 
-To get a first look at the genes that are retained, we can generated a volcano plot using the `EnhancedVolcano()` function. This is a visualization that allows us to quickly see trends in the significant genes. The x-axis here represents the average log2 fold change value, showing the degree of difference between the two conditions. On the y-axis, we see our `p_val_adj` column represented after a negative log10 transformation is applied to better see the spread of our p-values.  
+To get a first look at the genes that are retained, we can generated a volcano plot using the `EnhancedVolcano()` function. This is a visualization that allows us to quickly see trends in the significant genes. The x-axis here represents the average log2-fold change value, showing the degree of difference between the two conditions. On the y-axis, we see our `p_val_adj` column represented after a negative log10 transformation is applied to better see the spread of the adjusted p-values.  
 
-Volcano plots show us a great **overview of which genes are up-regulated (positive on the x-axis) or down-regulated (negative on the x-axis)**.
+Volcano plots provide a great **overview of which genes are up-regulated (positive on the x-axis) or down-regulated (negative on the x-axis)**.
 
 ```r
 # Volcano plot
@@ -214,7 +214,7 @@ VlnPlot(seurat_vsm, genes, ncol=3, idents=c("TN", "cold7"))
 
 When comparing two different conditions, we recommend creating a UMAP that clearly shows where the cells exist for each condition. To do so, we first need to get the UMAP coordinates for every cell of interest. When creating the scatterplot, the first thing we do is put a layer of light gray points that show the entire dataset to understand where all the cells fall. Then, we take the UMAP coordinates of the condition (`TN` or `cold7` in our example) and plot those on top with a color to clearly indicate where those cells are located. 
 
-> NOTE: This sometime works better on the non-integrated data, so you observe a true separation of cells by condition.
+> NOTE: This sometimes works better on the non-integrated data, so you observe a true separation of cells by condition.
 
 ```r
 # Grab the umap coordinates and condition information for each cell
@@ -244,7 +244,7 @@ p_tn + p_cold7
     <img src="../img/fm_tn_cold7_umap.png" width="700">
 </p>
 
-This allows us to better understand our results when we look at any follow-up information on our UMAP. For example, we can begin to look at distribution of gene expression for each of the top 6 genes with a better understanding of where the cells for each condition lie:
+This allows us to better understand our results when we look at any follow-up information on our UMAP. For example, we can begin to look at the distribution of gene expression for each of the top 6 genes with a better understanding of where the cells for each condition lie:
 
 ```r
 FeaturePlot(seurat_vsm, genes, ncol=3)
@@ -257,10 +257,10 @@ FeaturePlot(seurat_vsm, genes, ncol=3)
 
 ## Other statistical tests
 
-When we looked at the extra explanations for the `FindMarkers()` function, there was a parameter called `test.use`. By default, the method for calculating differentially expressed genes will be a Wilcoxon Rank sum test. This is a fairly simple statistical approach, and there a multitude of different algorithms that can be specified. These other options are documented on the `FindMarkers()` [documentation page](https://www.rdocumentation.org/packages/Seurat/versions/5.0.3/topics/FindMarkers). For this workshop we want to highlight a few of these methods:
+When we looked at the extra explanations for the `FindMarkers()` function, there was a parameter called `test.use`. By default, the method for calculating differentially expressed genes will be a Wilcoxon Rank Sum Test. This is a fairly simple statistical approach, and there a multitude of different algorithms that can be specified. These other options are documented on the `FindMarkers()` [documentation page](https://www.rdocumentation.org/packages/Seurat/versions/5.0.3/topics/FindMarkers). For this workshop we want to highlight a few of these methods:
 
 
-### Wilcoxon Rank Sum test
+### Wilcoxon Rank Sum Test
 
 * Often described as the non-parametric version of the two-sample t-test. 
 * Beneficial because it can reduce the impact of outliers, which can skew the results of parametric testing.
@@ -269,13 +269,13 @@ When we looked at the extra explanations for the `FindMarkers()` function, there
 
 ### DESeq2
 
-* Identifies differentially expressed genes between two groups of cells based on a model using DESeq2 which uses a negative binomial distribution (Love et al, Genome Biology, 2014). More information on DESeq2 will be provided in an upcoming lesson in this workshop.
+* Identifies differentially expressed genes between two groups of cells based on a model using DESeq2 which uses a negative binomial distribution ([Love et al., 2014](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8)). More information on DESeq2 will be provided in an upcoming lesson in this workshop.
 * This test option does not support pre-filtering of genes based on average difference (or percent detection rate) between cell groups. However, genes may be pre-filtered based on their minimum detection rate (min.pct) across both cell groups.
 
 > **NOTE:** The creators of the Seurat package [no longer recommend](https://github.com/satijalab/seurat/issues/2938) using the `FindMarkers()` implementation of DESeq2.
  
  
- ### MAST
+### MAST
 
 * Implements an approach that accounts for the stochastic dropout and characteristic bimodal expression distributions in which expression is either strongly non-zero or non-detectable.
     *  A two-part, generalized linear model for such bimodal data that parameterizes both of these features    
