@@ -224,15 +224,15 @@ df_cold7 <- df %>% subset(condition == "cold7")
 
 # Scatterplot of TN cells
 p_tn <- ggplot() +
-  geom_point(data=df, aes(x=umap_1, y=umap_2), color="lightgray", alpha=0.5) +
-  geom_point(data=df_tn, aes(x=umap_1, y=umap_2), color="#F8766D") +
+  geom_point(data=df, aes(x=umap_1, y=umap_2), color="lightgray", alpha=0.5, size = 0.1) +
+  geom_point(data=df_tn, aes(x=umap_1, y=umap_2), color="#F8766D", size = 0.1) +
   theme_classic() +
   ggtitle("VSM: TN cells")
 
 # Scatterplot of cold7 cells
 p_cold7 <- ggplot() +
-  geom_point(data=df, aes(x=umap_1, y=umap_2), color="lightgray", alpha=0.5) +
-  geom_point(data=df_cold7, aes(x=umap_1, y=umap_2), color="#00B8E7") +
+  geom_point(data=df, aes(x=umap_1, y=umap_2), color="lightgray", alpha=0.5, size = 0.1) +
+  geom_point(data=df_cold7, aes(x=umap_1, y=umap_2), color="#00B8E7", size = 0.1) +
   theme_classic() +
   ggtitle("VSM: cold7 cells")
 
@@ -241,7 +241,7 @@ p_tn + p_cold7
 ```
 
 <p align="center">
-    <img src="../img/fm_tn_cold7_umap.png" width="700">
+    <img src="../img/fm_tn_cold7_umap_2.png" width="700">
 </p>
 
 This allows us to better understand our results when we look at any follow-up information on our UMAP. For example, we can begin to look at the distribution of gene expression for each of the top 6 genes with a better understanding of where the cells for each condition lie:
