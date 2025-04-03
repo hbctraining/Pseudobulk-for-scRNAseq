@@ -44,7 +44,7 @@ Some relevant metadata for our dataset is provided below:
 
 For this workshop, we will be working within an RStudio project. In order to follow along you should have **downloaded the R project**.
 
-> If you haven't done this already, the project can be accessed using [this link](https://www.dropbox.com/s/lqku3yguev2un74/DGE_scRNA.zip?st=72qbwrbi&dl=1).
+> If you haven't done this already, the project can be accessed using [this link](https://www.dropbox.com/scl/fi/ucxyecmviu4o882envynh/DGE_scRNA.zip?rlkey=ahb22wapzfkcbyioajlnq4m9k&st=sbfzxj8k&dl=1).
 
 Once downloaded, you should see a file called `DGE_scRNA.zip` on your computer (likely, in your `Downloads` folder). 
 
@@ -79,7 +79,7 @@ DGE_scRNA/
 └── figures
 ```
 
-> **NOTE FOR WINDOWS OS users** - When you open the project folder after unzipping, please check if you have a `data` folder with a sub folder also called `data`. If this is the case, please move all the files from the subfolder into the parent `data` folder.
+> **NOTE FOR WINDOWS OS users** - When you open the project folder after unzipping, please check if you have a `data` folder with a subfolder also called `data`. If this is the case, please move all the files from the subfolder into the parent `data` folder.
 
 ## Loading single-cell RNA-seq count data 
 
@@ -113,7 +113,7 @@ library(ggalluvial)
 
 ### Load Seurat object
 
-We generated this Seurat object using the using the files that were deposited to GEO. More details on how this Seurat object was generated are detailed in [another lesson](01b_gen_seurat_object.md), where we provide more clarity on what parameters were used for normalization, integration, and clustering. 
+We generated this Seurat object using the files that were deposited to GEO. More details on how this Seurat object was generated are detailed in [another lesson](01b_gen_seurat_object.md), where we provide more clarity on what parameters were used for normalization, integration, and clustering. 
 
 Let's begin by looking at what metadata is stored inside the Seurat object, paying close attention to sample identities and celltype annotations.
 
