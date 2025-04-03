@@ -28,9 +28,9 @@ To explore the similarity of our samples, we will be performing quality checks u
 </p>
 
 
-Sample-level QC allows us to see **how well our replicates cluster together**, as well as observe whether our experimental condition represents the major source of variation in the data. Performing sample-level QC can also identify any **sample outliers**, which may need to be explored further to determine whether they need to be removed prior to DE analysis.
+Sample-level QC allows us to see **how well our replicates cluster together**, and observe whether the experimental condition represents the major source of variation in the data. Performing sample-level QC can also help identify any **sample outliers**, which may need to be explored further to determine whether they need to be removed prior to DE analysis.
 
-When using these unsupervised clustering methods, normalization and log2-transformation of the counts improves the distances/clustering for visualization. DESeq2 uses median of ratios method for count normalization and a regularized log transform (rlog) of the normalized counts for sample-level QC as it moderates the variance across the mean, improving the clustering.
+In this lesson, we will introduce to you two different unsupervised clustering methods for exploratory data analysis. When **using unsupervised methods** it is helpful to apply a normalization or transformation to the data to improve the distances/clustering for visualization, rather than using raw counts. DESeq2 uses median of ratios method for count normalization, which is typically used for plotting expression data downstream after DE analysis. DESeq2 also has the option to **transform counts** using a regularized log transform (rlog) or varaince stabilizing transform (vst) **as these can moderate the variance across the mean**, and improve the clustering. The transformation of raw count data is recommended for sample-level QC. 
 
 ### PCA
 
