@@ -59,7 +59,7 @@ II. **Submit your work**:
 | Time |  Topic  | Instructor |
 |:-----------:|:----------:|:--------:|
 | 09:30 - 10:00 | Self-learning lessons discussion | All |
-| 10:00 - 10:40 | [Visualization of differentially expressed genes](../lessons/05_pseudobulk_DE_visualizations.md) | Meeta |
+| 10:00 - 10:40 | [Visualization of differentially expressed genes](../lessons/05_pseudobulk_DE_visualizations.md) | Will |
 | 10:40 - 10:50|  Break |  |
 | 10:50 - 12:00 | [Comparison of results from different DE approaches](../lessons/06_DE_comparisons.md) | Noor|
 
@@ -94,7 +94,7 @@ II. **Submit your work**:
 | 10:15 - 11:15| [Methods for Differental Abundance](../lessons/08_differential_abundance.md)  | Noor  |
 | 11:15 - 11:20 | Break |
 | 11:25 - 12:00| Discussion and Q&A | All |
-| 11:45 - 12:00| [Wrap-up](../lectures/Workshop_wrapup.pdf) | Meeta |
+| 11:45 - 12:00| [Wrap-up](../lectures/Workshop_wrapup.pdf) | Will |
 
 ***
 
