@@ -197,7 +197,7 @@ Based on the trends observed in this curve, we can say that there is a good fit 
 
 ```
 # Run DESeq2 differential expression analysis for APC
-dds <- DESeq(dds_APC)
+dds_APC <- DESeq(dds_APC)
 ```
 
 ***
