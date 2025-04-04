@@ -44,7 +44,7 @@ Some relevant metadata for our dataset is provided below:
 
 For this workshop, we will be working within an RStudio project. In order to follow along you should have **downloaded the R project**.
 
-> If you haven't done this already, the project can be accessed using [this link](https://www.dropbox.com/scl/fi/ucxyecmviu4o882envynh/DGE_scRNA.zip?rlkey=ahb22wapzfkcbyioajlnq4m9k&st=sbfzxj8k&dl=1).
+> If you haven't done this already, the project can be accessed using [this link](https://www.dropbox.com/scl/fi/c3ggrdttuk3cqovqocy1a/Pseudobulk_workshop.zip?rlkey=nehku3i8mrtkbibe4wvt04n40&st=t8noj7w8&dl=1).
 
 Once downloaded, you should see a file called `DGE_scRNA.zip` on your computer (likely, in your `Downloads` folder). 
 
@@ -56,7 +56,6 @@ Once downloaded, you should see a file called `DGE_scRNA.zip` on your computer (
 <p align="center">
 <img src="../img/Directory_content_with_label.png" width="400">
 </p>
-
 
 
 ## Project organization
