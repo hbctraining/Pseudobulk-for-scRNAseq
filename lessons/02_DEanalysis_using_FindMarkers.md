@@ -241,7 +241,7 @@ p_tn + p_cold7
 ```
 
 <p align="center">
-    <img src="../img/fm_tn_cold7_umap_2.png" width="700">
+    <img src="../img/fm_tn_cold7_umap_2.pdf" width="700">
 </p>
 
 This allows us to better understand our results when we look at any follow-up information on our UMAP. For example, we can begin to look at the distribution of gene expression for each of the top 6 genes with a better understanding of where the cells for each condition lie:
