@@ -132,7 +132,7 @@ A nice way to observe patterns or trends in the data is to visualize it, especia
 
 ### Sample distribution
 
-Recall from the summary above that we have cells from four different conditions. We can use a barplot to show the number of cells for each replicate, coloring each sample by the temperature condition the mice were subjected to.
+Recall from the summary above that we have cells from four different conditions. We can use a barplot to show the number of cells for each replicate, coloring each sample by the temperature condition the mice were subjected to. This provides an overview of the number of cells we are working with for each replicate. This metric is important to bear in mind as we need to ensure that we have enough cells to run future analyses.
 
 ```r
 # Number of cells per sample
@@ -148,7 +148,7 @@ ggplot(seurat@meta.data) +
     <img src="../img/sample_info_ncells.png" width="600">
 </p>
 
-We can also see the distribution of cells across the UMAP for each replicate and sample.
+We can also see the distribution of cells across the UMAP for each replicate and sample. As this dataset has already been processed and integrated, we expect the cells to be integrated together - where there are no cells grouping together due to a batch effect (i.e sample). Instead the cells should be clustered together based upon gene expression similarity, which would ideally lead to celltypes being grouped together.
 
 ```r'
 # UMAPs of condition and sample
@@ -184,7 +184,7 @@ Using these clusters and a variety of marker genes, the cells were annotated int
 7. Myelinating Schwann cells (Schwann)
 8. Non-myelinating Schwann cells (Schwann)
 
-Notable marker genes from the paper are represented here using the `FeaturePlot()` function.
+Notable marker genes from the paper are represented here using the `FeaturePlot()` function. Here we can see that indeed the cells are grouping together based upon gene expression and celltype identities. 
 
 ```r
 FeaturePlot(seurat, c("Pdgfra", "Acta2", "Cdh5", "Lyve1", "Ucp1", "Mpz"))
@@ -194,7 +194,7 @@ FeaturePlot(seurat, c("Pdgfra", "Acta2", "Cdh5", "Lyve1", "Ucp1", "Mpz"))
     <img src="../img/sample_info_marker_genes.png" width="600">
 </p>
 
-The mapping of cluster to celltypes is being represented here as an **alluvial plot**.
+The mapping of cluster to celltypes is being represented here as an **alluvial plot**. This visualization provides a quick way to see which clusters have been annotated as which celltype.
 
 ```r
 # Order clusters numerically
@@ -233,7 +233,7 @@ LabelClusters(p, id = "ident",  fontface = "bold", size = 4,
     <img src="../img/sample_info_celltype_umap.png" width="40%">
 </p>
 
-We can identify celltypes that could be interesting based upon the proportion of conditions found in each celltype.
+We can even identify celltypes of interest based upon the proportion of cells in each experimental condition.
 
 ```r
 # Barplot sample proportion by celltype 
