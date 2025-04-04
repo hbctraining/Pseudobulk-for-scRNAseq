@@ -116,11 +116,74 @@ props$Proportions %>%  View()
 
 ### Differential compostion analysis using `sccomp`
 
-While propellor and other approaches based on linear regression (i.e., scDC, diffcyt) transform the data to model data compositionality, they do not model the data count distribution.  Modeling single-cell compositional data as counts is important as small datasets and rare cell types are characterized by a high noise-to-signal ratio, and **modeling counts enables the down-weighting of small cell-group proportions compared to larger ones** ([Mangiola s. et al, 2023](https://www.pnas.org/doi/10.1073/pnas.2203828120)). The **[sccomp](https://github.com/MangiolaLaboratory/sccomp) package** is a generalized method for differential composition and variability analyses based on sum-constrained independent Beta-binomial distributions. The sccomp core algorithm, data integration, and visualization are outlined in the figure below. Two important features of this method include outlier detection and differential variability analysis.
+While propellor and other approaches based on linear regression (i.e., scDC, diffcyt) transform the data to model data compositionality, they do not model the actual data count distribution.  Modeling single-cell compositional data as counts is important as small datasets and rare cell types are characterized by a high noise-to-signal ratio, and **modeling counts enables the down-weighting of small cell-group proportions compared to larger ones** ([Mangiola s. et al, 2023](https://www.pnas.org/doi/10.1073/pnas.2203828120)). The **[sccomp](https://github.com/MangiolaLaboratory/sccomp) package** is a generalized method for differential composition and variability analyses based on sum-constrained independent Beta-binomial distributions. The sccomp core algorithm is outlined in the grey boxed section of the figure below. Additional panels of the figure highlight other features of sccomp,s ome of which are described in this lesson; and for others (i.e simulation, benchmarking) we encourage you to read the paper in more detail for more information. 
 
 <p align="center">
 <img src="../img/sccomp.jpg" width="630">
 </p>
+
+**How does it work?**
+
+1. **Fit the model onto the data, and estimate the coefficients**. `sccomp` can model changes in composition and variability. Here we provide the formula `~ condition`, indicating the cell-group variability is dependent on condition.
+2. Optionally, `sccomp` can **identify outliers probabilistically** based on the model fit, and exclude them from the estimation.
+3. **Hypothesis testing** is performed by calculating the posterior probability of the composition and variability effects being larger than a specified fold-change threshold
+    * When only a few groups or samples are present it becomes challenging to estimate the mean–variability association. `sccomp` gains this prior knowledge from other datasets and incoportaes it to stabilize estimates.
+
+
+The code below will perform the step outlined above. The input is the subsetted Seurat object used in the previous section of this lesson.
+
+```r
+
+# Run the first three steps of sccomp
+sccomp_result <- seurat_sub %>% 
+  sccomp_estimate( 
+    formula_composition = ~ condition, 
+    .sample =  sample, 
+    .cell_group = celltype, 
+    bimodal_mean_variability_association = TRUE,
+    cores = 1 
+  ) %>% 
+  sccomp_remove_outliers(cores = 1, verbose = FALSE) %>%  # Optional  
+  sccomp_test()
+```
+
+Each of the columns in the output dataframe are described in detail on the [sccomp GitHub page](https://github.com/MangiolaLaboratory/sccomp?tab=readme-ov-file#from-counts). The column of interest to us is the `c_FDR`, as it reports the false-discovery rate of the null hypothesis for a composition (c). At an FDR < 0.05, **all celltypes are significantly changing with the exception of EC.** Additionally, some celltypes are marginally significant (i.e. Lymph and Perictyes)
+
+```r
+# Significant results FDR < 0.05
+sccomp_result %>% 
+  dplyr::filter(factor == "condition") %>% 
+  dplyr::filter(c_FDR < 0.05) %>% 
+  dplyr::select(celltype, c_FDR) %>% 
+  View()
+```
+
+We can view the fold changes observed and can see that for Lymph and Pericytes while the fold change appears to be high, the composition levels within each group are on the lower end.
+
+```r
+# Fold change
+sccomp_result %>% 
+  sccomp_proportional_fold_change(
+    formula_composition = ~  condition,
+    from =  "TN", 
+    to = "cold7"
+  ) %>% 
+  select(celltype, statement)
+
+```
+
+Finally, we can visualize the dat using boxplots:
+
+```r
+# Boxplots
+sccomp_result %>% 
+  sccomp_boxplot(factor = "condition")
+```
+
+<p align="center">
+<img src="../img/sccomp_boxplots.png" width="600">
+</p>
+
 
 
 ### Cluster-free approaches
