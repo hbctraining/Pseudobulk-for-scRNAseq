@@ -14,6 +14,8 @@ Approximate time: 90 minutes
 ## Differential abundance analysis with MiloR
 This approach is a cluster-free method and therefore does not require cells to be separated by celltype. Rather, **we will use the full dataset and subset by the two conditions of interest**.
 
+> NOTE: This dataset is fairly well structured with well defined celltypes, and is not the typical dataset that would be used for miloR. We use the data as an example to run code, but interpretation may not be as intuitive.
+
 ### Create new script
 
 To start, open a new Rscript file, and start with some a header line in comment format:
