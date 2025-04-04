@@ -46,12 +46,12 @@ For this workshop, we will be working within an RStudio project. In order to fol
 
 > If you haven't done this already, the project can be accessed using [this link](https://www.dropbox.com/scl/fi/c3ggrdttuk3cqovqocy1a/Pseudobulk_workshop.zip?rlkey=nehku3i8mrtkbibe4wvt04n40&st=t8noj7w8&dl=1).
 
-Once downloaded, you should see a file called `DGE_scRNA.zip` on your computer (likely, in your `Downloads` folder). 
+Once downloaded, you should see a file called `Pseudobulk_workshop.zip` on your computer (likely, in your `Downloads` folder). 
 
 1. Unzip this file. It will result in a folder of the same name. 
 2. **Move the folder to the location on your computer where you would like to perform the analysis.**
 3. Open up the folder. The contents will look like the screenshot below. 
-4. **Locate the `.Rproj file` and double-click on it.** This will open up RStudio with the "DGE_scRNA" project loaded. 
+4. **Locate the `.Rproj file` and double-click on it.** This will open up RStudio with the "Pseudobulk_workshop" project loaded. 
 
 <p align="center">
 <img src="../img/Directory_content_with_label.png" width="400">
@@ -67,7 +67,7 @@ For each experiment you work on and analyze data for, it is considered best prac
 Look inside your project space and you will find that a directory structure has been set up for you:
 
 ```
-DGE_scRNA/
+Pseudobulk_workshop/
 ├── data
 ├── meta
 ├── results
@@ -82,7 +82,7 @@ Next, let's open a new Rscript file, and start with some comments to indicate wh
 
 ```r
 # September 2024
-# HBC single-cell RNA-seq DGE workshop
+# HBC Pseduobulk workshop
 
 # Single-cell RNA-seq analysis - metadata
 ```
