@@ -131,24 +131,33 @@ genes
 
 Now that we have identified the significant genes, we can use a scatterplot to look at the expression values for each sample in both groups. This plot is also a good sanity check to make sure that we are interpreting our fold change values correctly, as well.
 
-Each point represents a sample with the y-axis representing the  normalized expression. Ideally we should see a clear shift in expression between our two conditions.
+Each point represents a sample with the y-axis representing the  normalized expression. Ideally we should see a clear shift in expression between our two conditions. As this is a helpful metric for assessing the pseudobulk results, we will create a function to make repeated use of this type of visualization.
+
+```r
+# pseudobulk scatterpot of normalized expression
+plot_pb_count <- function(dds, gene) {
+  
+  # returnData to get normalized counts for each sample for a gene
+  d <- plotCounts(dds, gene=gene, intgroup="condition", returnData=TRUE)
+  # Keep the order TN then cold7
+  d$condition <- factor(d$condition, levels = c("TN", "cold7"))
+  
+  # Plot the normalized counts for each sample
+  p <- ggplot(d, aes(x = condition, 
+                     y = count, 
+                     color = condition)) + 
+    geom_point(position=position_jitter(w = 0.1, h = 0)) +
+    theme_bw() + NoLegend() +
+    ggtitle(gene)
+  
+  return(p)
+}
+```
 
 ```r
 plot_list <- list()
-
 for (gene in genes) {
-    # Save plotcounts to a data frame object
-    d <- plotCounts(dds, gene=gene, intgroup="condition", returnData=TRUE)
-    d <- d %>% subset(condition %in% c("cold7", "TN"))
-
-    # Plot the normalized counts for each sample
-    p <- ggplot(d, aes(x = condition, y = count, color = condition)) + 
-            geom_point(position=position_jitter(w = 0.1,h = 0)) +
-            theme_bw() +
-            ggtitle(gene) +
-            theme(plot.title = element_text(hjust = 0.5)) +
-            NoLegend()
-    plot_list[[gene]] <- p
+  plot_list[[gene]] <- plot_pb_count(dds, gene)
 }
 
 plot_grid(plotlist=plot_list)
