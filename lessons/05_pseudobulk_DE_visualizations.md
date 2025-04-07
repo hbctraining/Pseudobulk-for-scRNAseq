@@ -18,7 +18,7 @@ Visualization is a key step for understanding the results of our analysis. In pa
 
 ### Identify significant genes
 
-Now that we have a table of genes with their associated p-values and log foldchange scores, we need to **filter the results**. We are are only interested in significantly differentially expressed genes that pass an **adjusted p-value threshold of 0.05**.
+Now that we have a table of genes with their associated adjusted p-values and log-fold change scores, we need to **filter the results**. We are only interested in significantly differentially expressed genes that pass an **adjusted p-value threshold of 0.05**.
 
 ```r
 # Set thresholds
@@ -49,11 +49,11 @@ sig_res %>% head()
 6 Mcm3      19.9           1.20  0.494 0.000682      0.00835    
 ```
 
-We will take these results and use them as input to a few different visualization techniques to explore the changes in gene expression. The 
+We will take these results and use them as input to a few different visualization techniques to explore the changes in gene expression. 
 
 ### Volcano plot 
 
-To get a first look at the significant genes compared to all genes tested, we can generated a volcano plot using the `EnhancedVolcano()` function. This is a visualization that allows us to quickly see trends in the significant genes. The x-axis here represents the average log2 fold change value, showing the degree of difference between the two conditions. On the y-axis, we see our p_val_adj column to which a negative log10 transformation is applied to better see the spread of our p-values.
+To get a first look at the significant genes compared to all genes tested, we can generated a volcano plot using the `EnhancedVolcano()` function. This is a visualization that allows us to quickly see trends in the significant genes. The x-axis here represents the average log2-fold change value, showing the degree of difference between the two conditions. On the y-axis, we see our adjusted p-value to which a negative log10 transformation is applied to better see the spread of our p-values.
 
 Volcano plots show us a great overview of which genes are up-regulated (positive on the x-axis) or down-regulated (negative on the x-axis).
 
@@ -74,9 +74,9 @@ print(p_deseq2)
 
 ### Heatmap of differntialy expressed genes
 
-Another way to look at global patterns of gene expression is to take our normalized expression matrix for our significant genes and generate a heatmap. The rows corresponds to a significant gene, columns are samples, and each value is the normalized expression from the pseudobulk aggregation. 
+Another way to look at global patterns of gene expression is to take our normalized expression matrix for our significant genes and generate a heatmap. The rows correspond to significant genes, columns are samples, and each value is the normalized expression from the pseudobulk aggregation. 
 
-Using the `pheatmap()` function, we can also cluster samples and genes together based upon their similarity. From the heatmap below we can clearly see that samples are clustering together based upon which experimental condition they belong to (`TN` and `cold7`). Similarly, the genes are being grouped together based upon their expression values, where we can see which genes are up and down-regulated in each condition.
+Using the `pheatmap()` function, we can also cluster samples and genes together based upon their similarity. From the heatmap below we can clearly see that samples are clustering together based upon which experimental condition they belong to (`TN` and `cold7`). Similarly, the genes are being grouped together based upon their expression values, where we can see which genes are up- and down-regulated in each condition.
 
 ```r
 # Extract normalized expression for significant genes from the samples
@@ -129,7 +129,7 @@ genes
 ```
 
 
-Now that we have identified the significant genes, we can use a scatterplot to look at the expression values for each sample in both groups. This plot is also a good sanity check to make sure that we are interpreting our fold change values correctly, as well.
+Now that we have identified the significant genes that we will look at, we can use a scatterplot to look at the expression values for each sample in both groups. This plot is also a good sanity check to make sure that we are interpreting our fold change values correctly, as well.
 
 Each point represents a sample with the y-axis representing the  normalized expression. Ideally we should see a clear shift in expression between our two conditions. As this is a helpful metric for assessing the pseudobulk results, we will create a function to make repeated use of this type of visualization.
 
@@ -182,7 +182,7 @@ VlnPlot(seurat_vsm, genes, idents=c("cold7", "TN"))
 <img src="../img/pb_sig_vln_sc.png" height="500">
 </p>
 
-In the next lesson, we will continue with additional visualizations for the DESeq2 results while comparing and contrastijng with results from the `FindMarkers()` analysis.
+In the next lesson, we will continue with additional visualizations for the DESeq2 results while comparing and contrasting with results from the `FindMarkers()` analysis.
 
 
 ***
