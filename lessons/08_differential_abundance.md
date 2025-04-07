@@ -110,8 +110,16 @@ props <- getTransformedProps(meta_sub$celltype,
                                  meta_sub$condition_sample, 
                                  transform="logit")
 
-props$Proportions %>%  View()
+props$Proportions %>% as.data.frame() %>%
+  ggplot(aes(x=sample, y=Freq, fill=clusters)) +
+  geom_bar(stat="identity", color="black") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 ```
+
+<p align="center">
+<img src="../img/propeller_prop.png" width="630">
+</p>
 
 
 ### Differential compostion analysis using `sccomp`
