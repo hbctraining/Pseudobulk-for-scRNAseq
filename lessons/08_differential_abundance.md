@@ -44,14 +44,17 @@ _Image source: [Phipson B. et al, 2022](https://academic.oup.com/bioinformatics/
 First we will need to load the required library:
 
 ```r
+# BiocManager::install("speckle")
+# devtools::install_github("MangiolaLaboratory/sccomp")
+
 # Load libraries
 library(speckle)
+library(sccomp)
 ```
 
 Next we will create a subset of the Seurat data object in which we keep only **TN and cold7 samples**. We will also create an associated metadata dataframe.
 
 ```r
-
 # Subset to keep only cells from TN and cold7
 # seurat <- readRDS("data/BAT_GSE160585_final.rds") # This dataset was loaded in at the beginning of the workshop
 seurat_sub <- subset(seurat, subset = (condition %in% c("TN", "cold7")))
@@ -109,7 +112,11 @@ As a final step, we will **create a dataframe of celltype proportions in each sa
 props <- getTransformedProps(meta_sub$celltype, 
                                  meta_sub$condition_sample, 
                                  transform="logit")
+```
 
+Now that we have these `Frequency` values for each celltype and sample, we can shows the proportions of celltypes for each sample:
+
+```r
 props$Proportions %>% as.data.frame() %>%
   ggplot(aes(x=sample, y=Freq, fill=clusters)) +
   geom_bar(stat="identity", color="black") +
@@ -119,6 +126,47 @@ props$Proportions %>% as.data.frame() %>%
 
 <p align="center">
 <img src="../img/propeller_prop.png" width="630">
+</p>
+
+To view how the Frequencies change across `TN` and `cold7` for each celltype , we can utilize boxplots to see the differences in conditions.
+
+```r
+props$Proportions %>% as.data.frame() %>%
+  mutate(condition = str_split_i(sample, "_", 1)) %>%
+  ggplot(aes(x=condition, y=Freq, fill=condition)) +
+  geom_boxplot(color="black") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  facet_wrap(~clusters) +
+  NoLegend()
+```
+
+<p align="center">
+<img src="../img/propeller_boxplot.png" width="630">
+</p>
+
+As we have replicates for each condition, we can even assess how the average Frequency changes with error bars by calculating the standard deviation of the values.
+
+```r
+# Calculate means and standard deviation
+# After grouping celltypes and samples
+props_summary <- props$Proportions %>% 
+  as.data.frame() %>%
+  mutate(condition = str_split_i(sample, "_", 1)) %>%
+  mutate(sample = str_split_i(sample, "cold7_|TN_", 2)) %>%
+  group_by(clusters, condition) %>% 
+  summarise(mean = mean(Freq), sd = sd(Freq))
+
+ggplot(props_summary, aes(x=clusters, y=mean, fill=condition)) + 
+    geom_bar(stat="identity", color="black", 
+             position=position_dodge()) +
+    geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2,
+                  position=position_dodge(.9)) +
+    theme_classic()
+```
+
+<p align="center">
+<img src="../img/propeller_error_bars.png" width="630">
 </p>
 
 
@@ -177,7 +225,6 @@ sccomp_result %>%
     to = "cold7"
   ) %>% 
   select(celltype, statement)
-
 ```
 
 Finally, we can visualize the data using boxplots.
