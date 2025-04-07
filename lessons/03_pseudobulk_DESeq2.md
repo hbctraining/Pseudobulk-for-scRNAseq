@@ -258,7 +258,7 @@ Another cell type in this dataset that was particularly interesting to the autho
 celltypes <- sort(unique(seurat@meta.data[["celltype"]]))
 ```
 
-> Reminder: The abreviationf for the cell types can be found in the [project set-up lesson](01_setup_intro_dataset.md#celltype-annotation).
+> Reminder: The abbreviations for the cell types can be found in the [project set-up lesson](01_setup_intro_dataset.md#celltype-annotation).
 
 2. Plot the cell number distribution across samples. How do the numbers compare to VSM cells?
 
