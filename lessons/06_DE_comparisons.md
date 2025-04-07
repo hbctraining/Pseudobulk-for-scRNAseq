@@ -226,29 +226,10 @@ p1 + p2
 
 With the violin plot we can see that there is **slightly higher expression in the TN condition**. Similarly, the log10 scaled expression distribution represented as a ridgeplot emphasizes that a small group of cells have similarly higher expression of Crebl2 across both conditions. By observing the expression at the single-cell level, we can possibly justify the significance call by FindMarkers. 
 
-To assess **why DESeq2 did not evaluate Crebl2 as significantly different**, we can take the normalized counts from the `dds` DESeq2 object to plot the expression at the pseudobulk level. As this is a helpful metric for assessing the pseudobulk results, we will create a function to make repeated use of this type of visualization.
+To assess **why DESeq2 did not evaluate Crebl2 as significantly different**, we can take the normalized counts from the `dds` DESeq2 object to plot the expression at the pseudobulk level.
 
 
 ```r
-# pseudobulk scatterpot of normalized expression
-plot_pb_count <- function(dds, gene) {
-  
-  # returnData to get normalized counts for each sample for a gene
-  d <- plotCounts(dds, gene=gene, intgroup="condition", returnData=TRUE)
-  # Keep the order TN then cold7
-  d$condition <- factor(d$condition, levels = c("TN", "cold7"))
-  
-  # Plot the normalized counts for each sample
-  p <- ggplot(d, aes(x = condition, 
-                     y = count, 
-                     color = condition)) + 
-    geom_point(position=position_jitter(w = 0.1, h = 0)) +
-    theme_bw() + NoLegend() +
-    ggtitle(gene)
-  
-  return(p)
-}
-
 plot_pb_count(dds, "Crebl2")
 ```
 <p align="center">
