@@ -54,6 +54,7 @@ library(EnhancedVolcano)
 library(RColorBrewer)
 library(cowplot)
 library(dplyr)
+library(ggrepel)
 ```
 
 ### Create metadata
