@@ -310,8 +310,9 @@ This is a great spot to store the results of the comparison:
 ```r
 
 res %>%
-data.frame() %>%  rownames_to_column(var="gene") %>%
-write.csv("results/deseq2_VSM_cold7_vs_TN.csv", row.names=F, quote=F)
+  data.frame() %>%
+  rownames_to_column(var="gene") %>%
+  write.csv("results/deseq2_VSM_cold7_vs_TN.csv", row.names=F, quote=F)
 ```
 
 ***
