@@ -53,8 +53,8 @@ ggplot(pca_data_condition, aes(x = PC1, y = PC2, color = condition, label = name
   geom_point() + 
   geom_text_repel(vjust = 1.5, hjust = 0.5, show.legend = FALSE) +
   theme_classic() +
-  xlab(paste0("PC1: ", round(attr(pca_data, "percentVar")[1] * 100), "% variance")) +
-  ylab(paste0("PC2: ", round(attr(pca_data, "percentVar")[2] * 100), "% variance")) 
+  xlab(paste0("PC1: ", round(attr(pca_data_condition, "percentVar")[1] * 100), "% variance")) +
+  ylab(paste0("PC2: ", round(attr(pca_data_condition, "percentVar")[2] * 100), "% variance")) 
 ```
 
 <p align="center">
@@ -77,8 +77,8 @@ ggplot(pca_data_n_cells, aes(x = PC1, y = PC2, color = n_cells, label = name_par
   geom_point() + 
   geom_text_repel(vjust = 1.5, hjust = 0.5, show.legend = FALSE) +
   theme_classic() +
-  xlab(paste0("PC1: ", round(attr(pca_data, "percentVar")[1] * 100), "% variance")) +
-  ylab(paste0("PC2: ", round(attr(pca_data, "percentVar")[2] * 100), "% variance")) 
+  xlab(paste0("PC1: ", round(attr(pca_data_n_cells, "percentVar")[1] * 100), "% variance")) +
+  ylab(paste0("PC2: ", round(attr(pca_data_n_cells, "percentVar")[2] * 100), "% variance")) 
 ```
 
 <p align="center">
