@@ -214,8 +214,8 @@ dge %>% subset(gene == "Crebl2")
 Immediately, we can see that there are **fairly small percentage of cells that express the gene** (pct.1 and pct.2) in both the cold7 and TN conditions. The LFC values are also on the lower end. To better understand what is happening at the expression level, we can visualize this gene at the single-cell level. We will use a violin plot and a ridge plot to evaluate the expression distribution for this gene in each condition.
 
 ```r
-p1 <- VlnPlot(seurat_vsm, "Crebl2") + NoLegend()
-p2 <- RidgePlot(seurat_vsm, "Crebl2") + scale_x_log10()
+p1 <- VlnPlot(seurat_vsm, "Crebl2", idents=c("cold7", "TN")) + NoLegend()
+p2 <- RidgePlot(seurat_vsm, "Crebl2", idents=c("cold7", "TN")) + scale_x_log10()
 p1 + p2
 ```
 
@@ -266,8 +266,8 @@ plot_pb_count(dds, "Hist1h1d")
 We can see that among the cold7 replicates, there is **one sample expressing considerably higher expression in Hist1h1d**. This sample is driving the observed fold change. Next, we can assess the expression of Hist1h1d at the single-cell level. From the ridge plot, we see that the TN plot is unimodal, but with cold7 it is bimodal with a tiny little hump on the right hand side of the plot. This represents a **handful of cells that are expressing Hist1h1d at higher levels**.
 
 ```r
-p1 <- VlnPlot(seurat_vsm, "Hist1h1d") + NoLegend()
-p2 <- RidgePlot(seurat_vsm, "Hist1h1d") + scale_x_log10()
+p1 <- VlnPlot(seurat_vsm, "Hist1h1d", idents=c("cold7", "TN")) + NoLegend()
+p2 <- RidgePlot(seurat_vsm, "Hist1h1d", idents=c("cold7", "TN")) + scale_x_log10()
 p1 + p2
 ```
 
@@ -302,8 +302,8 @@ plot_pb_count(dds, "Tiparp")
 Now, let's take a look at the expression values at the single cell level. Within the violin plot, we see there is a large distribution of cells in the TN group that show increased expression. The ridge plot displays a lower amplitude peak at the low end of expression and broad range across the higher end of expression. This suggests that while a small subset of cells exhibit low expression, a large majority express Tiparp at higher levels.
 
 ```r
-p1 <- VlnPlot(seurat_vsm, "Tiparp") + NoLegend()
-p2 <- RidgePlot(seurat_vsm, "Tiparp")
+p1 <- VlnPlot(seurat_vsm, "Tiparp", idents=c("cold7", "TN")) + NoLegend()
+p2 <- RidgePlot(seurat_vsm, "Tiparp", idents=c("cold7", "TN"))
 p1 + p2
 ```
 
