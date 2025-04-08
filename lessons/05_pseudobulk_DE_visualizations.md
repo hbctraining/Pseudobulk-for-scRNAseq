@@ -72,7 +72,7 @@ print(p_deseq2)
 </p>
 
 
-### Heatmap of differntialy expressed genes
+### Heatmap of differentially expressed genes
 
 Another way to look at global patterns of gene expression is to take our normalized expression matrix for our significant genes and generate a heatmap. The rows correspond to significant genes, columns are samples, and each value is the normalized expression from the pseudobulk aggregation. 
 
