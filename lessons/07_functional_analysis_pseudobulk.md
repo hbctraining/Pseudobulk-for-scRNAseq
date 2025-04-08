@@ -86,13 +86,13 @@ Next, we will filter genes to remove any genes that have NA values in the padj c
 
 ```r
 # Untested genes have padj = NA, so let's keep genes with padj != NA
-res_tbl_noNAs <- filter(res_tbl, padj != "NA" )
+dge_deseq2_noNAs <- filter(dge_deseq2, padj != "NA" )
 
 # Create background dataset for hypergeometric testing using all tested genes for significance in the results
-all_genes <- as.character(res_tbl_noNAs$gene)
+all_genes <- as.character(dge_deseq2_noNAs$gene)
 
 # Extract significant results for up-regulated
-sigUp <- dplyr::filter(res_tbl_noNAs, padj < 0.05, log2FoldChange > 0)
+sigUp <- dplyr::filter(dge_deseq2_noNAs, padj < 0.05, log2FoldChange > 0)
 sigUp_genes <- as.character(sigUp$gene)
 ```
 
@@ -244,10 +244,10 @@ Now that we have our gene sets, we need to prepare the fold changes. GSEA will u
 
 ```r
 # Extract the foldchanges
-foldchanges <- res_tbl_noNAs$log2FoldChange
+foldchanges <- dge_deseq2_noNAs$log2FoldChange
 
 # Name each fold change with the corresponding gene symbol
-names(foldchanges) <- res_tbl_noNAs$gene
+names(foldchanges) <- dge_deseq2_noNAs$gene
 
 # Sort fold changes in decreasing order
 foldchanges <- sort(foldchanges, decreasing = TRUE)
