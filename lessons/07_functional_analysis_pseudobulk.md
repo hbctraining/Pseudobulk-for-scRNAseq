@@ -236,7 +236,7 @@ For our analysis, we will select the mouse C5 collection, which corresponds to G
 
 ```r
 # Use a specific collection; C5 GO signatures
-m_t2g <- msigdbr(species = "Mus musculus", category = "C5") %>%
+m_t2g <- msigdbr(species = "Mus musculus", collection = "C5") %>%
   dplyr::select(gs_name, gene_symbol)
 ```
 
