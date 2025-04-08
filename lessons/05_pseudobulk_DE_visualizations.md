@@ -14,7 +14,7 @@ Approximate time: 40 minutes
 
 ## Visualization of differentially expressed genes
 
-Visualization is a key step for understanding the results of our analysis. In particular, we want to focus on the significant genes that are differentially expressed between the two conditions of interest. In doing so, we can better understand patterns in gene expression and identify any outlier genes that may bring up further questions in a downstream analysis. Additionally, these visualizations are a great way to glocally evaluate the changes brought about due to an experimental condition.
+Visualization is a key step for understanding the results of our analysis. In particular, we want to focus on the significant genes that are differentially expressed between the two conditions of interest. In doing so, we can better understand patterns in gene expression and identify any outlier genes that may bring up further questions in a downstream analysis. Additionally, these visualizations are a great way to globally evaluate the changes brought about due to an experimental condition.
 
 ### Identify significant genes
 
