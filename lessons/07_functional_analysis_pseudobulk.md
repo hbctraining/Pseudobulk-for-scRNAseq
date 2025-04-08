@@ -31,9 +31,9 @@ Image credit: [Khatri et al, PloS Computational Biology](https://journals.plos.o
 In this lesson, we will walk you through both an over-representation analysis and gene set enrichment analysis (GSEA) using an R Bioconductor package called [`clusterProfiler`](https://bioconductor.org/packages/release/bioc/vignettes/clusterProfiler/inst/doc/clusterProfiler.html).
 
 ## Over-representation analysis
-Over-representation analysis (ORA) is used to determine which a priori defined gene sets are more present (over-represented) in a subset of “interesting” genes than what would be expected by chance [(Huang et al, 2009)](https://pmc.ncbi.nlm.nih.gov/articles/PMC2615629/). Most genes in the genome have some pre-existing annotation associated with it which has been compiled through a combination of manual curation and computational algorithms. There are a number of existing databases which define genes using a controlled vocabulary and then categorize genes into groups (gene sets) based on shared function, or involvement in a pathway, or presence in a specific cellular location etc. A very commonly used gene annotataion resource is the [Gene Ontology (GO) database](https://geneontology.org/), and is what we will use in our workflow.
+Over-representation analysis (ORA) is used to determine which _a priori_ defined gene sets are more present (over-represented) in a subset of “interesting” genes than what would be expected by chance [(Huang et al, 2009)](https://pmc.ncbi.nlm.nih.gov/articles/PMC2615629/). Most genes in the genome have some pre-existing annotation associated with it, which has been compiled through a combination of manual curation and computational algorithms. There are a number of existing databases which define genes using a controlled vocabulary and then categorize genes into groups (gene sets) based on shared function, involvement in a pathway or presence in a specific cellular location, etc. A very commonly used gene annotataion resource is the [Gene Ontology (GO) database](https://geneontology.org/), and is what we will use in our workflow.
 
-We then use those categorizations to assess enrichment amongst our DE gene results and compare this to the enrichment observed in the larger universe of genes, to identify whether or not the enrichment observed is significant.
+We then use those categorizations to assess whether or not the enrichment observed amongst our DE gene results when compared to the larger universe of genes is significant. 
 
 <p align="center">
 <img src="../img/go_proportions.png" width="500">
@@ -43,7 +43,7 @@ We then use those categorizations to assess enrichment amongst our DE gene resul
 ### Hypergeometric test
 The statistical test that will determine whether something is actually over-represented is the *Hypergeometric test*.
 
-Hypergeometric distribution is a probability distribution that describes the probability of some number of genes (k) being associated with "Functional category 1", for all genes in our gene list (n=1000), compared to drawing some number of genes (K) associated with "Functional category 1" from a population of all of the genes in entire genome (N=13,000) [[2](https://en.wikipedia.org/wiki/Hypergeometric_distribution)].
+Hypergeometric distribution is a probability distribution that describes the probability of some number of genes (k) being associated with "Functional category 1", for all genes in our gene list (n=1000), compared to the number of genes (K) associated with "Functional category 1" from a population of all of the genes in entire genome (N=13,000) [[2](https://en.wikipedia.org/wiki/Hypergeometric_distribution)].
 
 The calculation of probability of k successes follows the formula:
 
@@ -59,8 +59,8 @@ Now that we know more about what ORA is doing, let's take our significant genes 
 
 In the workshop so far, we have run differential expression analysis using two different approaches: 
 
-1. Using `FindMarkers()` and treating individual cells as replicates
-2. Aggregating counts from all cells in sample to run pseudobulk DE
+1. Using `FindMarkers()` to treat individual cells as replicates
+2. Aggregating counts from all cells in a sample to run pseudobulk DE
 
 We will take **the results from the pseudobulk DE** and run different **functional analysis** methods to obtain some biological insight.
 
@@ -82,7 +82,7 @@ library(org.Mm.eg.db)
 library(msigdbr)
 ```
 
-Next, we will filter genes to remove any genes that have NA values in the padj column. These are genes that were not tested and so we do not want to consider them in our background set of genes. Once filtered, we create vectors containing our gene symbols for the background and query set of genes. We will query the up- and down-regulated gene sets separately, but note that you can also use the entire significant list as input.
+Next, we will filter genes to remove any genes that have NA values in the padj column. These are genes that were not tested and so we do not want to consider them in our background set of genes. Once filtered, we create vectors containing our gene symbols for the background and query set of genes. We will query the up- and down-regulated gene sets separately, but note that you can also use the entire significant list as a query input.
 
 ```r
 # Untested genes have padj = NA, so let's keep genes with padj != NA
@@ -123,7 +123,7 @@ cluster_summaryUp <- data.frame(egoUp)
 write.csv(cluster_summaryUp, "results/clusterProfiler_VSM_TNvsCold7_upregulated.csv")
 ```          
 
-> **NOTE:** Instead of saving just the results summary from the `egoUp` object, it might also be beneficial to save the object itself. The `save()` function enables you to save it as a `.rda` file, e.g. `save(egoUp, file="results/egoUp.rda")`. The statistsics stored in the object can be used for downstream visualization.
+> **NOTE:** Instead of saving just the results summary from the `egoUp` object, it might also be beneficial to save the object itself. The `save()` function enables you to save it as a `.rda` file, e.g. `save(egoUp, file="results/egoUp.rda")`. The statistics stored in the object can be used for downstream visualization.
         
 ### Exploring results from over-representation analysis
 
@@ -135,10 +135,12 @@ View(cluster_summaryUp)
 
 In the first few columns we see the GO identifier and the descriptive term name. In the next two columns that follow, we observe GeneRatio and BgRatio. These values allows us to compare the overlaps to the background.
 
-* **BgRatio:** M/N
-  * The total number of genes in the GO term gene set (_M_), divided by the total number of genes in universe (_N_)
+* **BgRatio:** K/N
+  * The total number of genes in the GO term gene set (_K_), divided by the total number of genes in universe (_N_)
 * **GeneRatio**: k/n
-  *  The total number of genes in our sig DE gene set which overlap with the GO term gene set (_k_), divided by the total number of genes in our sig DE gene set that overlap with the universe gene set (_n_)
+  * The total number of genes in our sig DE gene set which overlap with the GO term gene set (_k_), divided by the total number of genes in our sig DE gene set that overlap with the universe gene set (_n_)
+* **Fold Enrichment**: (k/n)/(K/N)
+  * This represents how many fold enriched is the **GeneRatio** compared to the **BgRatio**
 
 Other columns of interest are the **p.adjust** column (by which results are ordered by default), and the **geneID** column, which lists the gene symbols of the overlapping genes.
 
@@ -146,7 +148,7 @@ Other columns of interest are the **p.adjust** column (by which results are orde
 <img src="../img/ego_up_clusterprofiler.png" width="600">
 </p>
 
-When cold induces a response in vascular smooth muscle cells (VSMCs), the primary transcriptional change observed is an up-regulation of genes related to vasoconstriction. Vasoconstriction is when the muscles around your blood vessels tighten to make the space inside smaller. In our results table we see **significant terms such as extracellular matrix organization, and cell proliferation**, which makes sense because the cold temperatures will lead to a shift towards a more **contractile phenotype**. We also observe up-regulation of genes involved in **cell adhesion and tight junction formation**, which are processes related to **maintaining vascular integrity**.
+When cold induces a response in vascular smooth muscle cells (VSMCs), the primary transcriptional change observed is an up-regulation of genes related to vasoconstriction. Vasoconstriction is when the muscles around your blood vessels tighten to make the space inside smaller. In our results table we see **significant terms such as extracellular matrix organization** and **cell proliferation**, which makes sense because the cold temperatures will lead to a shift towards a more **contractile phenotype**. We also observe up-regulation of genes involved in **cell adhesion** and **tight junction formation**, which are processes related to **maintaining vascular integrity**.
 
 ***
 
