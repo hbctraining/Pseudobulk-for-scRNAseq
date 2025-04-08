@@ -43,7 +43,7 @@ _Image credit: [Nguyen et al, Nat Communications](https://www.nature.com/article
 
 So far in this workshop, we have made use of the DESeq2 and FindMarkers algorithms to find differentially expressed genes between the TN and cold7 sample groups. In this lesson, we compare and contrast results and use visualizations to see the practical implications of the questions outlined in the beginning of the lesson. 
 
-Let's begin by creating a new Rscript called `DE_comparison.R`. At the top add a commented header to indicate what this file is going to contain.
+Let's begin by creating a new Rscript called `DE_comparison.R`. At the top, add a commented header to indicate what this file is going to contain.
 
 ```r
 # September 2024
@@ -84,7 +84,7 @@ p_fm <- EnhancedVolcano(dge_vsm_sig,
 
 
 &#35; Volcano plot for Pseudobulk results
-p_fm <- EnhancedVolcano(sig_res,
+p_deseq2 <- EnhancedVolcano(sig_res,
                         sig_res$gene,
                         x="log2FoldChange",
                         y="padj",
@@ -176,7 +176,7 @@ ggvenn(sig_genes, auto_scale = TRUE)
 </p>
 
 ### Barplot
-Next, we can break that overlap into a barplot. The benefit of this visualization is that we can include the number of genes that were identified as not significant in both DESeq2 and FindMarkers. Here, we also categorize genes that are listed as `NA`, which is the result of DESeq2 filtering genes as was [discussed earlier](https://hbctraining.github.io/DGE_analysis_scRNAseq/lessons/04_pseudobulk_DE_analysis.html).
+Next, we can break that overlap into a barplot. The benefit of this visualization is that we can include the number of genes that were identified as not significant in both DESeq2 and FindMarkers. Here, we also categorize genes that are listed as `NA`, which is the result of DESeq2 filtering genes as was [discussed earlier](04_pseudobulk_DE_analysis.md).
 
 ```r
 ggplot(dge, aes(x=sig, fill=sig)) +
@@ -191,7 +191,7 @@ ggplot(dge, aes(x=sig, fill=sig)) +
   <img src="../img/DE_ncells.png" width="600">
 </p>
 
-Ultimately, we **find ~1,200 genes significant from both DESeq2 and FindMarkers**. The DESeq2 signicant list is considerably smaller and so the overlapping genes make up a good proportion of the total.  To explore some of the similarities and differences, let us look at specific genes that demonstrate each of the following cases:
+Ultimately, we **find ~1,200 genes significant from both DESeq2 and FindMarkers**. The DESeq2 significant list is considerably smaller and so the overlapping genes make up a good proportion of the total.  To explore some of the similarities and differences, let's look at specific genes that demonstrate each of the following cases:
 
 1. Significant in only FindMarkers (Crebl2)
 2. Significant in only DESeq2 (Hist1h1d)
@@ -199,7 +199,7 @@ Ultimately, we **find ~1,200 genes significant from both DESeq2 and FindMarkers*
 
 ### Significant only in FindMarkers results
 
-First, let us take a look at the expression values for the gene Crebl2 which was significant from the FindMakers analysis, but not DESEq2. We can begin by looking at the statistical results (p-value, LFC) for this gene:
+First, let us take a look at the expression values for the gene Crebl2, which was significant from the FindMakers analysis, but not DESeq2. We can begin by looking at the statistical results (adjusted p-value and LFC) for this gene:
 
 ```r
 dge %>% subset(gene == "Crebl2")
@@ -211,7 +211,7 @@ dge %>% subset(gene == "Crebl2")
 
 ```
 
-Immediately we can see that there are **fairly small percentage of cells that express the gene** (pct.1 and pct.2) in both the cold7 and TN conditions. The LFC values are also on the lower end. To better understand what is happening at the expression level, we can visualize this gene at the single-cell level. We will use a violin plot and a rdiget plot to evaluate the expression distribution for this gene in each condition.
+Immediately, we can see that there are **fairly small percentage of cells that express the gene** (pct.1 and pct.2) in both the cold7 and TN conditions. The LFC values are also on the lower end. To better understand what is happening at the expression level, we can visualize this gene at the single-cell level. We will use a violin plot and a ridge plot to evaluate the expression distribution for this gene in each condition.
 
 ```r
 p1 <- VlnPlot(seurat_vsm, "Crebl2") + NoLegend()
@@ -224,7 +224,7 @@ p1 + p2
 </p>
 
 
-With the violin plot we can see that there is **slightly higher expression in the TN condition**. Similarly, the log10 scaled expression distribution represented as a ridgeplot emphasizes that a small group of cells have similarly higher expression of Crebl2 across both conditions. By observing the expression at the single-cell level, we can possibly justify the significance call by FindMarkers. 
+With the violin plot we can see that there is **slightly higher expression in the TN condition**. Similarly, the log10 scaled expression distribution represented as a ridge plot emphasizes that a small group of cells have similarly higher expression of Crebl2 across both conditions. By observing the expression at the single-cell level, we can possibly justify the significance call by FindMarkers. 
 
 To assess **why DESeq2 did not evaluate Crebl2 as significantly different**, we can take the normalized counts from the `dds` DESeq2 object to plot the expression at the pseudobulk level.
 
@@ -255,11 +255,15 @@ dge %>% subset(gene == "Hist1h1d")
 
 Similar to before, we can see that **very few cells** are expressing this gene (even fewer than observed with Crebl2). The fold change is a bit higher than observed. Let's take a look at the normalized expression values from pseudobulk to see if we can figure out why the DESeq2 algorithm identified this gene as significant.
 
+```
+plot_pb_count(dds, "Hist1h1d")
+```
+
 <p align="center">
   <img src="../img/../img/DE_comp_Hist1h1d_pb.png" width="400">
 </p>
 
-Immediately we can see that among the cold7 replicates there is **one sample expressing considerably higher expression in Hist1h1d**. This sample is driving the observed fold change. Next we can assess the expression of Hist1h1d at the single-cell level. From the Ridgeplot we see that the TN plot is unimodal, but with cold7 it is bimodal with a tiny little hump on the right hand side of the plot. This represents a **handful of cells that are expressing Hist1h1d at higher levels**.
+We can see that among the cold7 replicates, there is **one sample expressing considerably higher expression in Hist1h1d**. This sample is driving the observed fold change. Next, we can assess the expression of Hist1h1d at the single-cell level. From the ridge plot, we see that the TN plot is unimodal, but with cold7 it is bimodal with a tiny little hump on the right hand side of the plot. This represents a **handful of cells that are expressing Hist1h1d at higher levels**.
 
 ```r
 p1 <- VlnPlot(seurat_vsm, "Hist1h1d") + NoLegend()
@@ -271,7 +275,7 @@ p1 + p2
   <img src="../img/DE_comp_Hist1h1d_sc.png" width="800">
 </p>
 
-With this example we can see sometimes in the process of pseudobulk aggregation high expression from a small proportion of cells can drive the results. At the single-cell level, we are better able to observe the true distribution of expression across all cells and rule out cases where only a few cells are expressing Hist1h1d.
+Using this example, we can see how in the process of pseudobulk aggregation, high expression in a small proportion of cells can drive the results. At the single-cell level, we are better able to observe the true distribution of expression across all cells and rule out cases where only a few cells are expressing Hist1h1d.
 
 ### High confidence genes: Significant in DESeq2 and FindMarkers
 A conservative approach for a DGE analysis, would be to use only the significant genes that are identified from both methods. As an example, we can take a look at the **gene Tiparp which was significant in DESEq2 and FindMarkers**. Again, let's begin with a quick peek at the results file. Unlike the previous genes, **the percentage of cells expressing this gene is on the higher end**.
@@ -285,7 +289,7 @@ dge %>% subset(gene == "Tiparp")
 8768 Tiparp -2.414068 0.393 0.742 2.1504e-141     -2.378904 3.917121e-34 both
 ```
 
-Next, we plot the normalized counts from pseudobulk aggregation. Here, we observe a clear difference in expression between groups. While there is some observed variability within the TN group, it is small compared to the varibility between groups. For this gene it is clear why it was identified as significant. 
+Next, we plot the normalized counts from pseudobulk aggregation. Here, we observe a clear difference in expression between groups. While there is some observed variability within the TN group, it is small compared to the varibility between groups. For this gene, it is clear why it was identified as significant. 
 
 ```r
 plot_pb_count(dds, "Tiparp")
@@ -295,7 +299,7 @@ plot_pb_count(dds, "Tiparp")
   <img src="../img/DE_comp_Tiparp_pb.png" width="400">
 </p>
 
-Now, let's take a look at the expression values at the single cell level. With the Violin plot we see there is a large distribution of cells in the TN group that show increased expression. The Ridgeplot displays a lower amplitude peak at the low end of expression and broad range across the higher end of expression. This suggests that while a small subset of cells exhibit low expression, a large majority express Tiparp at higher levels.
+Now, let's take a look at the expression values at the single cell level. Within the violin plot, we see there is a large distribution of cells in the TN group that show increased expression. The ridge plot displays a lower amplitude peak at the low end of expression and broad range across the higher end of expression. This suggests that while a small subset of cells exhibit low expression, a large majority express Tiparp at higher levels.
 
 ```r
 p1 <- VlnPlot(seurat_vsm, "Tiparp") + NoLegend()
@@ -318,7 +322,7 @@ Let's start by filtering our data to keep only the genes that are significant in
 dge_sig <- dge %>% subset(sig != "Not Significant")
 ```
 
-Now, we'll use that data to generate a scatter plot of the fold changes from FindMarkers on the y-axis and DESeq2 foldchanges on the x-axis. Each data point represents a gene, and it is colored based on the percentage on cells expressed in TN (`pct.1`, right plot) or cold 7 (`pct.2` left plot). **We see a smear of light blue on the diagonal, which are the cells with the highest percentage of cells.**
+Now, we'll use that data to generate a scatter plot of the fold changes from FindMarkers on the y-axis and DESeq2 fold changes on the x-axis. Each data point represents a gene, and it is colored based on the percentage on cells expressed in TN (`pct.1`, right plot) or cold 7 (`pct.2` left plot). **We see a smear of light blue on the diagonal, which are the cells with the highest percentage of cells.**
 
 ```r
 pct_1 <- ggplot(dge_sig %>% arrange(pct.1), 
@@ -392,8 +396,7 @@ pheatmap(norm_sig,
   <img src="../img/DE_pb_heatmap.png" height="500">
 </p>
 
-Through this visualization, we can see that there is a **a clustering of genes that are found significant by DESeq2 and FindMarkers**, with some of the 'both 'genes scattered. Most of the DESeq2 genes have a high percentage of cells expressing them, suggesting this drives the results observed with Psedubulk. 
-
+Through this visualization, we can see that there is a **a clustering of genes that are found significant by DESeq2 and FindMarkers**, with some of the 'both' genes scattered. Most of the DESeq2 genes have a high percentage of cells expressing them, suggesting this drives the results observed with Pseudobulk. 
 
 ***
 
