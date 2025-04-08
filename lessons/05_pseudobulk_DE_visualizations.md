@@ -25,13 +25,13 @@ Now that we have a table of genes with their associated adjusted p-values and lo
 padj.cutoff <- 0.05
 
 # Turn the results object into a tibble for use with tidyverse functions
-res_tbl <- res %>%
+dge_deseq2 <- res %>%
             data.frame() %>%
             rownames_to_column(var="gene") %>% 
             as_tibble()
 
 # Subset the significant results
-sig_res <- dplyr::filter(res_tbl, 
+sig_res <- dplyr::filter(dge_deseq2, 
         padj < padj.cutoff)
 
 # Look at top sig genes
