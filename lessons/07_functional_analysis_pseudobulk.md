@@ -163,7 +163,7 @@ When cold induces a response in vascular smooth muscle cells (VSMCs), the primar
 ### Visualizing over-representation analysis results
 `clusterProfiler` has a variety of options for viewing the over-represented GO terms. We will explore the dotplot and the enrichment plot in this lesson.
 
-The **dotplot** shows statistics associated with a user-selected top number of significant terms. The color of the dots represent the adjusted p-values for these terms, and size of the dots corresponds to the total count of sig DE genes annotated with the GO term (count). This plot displays the top 20 GO terms ordered by gene ratio, not adjusted p-value.
+The **dotplot** shows statistics associated with a user-selected top number of significant terms. The color of the dots represents the adjusted p-values for these terms and size of the dots corresponds to the total count of sig DE genes annotated with the GO term (count). This plot displays the top 20 GO terms ordered by gene ratio, not adjusted p-value.
 
 ```r
 # Dotplot 
@@ -171,8 +171,8 @@ dotplot(egoUp, showCategory=20)
 ```
 
 **To save the figure,** click on the `Export` button in the RStudio `Plots` tab and `Save as PDF...`. In the pop-up window, change:
-- `Orientation:` to `Landscape`
-- `PDF size` to `8 x 14` to give a figure of appropriate size for the text labels
+- `Orientation:` To `Portrait`
+- `PDF size` to `11 x 8` to give a figure of appropriate size for the text labels
 
 <p align="center"> 
 <img src="../img/sigUp_dotplot.png" width="600">
@@ -188,7 +188,7 @@ egoUp <- enrichplot::pairwise_termsim(egoUp)
 emapplot(egoUp, showCategory = 50)
 ```
 
-**To save the figure,** click on the `Export` button in the RStudio `Plots` tab and `Save as PDF...`. In the pop-up window, change the `PDF size` to `12 x 14` to give a figure of appropriate size for the text labels.
+**To save the figure,** click on the `Export` button in the RStudio `Plots` tab and `Save as PDF...`. In the pop-up window, ensure that the `Orientation` is `Portrait` and change the `PDF size` to `11 x 8` to give the figure the appropriate size for the text labels.
 
 <p align="center"> 
 <img src="../img/sigUp_emapplot.png" width="800">
