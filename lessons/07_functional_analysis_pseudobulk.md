@@ -51,7 +51,7 @@ The calculation of probability of k successes follows the formula:
 <img src="../img/hypergeo.png" width="200">
 </p>
 
-This test will result in an adjusted p-value (after multiple testing correction) for each category tested.
+This test will result in a p-value that will be adjusted to consider  multiple testing correction for each category tested.
 
 ### Running ORA with clusterProfiler
 
@@ -208,7 +208,7 @@ _Image source: [(Subramanium A. et al, 2005)](https://www.pnas.org/doi/10.1073/p
 This image describes the theory of GSEA, with the 'gene set S' showing the metric used (in our case, ranked log2-fold changes) to determine enrichment of genes in the gene set. There are four main steps that are being performed:
 
 1. **Rank genes**:
-    * Genes in a data set are ranked based on the given statistic, which in our case is the log2-fold changes. 
+    * Genes in a data set are ranked based on the given statistic, which in our case is the shrunken log2-fold changes. 
 2. **Calculate enrichment scores for each gene set**
    * This score reflects how often genes in the set appear at the top or bottom of the ranked list.
    * The score is calculated by walking down the list of log2-fold changes and increasing the running-sum statistic every time a gene in the gene set is encountered and decreasing it when genes are not part of the gene set.
