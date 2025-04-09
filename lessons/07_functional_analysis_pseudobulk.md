@@ -205,13 +205,13 @@ A commonly used example of an FCS method is GSEA [(Subramanium A. et al, 2005)](
 
 _Image source: [(Subramanium A. et al, 2005)](https://www.pnas.org/doi/10.1073/pnas.0506580102)_
 
-This image describes the theory of GSEA, with the 'gene set S' showing the metric used (in our case, ranked log2 fold changes) to determine enrichment of genes in the gene set. There are four main steps that are being performed:
+This image describes the theory of GSEA, with the 'gene set S' showing the metric used (in our case, ranked log2-fold changes) to determine enrichment of genes in the gene set. There are four main steps that are being performed:
 
 1. **Rank genes**:
-    * Genes in a data set are ranked based on the given statistic, which in our case is the log2 fold changes. 
+    * Genes in a data set are ranked based on the given statistic, which in our case is the log2-fold changes. 
 2. **Calculate enrichment scores for each gene set**
    * This score reflects how often genes in the set appear at the top or bottom of the ranked list.
-   * The score is calculated by walking down the list of log2 fold changes and increasing the running-sum statistic every time a gene in the gene set is encountered and decreasing it when genes are not part of the gene set.
+   * The score is calculated by walking down the list of log2-fold changes and increasing the running-sum statistic every time a gene in the gene set is encountered and decreasing it when genes are not part of the gene set.
    * Increase/decrease is determined by magnitude of fold change.
 3. **Estimate statistical significance**
    *  A permutation test is used to calculate a null distribution for the enrichment score. This produces a p-value that represents the probability of observing a given enrichment score. 
@@ -242,7 +242,7 @@ m_t2g <- msigdbr(species = "Mus musculus", collection = "C5") %>%
   dplyr::select(gs_name, gene_symbol)
 ```
 
-Now that we have our gene sets, we need to prepare the fold changes. GSEA will use the log2 fold changes obtained from the differential expression analysis for every gene to perform the analysis. We need to create an ordered and named vector for input to clusterProfiler:
+Now that we have our gene sets, we need to prepare the fold changes. GSEA will use the log2-fold changes obtained from the differential expression analysis for every gene to perform the analysis. We need to create an ordered and named vector for input to clusterProfiler:
 
 ```r
 # Extract the foldchanges
@@ -291,7 +291,7 @@ msigGSEA_results %>% arrange(-NES) %>% View()
 
 ### GSEA visualization
 
-Let's explore the GSEA plot of enrichment of one of the pathways in the ranked list using a built-in function from clusterProfiler. We can pick the top term "GOMF_EXTRACELLULAR_MATRIX_STRUCTURAL_CONSTITUENT":
+Let's explore the GSEA plot of enrichment of one of the pathways in the ranked list using a built-in function from clusterProfiler. We can pick the top term `GOMF_EXTRACELLULAR_MATRIX_STRUCTURAL_CONSTITUENT`:
 
 ```r
 # Plot the GSEA plot for a single enriched GO term
@@ -302,7 +302,7 @@ gseaplot(msig_GSEA, geneSetID = 'GOMF_EXTRACELLULAR_MATRIX_STRUCTURAL_CONSTITUEN
 <img src="../img/gseaplot_msigdb.png" width="500">
 </p>
 
-In this plot, the lines in plot represent the genes in the gene set 'GOMF_EXTRACELLULAR_MATRIX_STRUCTURAL_CONSTITUENT', and where they occur among the log2 fold changes. The largest positive log2 fold changes are on the left-hand side of the plot, while the largest negative log2 fold changes are on the right. The top plot shows the magnitude of the log2 fold changes for each gene, while the bottom plot shows the running sum, with the enrichment score peaking at the red dotted line (which is among the positive log2 fold changes). This suggests the up-regulation of this function.
+In this plot, the lines in plot represent the genes in the gene set `GOMF_EXTRACELLULAR_MATRIX_STRUCTURAL_CONSTITUENT` and where they occur among the log2-fold changes. The largest positive log2-fold changes are on the left-hand side of the plot, while the largest negative log2-fold changes are on the right. The top plot shows the magnitude of the log2-fold changes for each gene, while the bottom plot shows the running sum, with the enrichment score peaking at the red dotted line (which is among the positive log2-fold changes). This suggests the up-regulation of this function.
 
 ***
 
@@ -310,13 +310,13 @@ In this plot, the lines in plot represent the genes in the gene set 'GOMF_EXTRAC
 
 Now that we have run through functional analysis with the results from Pseudobulk DE, let's see what results we derive from the DGE lists from our [FindMarkers DE analysis](02_DEanalysis_using_FindMarkers.md).
 
-1. Create a significant DE genes data frame from the FM results with an added fold change criteria to reduce the gene list size. You can do this by running the code below:
+1. Create a significant DE genes data frame from the FindMarkers results with an added fold change criteria to reduce the gene list size. You can do this by running the code below:
 
 ```r
 sig_fc_dge <- dge_vsm %>% dplyr::filter(p_val_adj < 0.05, abs(avg_log2FC) > 1)
 ```
 
-2. Use this gene list to run over-representation analysis. Be sure to separate genes into up- and down-regulated first. Also keep in mind that the background gene dataset is different than for the DESeq2 analysis. What are the top terms enriched among up-regulated genes? What are the top terms enriched among down-regulated genes?
+2. Use this gene list to run an over-representation analysis. Be sure to separate genes into up- and down-regulated first. Also keep in mind that the background gene dataset is different than for the DESeq2 analysis. What are the top terms enriched among up-regulated genes? What are the top terms enriched among down-regulated genes?
 
 3. How do these results compare with what we observed from the Pseudobulk DE functional analysis?
 
