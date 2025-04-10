@@ -29,8 +29,8 @@ The **propellor method** is a function that is part of the [speckle R package](h
    * As can be seen in the plot below (right), the cell type proportions are over-dispersed compared to the variance estimated under a Binomial distribution.
    * To overcome this, two transformations are available: arcsin square root and logit
 * Linear modeling is applied using an empirical Bayes framework, allowing information to be borrowed across cell types to stabilize the cell type-specific variance estimates
-   * Two groups, moderated t-tests are implemented;
-   * More than two groups, the option is a moderated ANOVA test. 
+   * For **two groups**, moderated t-tests are implemented;
+   * For **more than two groups**, the option is a moderated ANOVA test. 
 * Finally, false discovery rates are calculated.
 
 <p align="center">
@@ -51,7 +51,6 @@ library(speckle)
 Next we will create a subset of the Seurat data object in which we keep only **TN and cold7 samples**. We will also create an associated metadata dataframe.
 
 ```r
-
 # Subset to keep only cells from TN and cold7
 # seurat <- readRDS("data/BAT_GSE160585_final.rds") # This dataset was loaded in at the beginning of the workshop
 seurat_sub <- subset(seurat, subset = (condition %in% c("TN", "cold7")))
@@ -103,7 +102,7 @@ propres %>%  View()
 
 ***
 
-As a final step, we will **create a dataframe of celltype proportions in each sample**. We can use this later to explore the variability within group and how results compare to a different approach. 
+As a final step, we will **create a dataframe of celltype proportions in each sample**. We can use this later to explore the variability within groups and how results compare to a different approach. 
 
 ```r
 props <- getTransformedProps(meta_sub$celltype, 
@@ -116,7 +115,7 @@ props$Proportions %>%  View()
 
 ### Differential compostion analysis using `sccomp`
 
-While propellor and other approaches based on linear regression (i.e., scDC, diffcyt) transform the data to model data compositionality, they do not model the actual data count distribution.  Modeling single-cell compositional data as counts is important as small datasets and rare cell types are characterized by a high noise-to-signal ratio, and **modeling counts enables the down-weighting of small cell-group proportions compared to larger ones** ([Mangiola s. et al, 2023](https://www.pnas.org/doi/10.1073/pnas.2203828120)). The **[sccomp](https://github.com/MangiolaLaboratory/sccomp) package** is a generalized method for differential composition and variability analyses based on sum-constrained independent Beta-binomial distributions. The sccomp core algorithm is outlined in the grey boxed section of the figure below. Additional panels of the figure highlight other features of sccomp,s ome of which are described in this lesson; and for others (i.e simulation, benchmarking) we encourage you to read the paper in more detail for more information. 
+While propellor and other approaches based on linear regression (i.e., scDC, diffcyt) transform the data to model data compositionality, they do not model the actual data count distribution.  Modeling single-cell compositional data as counts is important as small datasets and rare cell types are characterized by a high noise-to-signal ratio, and **modeling counts enables the down-weighting of small cell-group proportions compared to larger ones** ([Mangiola s. et al, 2023](https://www.pnas.org/doi/10.1073/pnas.2203828120)). The **[sccomp](https://github.com/MangiolaLaboratory/sccomp) package** is a generalized method for differential composition and variability analyses based on sum-constrained independent Beta-binomial distributions. The sccomp core algorithm is outlined in the grey boxed section of the figure below. Additional panels of the figure highlight other features of sccomp, some of which are described in this lesson; and for others (i.e simulation, benchmarking) we encourage you to read the paper in more detail for more information. 
 
 <p align="center">
 <img src="../img/sccomp.jpg" width="630">
@@ -127,7 +126,7 @@ While propellor and other approaches based on linear regression (i.e., scDC, dif
 1. **Fit the model onto the data, and estimate the coefficients**. `sccomp` can model changes in composition and variability. Here we provide the formula `~ condition`, indicating the cell-group variability is dependent on condition.
 2. Optionally, `sccomp` can **identify outliers probabilistically** based on the model fit, and exclude them from the estimation.
 3. **Hypothesis testing** is performed by calculating the posterior probability of the composition and variability effects being larger than a specified fold-change threshold
-    * When only a few groups or samples are present it becomes challenging to estimate the mean–variability association. `sccomp` gains this prior knowledge from other datasets and incoportaes it to stabilize estimates.
+    * When only a few groups or samples are present it becomes challenging to estimate the mean–variability association. `sccomp` gains this prior knowledge from other datasets and incoporates it to stabilize estimates.
 
 
 The code below will perform the step outlined above. The input is the subsetted Seurat object used in the previous section of this lesson.
