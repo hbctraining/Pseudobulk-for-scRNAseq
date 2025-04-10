@@ -43,13 +43,22 @@ _Image source: [Phipson B. et al, 2022](https://academic.oup.com/bioinformatics/
 
 ### Running propellor
 
-First we will need to load the required library:
+Let's make a R script to hold our analysis called `Diiferential_abundance.R`. We can provide the R script with this header:
+
+```
+# September 2024
+# HBC single-cell RNA-seq DGE workshop
+# Single-cell RNA-seq analysis - Differential abundance analysis
+```
+
+Next, we will need to load the required library:
 
 ```r
 # BiocManager::install("speckle")
 # devtools::install_github("MangiolaLaboratory/sccomp")
 
 # Load libraries
+library(tidyverse)
 library(speckle)
 library(sccomp)
 ```
@@ -160,6 +169,17 @@ sccomp_result %>%
   dplyr::filter(c_FDR < 0.05) %>% 
   dplyr::select(celltype, c_FDR) %>% 
   View()
+```
+
+```
+  celltype      c_FDR
+1       AP 0.00081250
+2    Adipo 0.01458333
+3     ECAP 0.00000000
+4    Lymph 0.02835714
+5  Schwann 0.00000000
+6      VSM 0.00000000
+7   VSM-AP 0.00400000
 ```
 
 We can view the fold changes and can see that for Lymph and Pericytes, while the fold change appears to be high, the composition levels within each group are on the lower end.
