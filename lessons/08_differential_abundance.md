@@ -11,7 +11,7 @@ date: November 5th, 2024
 * Run cluster-based differential abundance analysis on VSM cells
 
 ## Differential abundance of celltypes
-Differential abundance (DA) analysis is a method used to identify celltypes with statistically significant changes in abundance between different biological conditions.  The overall aim is to find sub-populations of cells in which the ratio of cells from the two conditions is significantly different from the ratios observed in the overall data. Methods for differential abundance have been successfully used in practice in both clinical and experimental settings. For example, these approaches highlighted an increased presence of granulocytes, monocytes, and B cells in fatal cases of COVID-19 ([1](https://www.nature.com/articles/nbt.2317)). 
+Differential abundance (DA) analysis is a method used to identify celltypes with statistically significant changes in cell proportions between different biological conditions.  The overall aim is to find sub-populations of cells in which the ratio of cells from the two conditions is significantly different from the ratios observed in the overall data. Methods for differential abundance have been successfully used in practice in both clinical and experimental settings. For example, these approaches highlighted an increased presence of granulocytes, monocytes, and B cells in fatal cases of COVID-19 ([1](https://www.nature.com/articles/nbt.2317)). 
 
 The figure below ....and nicely illustrates DA effects. 
 
@@ -28,7 +28,7 @@ The **propellor method** is a function that is part of the [speckle R package](h
 * The matrix is then transformed such that a linear modeling framework can be applied.
    * As can be seen in the plot below (right), the cell type proportions are over-dispersed compared to the variance estimated under a Binomial distribution.
    * To overcome this, two transformations are available: arcsin square root and logit
-* Linear modeling is applied using an empirical Bayes framework, allowing information to be borrowed across cell types to stabilize the cell type-specific variance estimates
+* Linear modeling is applied using an empirical Bayesian framework, allowing information to be borrowed across cell types to stabilize the cell type-specific variance estimates
    * For **two groups**, moderated t-tests are implemented;
    * For **more than two groups**, the option is a moderated ANOVA test. 
 * Finally, false discovery rates are calculated.
@@ -46,6 +46,7 @@ First we will need to load the required library:
 ```r
 # Load libraries
 library(speckle)
+library(sccomp)
 ```
 
 Next we will create a subset of the Seurat data object in which we keep only **TN and cold7 samples**. We will also create an associated metadata dataframe.
@@ -115,7 +116,7 @@ props$Proportions %>%  View()
 
 ### Differential compostion analysis using `sccomp`
 
-While propellor and other approaches based on linear regression (i.e., scDC, diffcyt) transform the data to model data compositionality, they do not model the actual data count distribution.  Modeling single-cell compositional data as counts is important as small datasets and rare cell types are characterized by a high noise-to-signal ratio, and **modeling counts enables the down-weighting of small cell-group proportions compared to larger ones** ([Mangiola s. et al, 2023](https://www.pnas.org/doi/10.1073/pnas.2203828120)). The **[sccomp](https://github.com/MangiolaLaboratory/sccomp) package** is a generalized method for differential composition and variability analyses based on sum-constrained independent Beta-binomial distributions. The sccomp core algorithm is outlined in the grey boxed section of the figure below. Additional panels of the figure highlight other features of sccomp, some of which are described in this lesson; and for others (i.e simulation, benchmarking) we encourage you to read the paper in more detail for more information. 
+While propellor and other approaches based on linear regression (i.e., scDC, diffcyt) transform the data to model data compositionality, they do not model the actual data count distribution.  Modeling single-cell compositional data as counts is important as small datasets and rare cell types are characterized by a high noise-to-signal ratio, and **modeling counts enables the down-weighting of small cell-group proportions compared to larger ones** ([Mangiola s. et al, 2023](https://www.pnas.org/doi/10.1073/pnas.2203828120)). The **[sccomp](https://github.com/MangiolaLaboratory/sccomp)** core algorithm is outlined in the **grey-boxed panels** of the figure below. Additional panels of the figure highlight other features of sccomp, some of which are described in this lesson; and others (i.e simulation, benchmarking) are described more deeply in the [paper](https://www.pnas.org/doi/10.1073/pnas.2203828120). 
 
 <p align="center">
 <img src="../img/sccomp.jpg" width="630">
@@ -132,7 +133,6 @@ While propellor and other approaches based on linear regression (i.e., scDC, dif
 The code below will perform the step outlined above. The input is the subsetted Seurat object used in the previous section of this lesson.
 
 ```r
-
 # Run the first three steps of sccomp
 sccomp_result <- seurat_sub %>% 
   sccomp_estimate( 
@@ -230,7 +230,7 @@ _Image source: [Dann E. et al, 2021](https://www.nature.com/articles/s41587-021-
 
 The general method of this tool is to assign cells to neighborhoods based upon a latent space (typically PCA) and neighborhood graph. Ultimately, we generate a neighborhood by counts matrix. These counts are modelled with a negative bionomial generalized linear model, which is then put through hypothesis testing to **identify significantally differentially abundant neighborhoods with associated fold change values**.
 
-While we won't apply the miloR methods to our dataset in class, we do have a [lesson that walks you through the miloR workflow](08a_miloR.md). Each step is outlined in detail along with the code on how to apply it in this dataset. Note that the result is not directly comparable to results presented in this lesson, as the data is transformed from cells to neighborhood-level. 
+While we won't apply the miloR methods to our dataset in class, we do have a [lesson that walks you through the miloR workflow](08a_miloR.md). Each step is outlined in detail along with the code on how to apply it in this dataset. Note that the result is not directly comparable to results generated from cluster-based approaches (which are at the celltype level) presented in this lesson, because in cluster-free approaches the data is presented at the neighborhood-level. 
 
 ---
 
