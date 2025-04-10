@@ -13,9 +13,11 @@ date: November 5th, 2024
 ## Differential abundance of celltypes
 Differential abundance (DA) analysis is a method used to identify celltypes with statistically significant changes in cell proportions between different biological conditions.  The overall aim is to find sub-populations of cells in which the ratio of cells from the two conditions is significantly different from the ratios observed in the overall data. Methods for differential abundance have been successfully used in practice in both clinical and experimental settings. For example, these approaches highlighted an increased presence of granulocytes, monocytes, and B cells in fatal cases of COVID-19 ([1](https://www.nature.com/articles/nbt.2317)). 
 
-The figure below ....and nicely illustrates DA effects. 
+The figure below illustrates the aims of a differential abundance analysis. The different celltypes have different abundances and we would like to have a robust statistical approach to determine with these differences are significant.
 
-Make a figure that looks like this? https://www.sc-best-practices.org/conditions/compositional.html
+<p align="center">
+<img src="../img/Differential_abundance_diagram.png" width="700">
+</p>
 
 ## Cluster-based approaches for DA
 Methods which are dependent on having cells grouped into phenotypically similar cell populations, most classically aligning with specific cell types, are what we call cluster-based approaches. Many single cell RNA-seq data analysis workflows produce a result with annotated sub-populations, making these tools very easy to implement as a next step. 
