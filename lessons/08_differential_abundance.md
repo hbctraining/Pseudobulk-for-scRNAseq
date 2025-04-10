@@ -146,7 +146,7 @@ sccomp_result <- seurat_sub %>%
   sccomp_test()
 ```
 
-Each of the columns in the output dataframe are described in detail on the [sccomp GitHub page](https://github.com/MangiolaLaboratory/sccomp?tab=readme-ov-file#from-counts). The column of interest to us is the `c_FDR`, as it reports the false-discovery rate of the null hypothesis for a composition (c). At an FDR < 0.05, **all celltypes are significantly changing with the exception of EC.** Additionally, some celltypes are marginally significant (i.e. Lymph and Perictyes)
+The column of interest to us is the `c_FDR`, as it reports the false-discovery rate of the null hypothesis for a composition (c). At an FDR < 0.05, **all celltypes are significantly changing with the exception of EC.** Additionally, some celltypes are marginally significant (i.e. Lymph and Perictyes). Each of the columns in the output dataframe are described in more detail on the [sccomp GitHub page](https://github.com/MangiolaLaboratory/sccomp?tab=readme-ov-file#from-counts).
 
 ```r
 # Significant results FDR < 0.05
@@ -157,7 +157,7 @@ sccomp_result %>%
   View()
 ```
 
-We can view the fold changes observed and can see that for Lymph and Pericytes while the fold change appears to be high, the composition levels within each group are on the lower end.
+We can view the fold changes and can see that for Lymph and Pericytes, while the fold change appears to be high, the composition levels within each group are on the lower end.
 
 ```r
 # Fold change
@@ -190,7 +190,7 @@ sccomp_result %>%
 
 
 ### Comparing `propeller` and `sccomp` results
-If we look at the significant results of each method side-by-side, we find there is concordance in the majority of the celltypes in which proportions of cells were significantly different between conditions. We also see that both methods report the endothelial cells (EC) are not changing in composition between TN and cold7. There is discrepancy in the Endothelial cell-derived progenitor cells (ECAP) and the VSM-derived adipocyte progenitor cells (VSM-AP), as propellor reports that these celltypes do not change in proportion. Looking at the underlying data for results identified by only one of the methods is not entirely convincing. **Best practice may be to run both methods and compare results.** The most conservative approach would be to take the intersect of the two methods.
+If we look at the significant results of each method side-by-side, we find there is concordance in the majority of the celltypes in which proportions of cells were significantly different between conditions. We also see that both methods report the endothelial cells (EC) are not changing in composition between TN and cold7. There is discrepancy in the Endothelial cell-derived progenitor cells (ECAP) and the VSM-derived adipocyte progenitor cells (VSM-AP), as propellor reports that these celltypes do not change in proportion. Looking at the underlying data for results identified by only one of the methods is not entirely convincing. **Best practice may be to run both methods and compare results.** The most conservative approach would be to take the intersection of the two methods.
 
 ```r
 # Get significant celltypes from propellor
@@ -217,10 +217,10 @@ Some good examples of this include:
 * Having sub-populations of celltypes that are differentially abundant between conditions and therefore may be distributed among several adjacent clusters or, alternatively, encompass only a part of a cluster.
 * Continuous processes where no clear cluster structure exists, such as cell cycles or certain developmental programs.
 
-For the above scenarios, differential abundance at a cluster level may miss the important molecular mechanisms that differentiate between the states.
+For the above scenarios, differential abundance at a cluster-based approaches may miss the important molecular mechanisms that differentiate between the states.
 
 ### miloR
-A good example of a tool that does not rely on clustering of cells is [miloR](https://www.nature.com/articles/s41587-021-01033-z). This tool makes use of k-nearest neighbor (KNN) graphs, a common data structure that is embedded in many single-cell analyses ([Dann E. et al, 2021](https://www-nature-com.ezp-prod1.hul.harvard.edu/articles/s41587-021-01033-z).) This can particularly helpful if you have questions on the more subtle shifts within a certain cell population. The tool miloR allows you to **look more deeply into smaller neighborhoods of cells by utilizing differential abundance testing on the k-nearest neighbor graph**.
+A good example of a tool that does not rely on clustering of cells is [miloR](https://github.com/MarioniLab/miloR). This tool makes use of k-nearest neighbor (KNN) graphs, a common data structure that is embedded in many single-cell analyses ([Dann E. et al, 2021](https://www.nature.com/articles/s41587-021-01033-z).) This can particularly helpful if you have questions on the more subtle shifts within a certain cell population. The tool miloR allows you to **look more deeply into smaller neighborhoods of cells by utilizing differential abundance testing on the k-nearest neighbor graph**.
 
 <p align="center">
 <img src="../img/milo_schematic.png" width="500">
@@ -230,7 +230,7 @@ _Image source: [Dann E. et al, 2021](https://www.nature.com/articles/s41587-021-
 
 The general method of this tool is to assign cells to neighborhoods based upon a latent space (typically PCA) and neighborhood graph. Ultimately, we generate a neighborhood by counts matrix. These counts are modelled with a negative bionomial generalized linear model, which is then put through hypothesis testing to **identify significantally differentially abundant neighborhoods with associated fold change values**.
 
-While we won't apply the miloR methods to our dataset in class, we do have a [lesson that walks you through the miloR workflow](08a_miloR.md). Each step is outlined in detail along with the code on how to apply it in this dataset. Note that the result is not directly comparable to results presented in this lesson, as the data is transformed from cell to neighbourhood-level. 
+While we won't apply the miloR methods to our dataset in class, we do have a [lesson that walks you through the miloR workflow](08a_miloR.md). Each step is outlined in detail along with the code on how to apply it in this dataset. Note that the result is not directly comparable to results presented in this lesson, as the data is transformed from cells to neighborhood-level. 
 
 ---
 
