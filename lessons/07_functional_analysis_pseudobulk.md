@@ -48,7 +48,7 @@ Hypergeometric distribution is a probability distribution that describes the pro
 The calculation of probability of k successes follows the formula:
 
 <p align="center">  
-<img src="../img/hypergeo.png" width="200">
+<img src="https://latex.codecogs.com/svg.image?&space;p=1-\sum_{i=0}^{k-1}\frac{\binom{N}{k}\binom{N-K}{n-k}}{\binom{N}{n}}" />
 </p>
 
 This test will result in a p-value that will be adjusted to consider  multiple testing correction for each category tested.
