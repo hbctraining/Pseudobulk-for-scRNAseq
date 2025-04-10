@@ -7,8 +7,8 @@ date: November 5th, 2024
 
 ## Learning Objectives
 * Describe current approaches for evaluating differences in cell proportions between groups
+* Run cluster-based differential abundance analysis
 * Distinguish between cluster-based and cluster-free methods for DA analysis
-* Run cluster-based differential abundance analysis on VSM cells
 
 ## Differential abundance of celltypes
 Differential abundance (DA) analysis is a method used to identify celltypes with statistically significant changes in cell proportions between different biological conditions.  The overall aim is to find sub-populations of cells in which the ratio of cells from the two conditions is significantly different from the ratios observed in the overall data. Methods for differential abundance have been successfully used in practice in both clinical and experimental settings. For example, these approaches highlighted an increased presence of granulocytes, monocytes, and B cells in fatal cases of COVID-19 ([1](https://www.nature.com/articles/nbt.2317)). 
@@ -46,6 +46,9 @@ _Image source: [Phipson B. et al, 2022](https://academic.oup.com/bioinformatics/
 First we will need to load the required library:
 
 ```r
+# BiocManager::install("speckle")
+# devtools::install_github("MangiolaLaboratory/sccomp")
+
 # Load libraries
 library(speckle)
 library(sccomp)
