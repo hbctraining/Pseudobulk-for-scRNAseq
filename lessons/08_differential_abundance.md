@@ -93,7 +93,6 @@ table(meta_sub$condition_sample, meta_sub$celltype)
   TN_Sample_10        0   59  174  276    20        9      27 1789    202
   TN_Sample_2         1   33   72  150     3       12       8  221     34
   TN_Sample_9         0   55   95  191    14       15      16  954     46
-
 ```
 
 To run the differential proportion analysis, we use the `propeller()` function, which takes as input the Seurat object and the columns for celltype and condition:
@@ -106,8 +105,12 @@ propres <- propeller(seurat_sub, sample=seurat_sub$sample,
 
 
 # Look at the results table
-propres %>%  View()
+propres %>% View()
 ```
+
+<p align="center">
+<img src="../img/propres_view.png" width="700">
+</p>
 
 ***
 
@@ -124,7 +127,7 @@ props <- getTransformedProps(meta_sub$celltype,
                                  meta_sub$condition_sample, 
                                  transform="logit")
 
-props$Proportions %>%  View()
+props$Proportions %>% View()
 ```
 
 
