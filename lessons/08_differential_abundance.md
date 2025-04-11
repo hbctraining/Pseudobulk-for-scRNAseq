@@ -119,8 +119,6 @@ As a final step, we run variance stablization and fit a linear model to our data
 props <- getTransformedProps(meta_sub$celltype, 
                                  meta_sub$condition_sample, 
                                  transform="logit")
-
-props$Proportions %>% View()
 ```
 
 Now that was have the transformed proportions, we can visualize the distribution of celltypes per sample.
@@ -141,7 +139,7 @@ ggplot(props_df) +
 ```
 
 <p align="center">
-<img src="../img/propeller_prop.png" width="700">
+<img src="../img/propeller_prop.png" width="500">
 </p>
 
 We can even assess how the `Frequency` changes across `TN` and `cold7` on average. As we have replicates we can also show the variability - with error bars representing the standard deviation.
@@ -164,7 +162,7 @@ ggplot(props_df_summary) +
 ```
 
 <p align="center">
-<img src="../img/propeller_error_bars.png" width="700">
+<img src="../img/propeller_error_bars.png" width="500">
 </p>
 
 ***
@@ -175,7 +173,7 @@ ggplot(props_df_summary) +
 
 ***
 
-Keep these answers in mind as we compare these `propeller` results against another differential abundance method called `sccomp`.
+Keep these answers in mind as we compare these `propeller` results against another differential composition method called `sccomp`.
 
 ### Differential compostion analysis using `sccomp`
 
@@ -209,10 +207,10 @@ sccomp_result <- seurat_sub %>%
   sccomp_test()
 ```
 
-> Note: It is recommended to following the tnstructions for installing `sccomp` on the `sccomp` [GitHub page](https://github.com/MangiolaLaboratory/sccomp?tab=readme-ov-file#installation) under the **GitHub** section. Some people may run into issue compiling `cmdstanr`/`cmdstan`. We have found that some operating system version require extra steps for this compilation. 
+> Note: It is recommended to following the tnstructions for installing `sccomp` on the [GitHub page](https://github.com/MangiolaLaboratory/sccomp?tab=readme-ov-file#installation) under the **GitHub** section. Some people may run into issue compiling `cmdstanr`/`cmdstan`. We have found that specific versions of operating systems require extra steps for this compilation. 
 Therefore, the next few lines will be a demo. However, we will provide the results of the `sccomp` method near the end so you can load the output yourself. 
 
-The column of interest to us is the `c_FDR`, as it reports the false-discovery rate of the null hypothesis for a composition (c). At an FDR < 0.05, **all celltypes are significantly changing with the exception of EC.** Additionally, some celltypes are marginally significant (i.e. Lymph and Perictyes). Each of the columns in the output dataframe are described in more detail on the [sccomp GitHub page](https://github.com/MangiolaLaboratory/sccomp?tab=readme-ov-file#from-counts).
+The column of interest to us is the `c_FDR`, as it reports the false-discovery rate of the null hypothesis for a composition (c). At an FDR < 0.05, **all celltypes are significantly changing with the exception of EC.** Additionally, some celltypes are marginally significant (i.e. Lymph and Perictyes). Each of the columns in the output dataframe are described in more detail on the [sccomp documentation page](https://github.com/MangiolaLaboratory/sccomp?tab=readme-ov-file#from-counts).
 
 ```r
 # Significant results FDR < 0.05
@@ -244,9 +242,12 @@ sccomp_result %>%
     from =  "TN", 
     to = "cold7"
   ) %>% 
-  select(celltype, statement)
-
+  View()
 ```
+
+<p align="center">
+<img src="../img/sccomp_result_view.png" width="500">
+</p>
 
 Finally, we can visualize the data using boxplots.
 
@@ -267,6 +268,7 @@ sccomp_result %>%
 
 
 ### Comparing `propeller` and `sccomp` results
+
 If we look at the significant results of each method side-by-side, we find there is concordance in the majority of the celltypes in which proportions of cells were significantly different between conditions. We also see that both methods report the endothelial cells (EC) are not changing in composition between TN and cold7. There is discrepancy in the Endothelial cell-derived progenitor cells (ECAP) and the VSM-derived adipocyte progenitor cells (VSM-AP), as propellor reports that these celltypes do not change in proportion. Looking at the underlying data for results identified by only one of the methods is not entirely convincing. **Best practice may be to run both methods and compare results.** The most conservative approach would be to take the intersection of the two methods.
 
 > If you were not able to get `sccomp` installed or had issues compiling `cmdstanr`/`cmdstan`, you can download the `sccomp_result` object by right-clicking and selecting "Save Link as..." from [here](https://www.dropbox.com/scl/fi/611upe534ic8zh3xmx25y/sccomp_result.RDS?rlkey=p4gvsnheu6ncsnzagyc3gu282&dl=1). Place this within your `data` folder.
@@ -290,7 +292,6 @@ s_results <- sccomp_result %>%
 
 # Look at overlapping celltypes
 s_results %>% dplyr::filter(celltype %in% p_results)
-
 ```
   
 ## Cluster-free approaches
