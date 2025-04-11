@@ -247,7 +247,7 @@ sccomp_result %>%
 ```
 
 <p align="center">
-<img src="../img/sccomp_result_view.png" width="500">
+<img src="../img/sccomp_result_view.png" width="800">
 </p>
 
 Finally, we can visualize the data using boxplots.
@@ -294,6 +294,10 @@ s_results <- sccomp_result %>%
 # Look at overlapping celltypes
 s_results %>% dplyr::filter(celltype %in% p_results)
 ```
+
+```
+[1] "AP"      "Adipo"   "Lymph"   "Schwann" "VSM"
+```
   
 ## Cluster-free approaches
 In cases **where the sub-populations most responsive to the biological state do not fall into well-defined separate clusters**, it can be useful to have available methods where the celltype annotation is not a required input. 
@@ -306,7 +310,7 @@ Some good examples of this include:
 For the above scenarios, differential abundance at a cluster-based approaches may miss the important molecular mechanisms that differentiate between the states.
 
 ### miloR
-A good example of a tool that does not rely on clustering of cells is [miloR](https://github.com/MarioniLab/miloR). This tool makes use of k-nearest neighbor (KNN) graphs, a common data structure that is embedded in many single-cell analyses ([Dann E. et al, 2021](https://www.nature.com/articles/s41587-021-01033-z).) This can particularly helpful if you have questions on the more subtle shifts within a certain cell population. The tool miloR allows you to **look more deeply into smaller neighborhoods of cells by utilizing differential abundance testing on the k-nearest neighbor graph**.
+A good example of a tool that does not rely on the annotation of cells is [miloR](https://github.com/MarioniLab/miloR). This tool makes use of k-nearest neighbor (KNN) graphs, a common data structure that is embedded in many single-cell analyses ([Dann E. et al, 2021](https://www.nature.com/articles/s41587-021-01033-z).) This can particularly helpful if you have questions on the more subtle shifts within a certain cell population. The tool miloR allows you to **look more deeply into smaller neighborhoods of cells by utilizing differential abundance testing on the k-nearest neighbor graph**.
 
 <p align="center">
 <img src="../img/milo_schematic.png" width="500">
