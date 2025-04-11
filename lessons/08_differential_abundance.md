@@ -207,8 +207,9 @@ sccomp_result <- seurat_sub %>%
   sccomp_test()
 ```
 
-> Note: It is recommended to following the tnstructions for installing `sccomp` on the [GitHub page](https://github.com/MangiolaLaboratory/sccomp?tab=readme-ov-file#installation) under the **GitHub** section. Some people may run into issue compiling `cmdstanr`/`cmdstan`. We have found that specific versions of operating systems require extra steps for this compilation. 
-Therefore, the next few lines will be a demo. However, we will provide the results of the `sccomp` method near the end so you can load the output yourself. 
+> Note: It is recommended to following the instructions for installing `sccomp` on the [GitHub page](https://github.com/MangiolaLaboratory/sccomp?tab=readme-ov-file#installation) under the **GitHub** section. Some people may run into issue compiling `cmdstanr`/`cmdstan`. We have found that specific versions of operating systems require extra steps for this compilation. 
+> 
+> Therefore, the next few lines will be a demo. However, we will provide the results of the `sccomp` method near the end so you can load the output yourself. 
 
 The column of interest to us is the `c_FDR`, as it reports the false-discovery rate of the null hypothesis for a composition (c). At an FDR < 0.05, **all celltypes are significantly changing with the exception of EC.** Additionally, some celltypes are marginally significant (i.e. Lymph and Perictyes). Each of the columns in the output dataframe are described in more detail on the [sccomp documentation page](https://github.com/MangiolaLaboratory/sccomp?tab=readme-ov-file#from-counts).
 
