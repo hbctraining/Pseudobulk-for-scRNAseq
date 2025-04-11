@@ -207,7 +207,7 @@ sccomp_result <- seurat_sub %>%
   sccomp_test()
 ```
 
-> Note: It is recommended to following the instructions for installing `sccomp` on the [GitHub page](https://github.com/MangiolaLaboratory/sccomp?tab=readme-ov-file#installation) under the **GitHub** section. Some people may run into issue compiling `cmdstanr`/`cmdstan`. We have found that specific versions of operating systems require extra steps for this compilation. 
+> Note: It is recommended to follow the instructions for installing `sccomp` from the [GitHub page](https://github.com/MangiolaLaboratory/sccomp?tab=readme-ov-file#installation) under the **GitHub** section. Some people may run into issues compiling `cmdstanr`/`cmdstan`. We have found that specific versions of operating systems require extra steps for this compilation. 
 > 
 > Therefore, the next few lines will be a demo. However, we will provide the results of the `sccomp` method near the end so you can load the output yourself. 
 
