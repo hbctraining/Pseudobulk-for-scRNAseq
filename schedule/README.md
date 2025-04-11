@@ -93,7 +93,7 @@ II. **Submit your work**:
 | 09:30 - 10:15 | Self-learning lessons discussion | All |
 | 10:15 - 11:15| [Methods for Differental Abundance](../lessons/08_differential_abundance.md)  | Noor  |
 | 11:15 - 11:20 | Break |
-| 11:25 - 12:00| Discussion and Q&A | All |
+| 11:25 - 11:45| Discussion and Q&A | All |
 | 11:45 - 12:00| [Wrap-up](../lectures/Workshop_wrapup.pdf) | Will |
 
 ***
