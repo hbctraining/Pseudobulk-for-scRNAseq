@@ -43,7 +43,7 @@ _Image source: [Phipson B. et al, 2022](https://academic.oup.com/bioinformatics/
 
 ### Running propellor
 
-Let's make a R script to hold our analysis called `Diferential_abundance.R`. We can provide the R script with this header:
+Let's make a R script to hold our analysis called `Differential_abundance.R`. We can provide the R script with this header:
 
 ```
 # September 2024
@@ -63,7 +63,7 @@ library(speckle)
 library(sccomp)
 ```
 
-Next we will create a subset of the Seurat data object in which we keep only **TN and cold7 samples**. We will also create an associated metadata dataframe will contain the celltype and sample ID for each cell.
+To begin, we will create a subset of the Seurat data object in which we keep only **TN and cold7 samples**. We will also create an associated metadata dataframe will contain the celltype and sample ID for each cell.
 
 ```r
 # Subset to keep only cells from TN and cold7
@@ -95,7 +95,7 @@ table(meta_sub$condition_sample, meta_sub$celltype)
   TN_Sample_9         0   55   95  191    14       15      16  954     46
 ```
 
-To run variance stablization and fit a linear model to our data, we use the `propeller()` fuction. After supplying the seurat object as an argument, we also specify the sample IDs, celltypes, and experimental conditions:
+To determine which celltypes are significantly different across our groups, we use the `propeller()` fuction. After supplying the seurat object as an argument, we then specify the sample IDs, celltypes, and experimental conditions:
 
 ```r
 # Run differential proportion analysis
@@ -113,9 +113,7 @@ propres %>% View()
 <img src="../img/propres_view.png" width="700">
 </p>
 
-TODO what are these columns
-
-As a final step, we will **create a dataframe of celltype proportions in each sample**. 
+As a final step, we run variance stablization and fit a linear model to our data to ultimately **create a dataframe of celltype proportions in each sample**. 
 
 ```r
 props <- getTransformedProps(meta_sub$celltype, 
@@ -146,7 +144,7 @@ ggplot(props_df) +
 <img src="../img/propeller_prop.png" width="700">
 </p>
 
-We can even assess how the `Frequency` changes across `TN` and `cold7` on average. As we have replicates, we can also show the variability with error bars representing the standard deviation.
+We can even assess how the `Frequency` changes across `TN` and `cold7` on average. As we have replicates we can also show the variability - with error bars representing the standard deviation.
 
 ```r
 # Calculate average proportion and standard deviation
