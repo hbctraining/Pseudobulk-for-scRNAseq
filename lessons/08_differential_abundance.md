@@ -1,6 +1,6 @@
 ---
 title: "Differential abundance of cells in scRNA-seq"
-author: "Noor Sohail, Meeta Mistry"
+author: "Noor Sohail, Meeta Mistry, Will Gammerdinger"
 date: November 5th, 2024
 ---
 
@@ -43,7 +43,7 @@ _Image source: [Phipson B. et al, 2022](https://academic.oup.com/bioinformatics/
 
 ### Running propellor
 
-Let's make a R script to hold our analysis called `Diiferential_abundance.R`. We can provide the R script with this header:
+Let's make a R script to hold our analysis called `Diferential_abundance.R`. We can provide the R script with this header:
 
 ```
 # September 2024
@@ -63,7 +63,7 @@ library(speckle)
 library(sccomp)
 ```
 
-Next we will create a subset of the Seurat data object in which we keep only **TN and cold7 samples**. We will also create an associated metadata dataframe.
+Next we will create a subset of the Seurat data object in which we keep only **TN and cold7 samples**. We will also create an associated metadata dataframe will contain the celltype and sample ID for each cell.
 
 ```r
 # Subset to keep only cells from TN and cold7
@@ -95,11 +95,12 @@ table(meta_sub$condition_sample, meta_sub$celltype)
   TN_Sample_9         0   55   95  191    14       15      16  954     46
 ```
 
-To run the differential proportion analysis, we use the `propeller()` function, which takes as input the Seurat object and the columns for celltype and condition:
+To run variance stablization and fit a linear model to our data, we use the `propeller()` fuction. After supplying the seurat object as an argument, we also specify the sample IDs, celltypes, and experimental conditions:
 
 ```r
 # Run differential proportion analysis
-propres <- propeller(seurat_sub, sample=seurat_sub$sample,
+propres <- propeller(seurat_sub, 
+                     sample=seurat_sub$sample,
                      clusters = seurat_sub$celltype,
                      group = seurat_sub$condition)
 
@@ -112,15 +113,9 @@ propres %>% View()
 <img src="../img/propres_view.png" width="700">
 </p>
 
-***
+TODO what are these columns
 
-**Exercise**
-1. Take a look at the results table `propres`. Which celltypes show a significant change in composition between TN and cold7?
-2. Does this line up with what we observed in the counts table?
-
-***
-
-As a final step, we will **create a dataframe of celltype proportions in each sample**. We can use this later to explore the variability within groups and how results compare to a different approach. 
+As a final step, we will **create a dataframe of celltype proportions in each sample**. 
 
 ```r
 props <- getTransformedProps(meta_sub$celltype, 
@@ -130,6 +125,59 @@ props <- getTransformedProps(meta_sub$celltype,
 props$Proportions %>% View()
 ```
 
+Now that was have the transformed proportions, we can visualize the distribution of celltypes per sample.
+
+```r
+# Add a condition value to the dataframe
+props_df <- props$Proportions %>%
+  as.data.frame() %>%
+  mutate(condition = str_split_i(sample, "_", 1))
+
+# Proportion of celltypes per sample
+ggplot(props_df) +
+  geom_bar(aes(x=sample, y=Freq, fill=clusters), 
+           stat="identity", color="black") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  NoLegend()
+```
+
+<p align="center">
+<img src="../img/propeller_prop.png" width="700">
+</p>
+
+We can even assess how the `Frequency` changes across `TN` and `cold7` on average. As we have replicates, we can also show the variability with error bars representing the standard deviation.
+
+```r
+# Calculate average proportion and standard deviation
+props_df_summary <- props_df %>%
+  group_by(clusters, condition) %>% 
+  summarise(mean = mean(Freq), sd = sd(Freq))
+
+# Create barplot of mean proportions
+# Add error bars = mean +/- sd
+ggplot(props_df_summary) + 
+    geom_bar(aes(x=clusters, y=mean, fill=condition),
+             stat="identity", color="black", 
+             position=position_dodge()) +
+    geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), 
+                  width=.2, position=position_dodge(.9)) +
+    theme_classic()
+```
+
+<p align="center">
+<img src="../img/propeller_error_bars.png" width="700">
+</p>
+
+***
+
+**Exercise**
+1. Take a look at the results table `propres`. Which celltypes show a significant change in composition between TN and cold7?
+2. Does this line up with what we observed in the counts table?
+
+***
+
+Keep these answers in mind as we compare these `propeller` results against another differential abundance method called `sccomp`.
 
 ### Differential compostion analysis using `sccomp`
 
@@ -147,7 +195,7 @@ While propellor and other approaches based on linear regression (i.e., scDC, dif
     * When only a few groups or samples are present it becomes challenging to estimate the mean–variability association. `sccomp` gains this prior knowledge from other datasets and incoporates it to stabilize estimates.
 
 
-The code below will perform the step outlined above. The input is the subsetted Seurat object used in the previous section of this lesson.
+The code below will perform the step outlined above. The input is the subsetted Seurat object `seurat_sub` used in the previous section of this lesson.
 
 ```r
 # Run the first three steps of sccomp
@@ -163,7 +211,8 @@ sccomp_result <- seurat_sub %>%
   sccomp_test()
 ```
 
-> Note: It is recommended to following the tnstructions for installing `sccomp` on the `sccomp` [GitHub page](https://github.com/MangiolaLaboratory/sccomp?tab=readme-ov-file#installation) under the **GitHub** section. Some people may run into issue compiling `cmdstanr`/`cmdstan`, if that is the case, we haven;t found a way around some of these compiling issues yet, so unfortunately the next few lines will be a demo. However, we will provide the results of the `sccomp` method near the end. 
+> Note: It is recommended to following the tnstructions for installing `sccomp` on the `sccomp` [GitHub page](https://github.com/MangiolaLaboratory/sccomp?tab=readme-ov-file#installation) under the **GitHub** section. Some people may run into issue compiling `cmdstanr`/`cmdstan`. We have found that some operating system version require extra steps for this compilation. 
+Therefore, the next few lines will be a demo. However, we will provide the results of the `sccomp` method near the end so you can load the output yourself. 
 
 The column of interest to us is the `c_FDR`, as it reports the false-discovery rate of the null hypothesis for a composition (c). At an FDR < 0.05, **all celltypes are significantly changing with the exception of EC.** Additionally, some celltypes are marginally significant (i.e. Lymph and Perictyes). Each of the columns in the output dataframe are described in more detail on the [sccomp GitHub page](https://github.com/MangiolaLaboratory/sccomp?tab=readme-ov-file#from-counts).
 
