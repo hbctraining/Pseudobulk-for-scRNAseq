@@ -130,12 +130,12 @@ props_df <- props$Proportions %>%
   mutate(condition = str_split_i(sample, "_", 1))
 
 # Proportion of celltypes per sample
-ggplot(props_df) +
-  geom_bar(aes(x=sample, y=Freq, fill=clusters), 
-           stat="identity", color="black") +
-  theme_classic() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
-  NoLegend()
+ggplot(props_df_summary, aes(x=clusters, y=mean, fill=condition)) + 
+  geom_bar(stat="identity", color="black", 
+           position=position_dodge()) +
+  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), 
+                width=.2, position=position_dodge(.9)) +
+  theme_classic()
 ```
 
 <p align="center">
