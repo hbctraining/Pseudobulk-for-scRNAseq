@@ -211,7 +211,7 @@ sccomp_result <- seurat_sub %>%
 > 
 > Therefore, the next few lines will be a demo. However, we will provide the results of the `sccomp` method near the end so you can load the output yourself. 
 
-The column of interest to us is the `c_FDR`, as it reports the false-discovery rate of the null hypothesis for a composition (c). At an FDR < 0.05, **all celltypes are significantly changing with the exception of EC.** Additionally, some celltypes are marginally significant (i.e. Lymph and Perictyes). Each of the columns in the output dataframe are described in more detail on the [sccomp documentation page](https://github.com/MangiolaLaboratory/sccomp?tab=readme-ov-file#from-counts).
+The column of interest to us is the `c_FDR`, as it reports the false-discovery rate of the null hypothesis for a composition (c). At an FDR < 0.05, **all celltypes are significantly changing with the exception of EC and Pericytes.** Additionally, some celltypes are marginally significant (i.e. Lymph). Each of the columns in the output dataframe are described in more detail on the [sccomp documentation page](https://github.com/MangiolaLaboratory/sccomp?tab=readme-ov-file#from-counts).
 
 ```r
 # Significant results FDR < 0.05
@@ -233,7 +233,7 @@ sccomp_result %>%
 7   VSM-AP 0.00400000
 ```
 
-We can view the fold changes and can see that for Lymph and Pericytes, while the fold change appears to be high, the composition levels within each group are on the lower end.
+We can view the fold changes and can see that for Lymph, while the fold change appears to be high, the composition levels within each group are on the lower end.
 
 ```r
 # Fold change
@@ -252,7 +252,7 @@ sccomp_result %>%
 
 Finally, we can visualize the data using boxplots.
 
-* The blue boxplots represent the posterior predictive check. The black boxplots represent the observed data.
+* The blue boxplots represent the posterior predictive check; it is what the model predicts the data should look like. The black boxplots represent the observed data.
 * If the model is descriptively adequate for the data, the blue boxplots should roughly overlay the black boxplots.
 * A box without coloring for both groups, indicates a celltype which was not significant (i.e. EC)
 
