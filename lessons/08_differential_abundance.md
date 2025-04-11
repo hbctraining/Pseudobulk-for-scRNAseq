@@ -163,6 +163,8 @@ sccomp_result <- seurat_sub %>%
   sccomp_test()
 ```
 
+> Note: It is recommended to following the tnstructions for installing `sccomp` on the `sccomp` [GitHub page](https://github.com/MangiolaLaboratory/sccomp?tab=readme-ov-file#installation) under the **GitHub** section. Some people may run into issue compiling `cmdstanr`/`cmdstan`, if that is the case, we haven;t found a way around some of these compiling issues yet, so unfortunately the next few lines will be a demo. However, we will provide the results of the `sccomp` method near the end. 
+
 The column of interest to us is the `c_FDR`, as it reports the false-discovery rate of the null hypothesis for a composition (c). At an FDR < 0.05, **all celltypes are significantly changing with the exception of EC.** Additionally, some celltypes are marginally significant (i.e. Lymph and Perictyes). Each of the columns in the output dataframe are described in more detail on the [sccomp GitHub page](https://github.com/MangiolaLaboratory/sccomp?tab=readme-ov-file#from-counts).
 
 ```r
@@ -219,6 +221,13 @@ sccomp_result %>%
 
 ### Comparing `propeller` and `sccomp` results
 If we look at the significant results of each method side-by-side, we find there is concordance in the majority of the celltypes in which proportions of cells were significantly different between conditions. We also see that both methods report the endothelial cells (EC) are not changing in composition between TN and cold7. There is discrepancy in the Endothelial cell-derived progenitor cells (ECAP) and the VSM-derived adipocyte progenitor cells (VSM-AP), as propellor reports that these celltypes do not change in proportion. Looking at the underlying data for results identified by only one of the methods is not entirely convincing. **Best practice may be to run both methods and compare results.** The most conservative approach would be to take the intersection of the two methods.
+
+> If you were not able to get `sccomp` installed or had issues compiling `cmdstanr`/`cmdstan`, you can download the `sccomp_result` object by right-clicking and selecting "Save Link as..." from [here](https://www.dropbox.com/scl/fi/611upe534ic8zh3xmx25y/sccomp_result.RDS?rlkey=p4gvsnheu6ncsnzagyc3gu282&dl=1). Place this within your `data` folder.
+>
+> Use the following command to read the RDS object into R:
+> ```
+>sccomp_result <- readRDS("data/sccomp_result.RDS")
+> ```
 
 ```r
 # Get significant celltypes from propellor
